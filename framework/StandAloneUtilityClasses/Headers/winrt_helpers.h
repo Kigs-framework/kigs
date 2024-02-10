@@ -31,7 +31,7 @@ namespace Kigs
 			return mat_row_major;
 		}
 
-		inline mat3x4 Mat3x4FromFloat4x4(const winrt::Windows::Foundation::Numerics::float4x4& transform)
+		inline mat4 Mat3x4FromFloat4x4(const winrt::Windows::Foundation::Numerics::float4x4& transform)
 		{
 			auto mat = mat4(
 				transform.m11, transform.m21, transform.m31, transform.m41,
@@ -40,7 +40,7 @@ namespace Kigs
 				transform.m14, transform.m24, transform.m34, transform.m44);
 
 
-			mat3x4 m{ mat.XAxis.xyz, mat.YAxis.xyz, mat.ZAxis.xyz, mat.Pos.xyz };
+			mat4 m{ mat.XAxis.xyz, mat.YAxis.xyz, mat.ZAxis.xyz, mat.Pos.xyz };
 			return m;
 		}
 

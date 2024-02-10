@@ -116,8 +116,8 @@ void	KigsBitmap::InitModifiable()
 			// clear all
 			memset(mRawPixels, 0, mSize[0] * mSize[1] * 4);
 
-			mDirtyZone.m_Min.Set(0, 0);
-			mDirtyZone.m_Max.Set(mSize[0]-1, mSize[1]-1);
+			mDirtyZone.m_Min = { 0, 0 };
+			mDirtyZone.m_Max = { mSize[0] - 1, mSize[1] - 1 };
 
 			if (parentTexture)
 			{
@@ -409,8 +409,8 @@ void	KigsBitmap::ScrollX(int offset, const KigsBitmapPixel& color)
 		memmove(startPixel, startPixel-offset, (mSize[0] * mSize[1] + offset ) * sizeof(KigsBitmapPixel) );
 		Box(mSize[0]+offset, 0, -offset, mSize[1], color);
 	}
-	mDirtyZone.m_Min.Set(0, 0);
-	mDirtyZone.m_Max.Set(mSize[0] - 1, mSize[1] - 1);
+	mDirtyZone.m_Min = { 0, 0 };
+	mDirtyZone.m_Max = { mSize[0] - 1, mSize[1] - 1 };
 
 }
 void	KigsBitmap::ScrollY(int offset, const KigsBitmapPixel& color)
@@ -439,6 +439,6 @@ void	KigsBitmap::ScrollY(int offset, const KigsBitmapPixel& color)
 		memmove(startPixel, startPixel - offset*mSize[0], (mSize[0] * (mSize[1] + offset)) * sizeof(KigsBitmapPixel));
 		Box(0,mSize[1] + offset, mSize[0], -offset, color);
 	}
-	mDirtyZone.m_Min.Set(0, 0);
-	mDirtyZone.m_Max.Set(mSize[0] - 1, mSize[1] - 1);
+	mDirtyZone.m_Min = { 0, 0 };
+	mDirtyZone.m_Max = { mSize[0] - 1, mSize[1] - 1 };
 }

@@ -61,7 +61,6 @@ namespace Kigs
 
 		DEFINE_MAKE_ATTR_FUNC_VECNF(v2f, maVect2DF)
 		DEFINE_MAKE_ATTR_FUNC_VECNF(v3f, maVect3DF)
-		DEFINE_MAKE_ATTR_FUNC_VECNF(p3f, maVect3DF)
 		DEFINE_MAKE_ATTR_FUNC_VECNF(v4f, maVect4DF)
 
 		DEFINE_MAKE_ATTR_FUNC(const std::string&, maString)

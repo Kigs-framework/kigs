@@ -99,7 +99,7 @@ namespace Kigs
 	{
 		template class CoreActionFunction<float, 1>;
 		template class CoreActionFunction<v2f, 2>;
-		template class CoreActionFunction<Point3D, 3>;
-		template class CoreActionFunction<Vector4D, 4>;
+		template class CoreActionFunction<v3f, 3>;
+		template class CoreActionFunction<v4f, 4>;
 	}
 }

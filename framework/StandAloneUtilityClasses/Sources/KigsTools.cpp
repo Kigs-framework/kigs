@@ -3212,7 +3212,7 @@ void DrawEditor()
 		{
 			Node3D* node = gKigsTools->HierarchyWindow.SelectedItem;
 			auto l2g = node->GetLocalToGlobal();
-			Matrix4x4 m{ l2g };
+			mat4 m{ l2g };
 			dd::axisTriad(&m.e[0][0], 0.1f, 0.2f);
 		}
 			

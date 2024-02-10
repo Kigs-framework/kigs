@@ -217,7 +217,7 @@ void ModernMesh::InitBoundingBox()
 				{
 					unsigned char* vertexStart = (unsigned char*)current->mVertexBufferArray.buffer();
 					
-					Point3D*	currentVertex = (Point3D*)vertexStart;
+					v3f*	currentVertex = (v3f*)vertexStart;
 					int i;
 
 					if (first)
@@ -232,7 +232,7 @@ void ModernMesh::InitBoundingBox()
 						mBoundingBox.Update(*currentVertex);
 					
 						vertexStart += current->mVertexSize;
-						currentVertex = (Point3D*)vertexStart;
+						currentVertex = (v3f*)vertexStart;
 					}
 				}
 			}
@@ -1006,9 +1006,9 @@ void ModernMeshItemGroup::GetTangent(unsigned char* v1, unsigned char* v2, unsig
 	const v2f&		w2 = *(v2f*)(v2 + tcpos);
 	const v2f&		w3 = *(v2f*)(v3 + tcpos);
 
-	const Point3D&		vt1 = *(Point3D*)v1;
-	const Point3D&		vt2 = *(Point3D*)v2;
-	const Point3D&		vt3 = *(Point3D*)v3;
+	const v3f&		vt1 = *(v3f*)v1;
+	const v3f&		vt2 = *(v3f*)v2;
+	const v3f&		vt3 = *(v3f*)v3;
 
 	float x1 = vt2.x - vt1.x;
 	float x2 = vt3.x - vt1.x;

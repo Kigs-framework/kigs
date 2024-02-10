@@ -171,7 +171,6 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_SET(const UTF8Char*); // Only for usstring
 			DECLARE_SET(const v2f&);
 			DECLARE_SET(const v3f&);
-			DECLARE_SET(const p3f&);
 			DECLARE_SET(const v4f&);
 
 #define DECLARE_GET(type) virtual bool getValue(type value,const CoreModifiable* owner) const { return false; }
@@ -183,7 +182,6 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_GET(void*&);
 			DECLARE_GET(v2f&);
 			DECLARE_GET(v3f&);
-			DECLARE_GET(p3f&);
 			DECLARE_GET(v4f&);
 
 #define DECLARE_SETARRAYVALUE(type)	virtual bool setArrayValue(type /*value*/,CoreModifiable* owner, size_t /* nbElements */){return false;};
@@ -406,7 +404,7 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_SET(const usString&);
 			DECLARE_SET(const UTF8Char*);
 			DECLARE_SET(const v2f&);
-			DECLARE_SET(const p3f&);
+			DECLARE_SET(const v3f&);
 			DECLARE_SET(const v4f&);
 
 #define DECLARE_GET(type)	virtual bool getValue(type val,const CoreModifiable* owner) const override { return CoreConvertValue(valueProtectedAccess(owner),val); }
@@ -415,7 +413,7 @@ auto& operator=(const CurrentAttributeType& value)\
 			DECLARE_GET(std::string&);
 			DECLARE_GET(usString&);
 			DECLARE_GET(v2f&);
-			DECLARE_GET(p3f&);
+			DECLARE_GET(v3f&);
 			DECLARE_GET(v4f&);
 
 			// special case for void*
@@ -477,7 +475,7 @@ auto& operator=(const CurrentAttributeType& value)\
 			EXPAND_MACRO_FOR_BASE_TYPES(NOQUALIFIER, NOQUALIFIER, DECLARE_SETARRAYELEMENTVALUE);
 			DECLARE_SETARRAYELEMENTVALUE(const std::string&);
 
-#define DECLARE_GETARRAYELEMENTVALUE(type)	virtual bool getArrayElementValue(type  val , const CoreModifiable* owner, size_t  line , size_t  column ) const override{\
+#define DECLARE_GETARRAYELEMENTVALUE(type)	virtual bool getArrayElementValue(type  val , const CoreModifiable* owner, size_t line , size_t  column ) const override{\
 		if constexpr(impl::is_array<std::remove_cv_t<T>>::value) {\
 			if( (line >= impl::arrayLineCount<std::remove_cv_t<T>>()) || (column >= impl::arrayColumnCount<std::remove_cv_t<T>>())) {return false;}\
 			if constexpr(impl::arrayLineCount<std::remove_cv_t<T>>()>1){\

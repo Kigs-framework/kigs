@@ -308,9 +308,9 @@ namespace Kigs
 				return result;
 			}
 
-			virtual operator p3f() const override
+			virtual operator v3f() const override
 			{
-				p3f result;
+				v3f result;
 
 				mVector[0]->getValue(result.x);
 				mVector[1]->getValue(result.y);

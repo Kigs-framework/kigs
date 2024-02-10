@@ -170,10 +170,10 @@ bool Drawable::Draw(TravState* state)
 			Node3D* parent = (Node3D*)getFirstParent(Node3D::mClassID);
 			if (parent)
 			{
-				Point3D min, max;
+				v3f min, max;
 				GetBoundingBox(min, max);
 
-				Point3D p[8];
+				v3f p[8];
 				p[0].Set(max.x, min.y, min.z);
 				p[1].Set(max.x, max.y, min.z);
 				p[2].Set(min.x, max.y, min.z);

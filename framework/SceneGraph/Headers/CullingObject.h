@@ -61,7 +61,7 @@ namespace Kigs
 			 * \file	CullingObject.h
 			 * \class	CullPlane
 			 * \ingroup SceneGraph
-			 * \brief structure to store a plane definition : a Origin p3f and a Normal v3f
+			 * \brief structure to store a plane definition : a Origin v3f and a Normal v3f
 			 */
 			 // ****************************************
 			class CullPlane
@@ -70,7 +70,7 @@ namespace Kigs
 				//! normal
 				v3f  mNormal;
 				//! position
-				p3f   mOrigin;
+				v3f   mOrigin;
 
 				//! fourth term of plane equation
 				float	mD;
@@ -85,21 +85,21 @@ namespace Kigs
 
 			/**
 			 * \brief	initialise plane with index i in the list with given origin and normal
-			 * \fn 		void  InitPlane(int i,const v3f&, const p3f&);
+			 * \fn 		void  InitPlane(int i,const v3f&, const v3f&);
 			 * \param	i : index
 			 * \param	v3f : normal
-			 * \param	p3f : position
+			 * \param	v3f : position
 			 * \return	the current plane count in this object
 			 */
-			void  InitPlane(int i, const v3f&, const p3f&);
+			void  InitPlane(int i, const v3f&, const v3f&);
 
 			/**
 			 * \brief	insert a new plane in the liste defined with given origin and normal
-			 * \fn 		void  AddPlane(const v3f&, const p3f&);
+			 * \fn 		void  AddPlane(const v3f&, const v3f&);
 			 * \param	v3f : normal
-			 * \param	p3f : position
+			 * \param	v3f : position
 			 */
-			void  AddPlane(const v3f&, const p3f&);
+			void  AddPlane(const v3f&, const v3f&);
 
 			/**
 			 * \brief	remove plane with index i from the list
@@ -116,7 +116,7 @@ namespace Kigs
 			std::vector<CullPlane>& GetCullPlaneList() { return mCullPlaneList; }
 
 			// return intersection point of p1,p2,p3
-			static p3f	getIntersection(const CullPlane& p1, const CullPlane& p2, const CullPlane& p3);
+			static v3f	getIntersection(const CullPlane& p1, const CullPlane& p2, const CullPlane& p3);
 
 		protected:
 

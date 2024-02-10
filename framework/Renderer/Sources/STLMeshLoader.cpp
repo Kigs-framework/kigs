@@ -158,7 +158,7 @@ int STLMeshLoader::ReadFile(Mesh *pMesh)
 	Mesh::F_Triangle* tmptriangles=new Mesh::F_Triangle[newgroup->mTriangleCount];
 
 	pMesh->mVertexCount = newgroup->mTriangleCount * 3;
-	pMesh->mVertexArray=new Point3D[pMesh->mVertexCount];
+	pMesh->mVertexArray=new v3f[pMesh->mVertexCount];
 	pMesh->mNormalCount = newgroup->mTriangleCount;
 	pMesh->mNormalArray=new v3f[pMesh->mNormalCount];
 

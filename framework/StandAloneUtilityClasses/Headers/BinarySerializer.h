@@ -211,7 +211,7 @@ namespace Kigs
 		}
 
 		template<typename PacketStream>
-		bool serialize(PacketStream& stream, mat3x4& value)
+		bool serialize(PacketStream& stream, mat4& value)
 		{
 			for (int i = 0; i < 4; ++i)
 			{

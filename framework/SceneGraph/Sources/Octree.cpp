@@ -86,19 +86,19 @@ void Octree::RecomputeBoundingBox()
 	mLocalBBox.m_Min = mBoundingBoxMin;
 	mLocalBBox.m_Max = mBoundingBoxMax;
 
-	mat3x4		BBoxTransformMatrix(mTransform);
+	mat4		BBoxTransformMatrix(mTransform);
 
-	BBoxTransformMatrix.e[0][0] = fabsf(BBoxTransformMatrix.e[0][0]);
-	BBoxTransformMatrix.e[1][0] = fabsf(BBoxTransformMatrix.e[1][0]);
-	BBoxTransformMatrix.e[2][0] = fabsf(BBoxTransformMatrix.e[2][0]);
+	BBoxTransformMatrix[0][0] = fabsf(BBoxTransformMatrix[0][0]);
+	BBoxTransformMatrix[1][0] = fabsf(BBoxTransformMatrix[1][0]);
+	BBoxTransformMatrix[2][0] = fabsf(BBoxTransformMatrix[2][0]);
 
-	BBoxTransformMatrix.e[0][1] = fabsf(BBoxTransformMatrix.e[0][1]);
-	BBoxTransformMatrix.e[1][1] = fabsf(BBoxTransformMatrix.e[1][1]);
-	BBoxTransformMatrix.e[2][1] = fabsf(BBoxTransformMatrix.e[2][1]);
+	BBoxTransformMatrix[0][1] = fabsf(BBoxTransformMatrix[0][1]);
+	BBoxTransformMatrix[1][1] = fabsf(BBoxTransformMatrix[1][1]);
+	BBoxTransformMatrix[2][1] = fabsf(BBoxTransformMatrix[2][1]);
 
-	BBoxTransformMatrix.e[0][2] = fabsf(BBoxTransformMatrix.e[0][2]);
-	BBoxTransformMatrix.e[1][2] = fabsf(BBoxTransformMatrix.e[1][2]);
-	BBoxTransformMatrix.e[2][2] = fabsf(BBoxTransformMatrix.e[2][2]);
+	BBoxTransformMatrix[0][2] = fabsf(BBoxTransformMatrix[0][2]);
+	BBoxTransformMatrix[1][2] = fabsf(BBoxTransformMatrix[1][2]);
+	BBoxTransformMatrix[2][2] = fabsf(BBoxTransformMatrix[2][2]);
 
 	// compute local translation of the bounding box
 
@@ -109,10 +109,10 @@ void Octree::RecomputeBoundingBox()
 	mBBox.m_Max = mLocalBBox.m_Max;
 	mBBox.m_Max -= translation;
 
-	BBoxTransformMatrix.TransformVector((v3f*)&mBBox.m_Max);
-	mTransform.TransformVector(&translation);
+	transformVector(BBoxTransformMatrix,mBBox.m_Max);
+	transformVector(mTransform ,translation);
 
-	translation += mTransform.GetTranslation();
+	translation += v3f(column(mTransform,3));
 
 	mBBox.m_Min = -mBBox.m_Max;
 	mBBox.m_Max += translation;
@@ -188,9 +188,8 @@ CullingObject::CULLING_RESULT  Octree::CullSubNodes(CullingObject* cullobj, Trav
 		current.mNormal = it->mNormal;
 
 		auto g2l = GetGlobalToLocal();
-		g2l.TransformVector(&current.mNormal);
-		g2l.TransformPoints(&current.mOrigin, 1);
-
+		transformVector(g2l ,current.mNormal);
+		transformPoint(g2l, current.mOrigin);
 
 		if (current.mNormal.x < 0.0f)
 		{
@@ -638,17 +637,17 @@ CullingObject::CULLING_RESULT  OctreeSubNode::RecurseCullSubNodes(const std::vec
 			toTest1.z = mBBox[2 + current.mPreTests[2]];
 			toTest2.z = mBBox[5 - current.mPreTests[2]];
 
-			toTest1 -= current.mOrigin;
+			toTest1 -= (v3f&)current.mOrigin;
 
-			if (Dot(toTest1, current.mNormal) < (float)0)
+			if (dot(toTest1, current.mNormal) < (float)0)
 			{
 				mCullingResult = CullingObject::all_out;
 				mIsVisible = 0;
 				return CullingObject::all_out;
 			}
 
-			toTest2 -= current.mOrigin;
-			if (Dot(toTest2, current.mNormal) < (float)0)
+			toTest2 -= (v3f&)current.mOrigin;
+			if (dot(toTest2, current.mNormal) < (float)0)
 			{
 				localresult = CullingObject::partially_in;
 			}

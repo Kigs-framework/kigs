@@ -54,15 +54,15 @@ namespace Kigs
 
 			/**
 			 * \brief	retreive the bounding box of the bitmap (point min and point max)
-			 * \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
+			 * \fn 		virtual void	GetBoundingBox(v3f& pmin,v3f& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
 			 * \param	pmin : point min of the bounding box (in/out param)
 			 * \param	pmax : point max of the bounding box (in/out param)
 			 */
-			void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override;
+			void GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override;
 
 			/**
 			 * \brief	set the Vertex list (cler the old Vertex list if not null)
-			 * \fn 		void setVertexArray(Point3D *aArray, int Count);
+			 * \fn 		void setVertexArray(v3f *aArray, int Count);
 			 * \param	aArray : new Vertex list
 			 * \param	Count :  number of the Vertex
 			 */
@@ -76,7 +76,7 @@ namespace Kigs
 			}
 			/**
 			 * \brief	set the indice list
-			 * \fn 		void setindiceArray(Point3D *aArray, int Count);
+			 * \fn 		void setindiceArray(v3f *aArray, int Count);
 			 * \param	aArray : new Vertex list
 			 * \param	Count :  number of the Vertex
 			 */

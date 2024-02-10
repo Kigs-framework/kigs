@@ -12,14 +12,12 @@ IMPLEMENT_CLASS_INFO(Billboard3D)
 
 Billboard3D::Billboard3D(const std::string& name,CLASS_NAME_TREE_ARG) : Drawable(name,PASS_CLASS_NAME_TREE_ARG)
 , mCamera(nullptr)
+, mHorizontalVector(1.0f, 0.0f, 0.0f)
+, mVerticalVector(0.0f, 0.0f, 1.0f)
+, mColor{1.0,1.0, 1.0, 1.0}
+, mDistanceToCamera(FLT_MAX)
 {
-	mColor[0] = 1.0f;
-	mColor[1] = 1.0f;
-	mColor[2] = 1.0f;
-	mColor[3] = 1.0f;
-	mHorizontalVector.Set(1,0,0);
-	mVerticalVector.Set(0,0,1);
-	mDistanceToCamera = FLT_MAX;
+
 	mU1 = 0.0f;
 	mU2 = 1.0f;
 	mV1 = 0.0f;
@@ -35,7 +33,7 @@ Billboard3D::~Billboard3D()
 }
 
 
-void Billboard3D::SetPosition(const Point3D &Position)
+void Billboard3D::SetPosition(const v3f &Position)
 {
 	mPosition[0] = Position.x;
 	mPosition[1] = Position.y;
@@ -59,7 +57,7 @@ void Billboard3D::SetTexCoord(const float &u1, const float &v1, const float &u2,
 	PrepareVertexBufferTex();
 }
 
-void Billboard3D::SetPositionAndSize(const Point3D &Position, const float &Width, const float &Height)
+void Billboard3D::SetPositionAndSize(const v3f &Position, const float &Width, const float &Height)
 {
 	mPosition[0] = Position.x;
 	mPosition[1] = Position.y;
@@ -100,16 +98,14 @@ bool Billboard3D::Draw(TravState* _state)
 
 void Billboard3D::UpdateOrientation()
 {
-	const mat3x4 &Mat = mCamera->GetLocalToGlobal();
-	mHorizontalVector.Set(-Mat.e[1][0],-Mat.e[1][1],-Mat.e[1][2]);
-	mVerticalVector.Set(-Mat.e[2][0],-Mat.e[2][1],-Mat.e[2][2]);
-	mHorizontalVector.Normalize();
-	mVerticalVector.Normalize();
+	const mat4 &Mat = mCamera->GetLocalToGlobal();
+	mHorizontalVector = glm::normalize(v3f( -Mat[1][0], -Mat[1][1], -Mat[1][2] ));
+	mVerticalVector = glm::normalize(v3f(-Mat[2][0], -Mat[2][1], -Mat[2][2]));
 	mFatherNode->SetupNodeIfNeeded();
 
-	//const mat3x4 &FatherMat = pFatherNode->GetLocalToGlobal();
-	mFatherNode->GetGlobalToLocal().TransformVector(&mHorizontalVector);
-	mFatherNode->GetGlobalToLocal().TransformVector(&mVerticalVector);
+	//const mat4 &FatherMat = pFatherNode->GetLocalToGlobal();
+	transformVector(mFatherNode->GetGlobalToLocal() ,mHorizontalVector);
+	transformVector(mFatherNode->GetGlobalToLocal(),mVerticalVector);
 	PrepareVertexBufferPos();
 }
 

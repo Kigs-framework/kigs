@@ -29,7 +29,7 @@ namespace Kigs
 			void Init(Camera* cam);
 
 			v3f		camViewVector;
-			p3f		camPos;
+			v3f		camPos;
 			// test only one bbox point
 			unsigned char	BBoxPointToTestIndexes[4];
 			bool flag_set_in_parents = false;

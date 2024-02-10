@@ -32,7 +32,7 @@ CoreModifiableAttribute* CoreValue<v2f>::createAttribute()
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<p3f>::createAttribute()
+CoreModifiableAttribute* CoreValue<v3f>::createAttribute()
 {
 	return new maVect3DFOrphan("Val", &(this->mValue.x));
 }

@@ -19,7 +19,7 @@ OpenGLCameraOrtho::~OpenGLCameraOrtho()
 void  OpenGLCameraOrtho::InitCullingObject(CullingObject* obj)
 {
 	v3f  n;
-	Point3D   o;
+	v3f   o;
 
 	int i;
 
@@ -91,7 +91,7 @@ void  OpenGLCameraOrtho::InitCullingObject(CullingObject* obj)
 	obj->InitPlane(5,n,o);
 }
 
-void OpenGLCameraOrtho::getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, v3f &RayDirection)
+void OpenGLCameraOrtho::getRay(const float &ScreenX, const float &ScreenY, v3f &RayOrigin, v3f &RayDirection)
 {
 	float width , height;
 	getRenderingScreen()->GetSize(width , height); 

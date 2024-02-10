@@ -171,14 +171,14 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 	}
 	double dist = DBL_MAX;
 	
-	Point3D		planePos = v3f(0,0,0);
+	v3f		planePos = v3f(0,0,0);
 	v3f	planeNorm = v3f(0,0,1);
 
 	v3f pos = posin.origin;
 	v3f dir = posin.dir;
 
 	//! transform Ray in local mesh coordinate system if needed				
-	const mat3x4& inverseMatrix = GetGlobalToLocal();
+	const mat4& inverseMatrix = GetGlobalToLocal();
 	inverseMatrix.TransformPoint(&pos);
 	inverseMatrix.TransformVector(&dir);
 

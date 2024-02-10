@@ -681,7 +681,7 @@ namespace dd
 	void camera(Kigs::Draw::Camera* cam, ddVec3Param color, Kigs::u32 flags = 0, int duration = 0);
 	void camera(const CameraPoints& pts, ddVec3Param color, Kigs::u32 flags = 0, int duration = 0);
 
-	void local_bbox(const mat3x4& local_to_global, Kigs::Maths::BBox bbox, ddVec3Param color, int duration = 0, bool depth_enabled = true);
+	void local_bbox(const mat4& local_to_global, Kigs::Maths::BBox bbox, ddVec3Param color, int duration = 0, bool depth_enabled = true);
 
 	CameraPoints camera_points(Kigs::Draw::Camera* cam);
 }

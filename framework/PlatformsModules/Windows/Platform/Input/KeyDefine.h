@@ -1,6 +1,8 @@
 #ifndef _KEY_DEFINE_H_
 #define _KEY_DEFINE_H_
 
+#include "CoreTypes.h"
+
 struct KeyEvent
 {
 public:
@@ -10,7 +12,7 @@ public:
 	static const int ACTION_MULTIPLE = 2;
 
 	int Action;
-	u32 KeyCode;
+	Kigs::u32 KeyCode;
 	int Unicode;
 	int flag;
 

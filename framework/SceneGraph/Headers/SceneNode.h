@@ -70,9 +70,9 @@ namespace Kigs
 				pmax = { -1.0f, -1.0f, -1.0f };
 			}
 
-			bool	CompareMatrix(const mat3x4& m1, const mat3x4& m2)
+			bool	CompareMatrix(const mat4& m1, const mat4& m2)
 			{
-				return (memcmp(&m1, &m2, sizeof(mat3x4)) == 0);
+				return (memcmp(&m1, &m2, sizeof(mat4)) == 0);
 			}
 
 		protected:

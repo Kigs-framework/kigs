@@ -84,7 +84,7 @@ bool	DrawableSwitch::removeItem(const CMSP& item DECLARE_LINK_NAME)
 
 void	DrawableSwitch::ComputeLocalBBox(double time)
 {
-	Point3D boundingp[2];
+	v3f boundingp[2];
 
 	bool isInit=false;
 	std::vector<ModifiableItemStruct>::const_iterator it;
@@ -105,11 +105,11 @@ void	DrawableSwitch::ComputeLocalBBox(double time)
 				{
 					if(isInit)
 					{
-						mBoundingBox.Update((Point3D *)boundingp,2);
+						mBoundingBox.Update((v3f *)boundingp,2);
 					}
 					else
 					{
-						mBoundingBox.Init((Point3D *)boundingp,2);
+						mBoundingBox.Init((v3f *)boundingp,2);
 						isInit=true;
 					}
 				}

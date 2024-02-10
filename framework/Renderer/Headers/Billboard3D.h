@@ -52,10 +52,10 @@ namespace Kigs
 
 			/**
 			 * \brief	set the position
-			 * \fn 		void SetPosition(const Point3D &Position);
+			 * \fn 		void SetPosition(const v3f &Position);
 			 * \param	Position : new position
 			 */
-			void SetPosition(const Point3D& Position);
+			void SetPosition(const v3f& Position);
 
 			/**
 			 * \brief	set the size
@@ -77,12 +77,12 @@ namespace Kigs
 
 			/**
 			 * \brief	set the position and the size
-			 * \fn 		void SetPositionAndSize(const Point3D &Position, const float &Width, const float &Height);
+			 * \fn 		void SetPositionAndSize(const v3f &Position, const float &Width, const float &Height);
 			 * \param	Position : new position
 			 * \param	Width : new width
 			 * \param	Height : new height
 			 */
-			void SetPositionAndSize(const Point3D& Position, const float& Width, const float& Height);
+			void SetPositionAndSize(const v3f& Position, const float& Width, const float& Height);
 
 			/**
 			 * \brief	set the color
@@ -118,10 +118,10 @@ namespace Kigs
 
 			/**
 			 * \brief	getter of the position
-			 * \fn 		const Point3D& GetPosition()
+			 * \fn 		const v3f& GetPosition()
 			 * \return	the position
 			 */
-			const Point3D GetPosition() { return Point3D(mPosition[0], mPosition[1], mPosition[2]); }
+			const v3f GetPosition() { return v3f(mPosition[0], mPosition[1], mPosition[2]); }
 
 			/**
 			 * \brief	getter of the father node

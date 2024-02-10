@@ -112,12 +112,6 @@ namespace Kigs
 				return result;
 			}
 
-			virtual inline operator p3f() const override
-			{
-				p3f result;
-				return result;
-			}
-
 			virtual inline operator v3f() const override
 			{
 				v3f result;
@@ -264,16 +258,6 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		}
 
 		template<>
-		inline CoreValueBase<float, CoreItem>::operator p3f()  const
-		{
-			p3f _value;
-			_value.x = (float)mValue;
-			_value.y = (float)mValue;
-			_value.z = (float)mValue;
-			return _value;
-		}
-
-		template<>
 		inline CoreValueBase<float, CoreItem>::operator v4f()  const
 		{
 			v4f _value;
@@ -294,16 +278,6 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		}
 
 		template<>
-		inline CoreValueBase<v2f, CoreItem>::operator p3f()  const
-		{
-			p3f _value;
-			_value.x = mValue.x;
-			_value.y = mValue.y;
-			_value.z = 0.0f;
-			return _value;
-		}
-
-		template<>
 		inline CoreValueBase<v2f, CoreItem>::operator v4f()  const
 		{
 			v4f _value;
@@ -311,25 +285,6 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 			_value.y = mValue.y;
 			_value.z = 0.0f;
 			_value.w = 0.0f;
-			return _value;
-		}
-
-		template<>
-		inline CoreValueBase<p3f, CoreItem>::operator v2f() const
-		{
-			v2f _value;
-			_value.x = mValue.x;
-			_value.y = mValue.y;
-			return _value;
-		}
-
-		template<>
-		inline CoreValueBase<p3f, CoreItem>::operator p3f()  const
-		{
-			p3f _value;
-			_value.x = mValue.x;
-			_value.y = mValue.y;
-			_value.z = mValue.z;
 			return _value;
 		}
 
@@ -657,14 +612,9 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 				KIGS_WARNING("trying to assign v2f value to non v2f CoreValue", 2);
 				return *this;
 			}
-			virtual CoreItem& operator=(const p3f& other)
-			{
-				KIGS_WARNING("trying to assign p3f value to non p3f CoreValue", 2);
-				return *this;
-			}
 			virtual CoreItem& operator=(const v4f& other)
 			{
-				KIGS_WARNING("trying to assign p3f value to non p3f CoreValue", 2);
+				KIGS_WARNING("trying to assign v4f value to non v4f CoreValue", 2);
 				return *this;
 			}
 
@@ -793,63 +743,6 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		}
 
 		template<>
-		inline CoreItem& CoreValue<p3f>::operator= (const bool& _value)
-		{
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<p3f>::operator= (const float& _value)
-		{
-			this->mValue.x = this->mValue.y = this->mValue.z = _value;
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<p3f>::operator= (const int& _value)
-		{
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<p3f>::operator= (const s64& _value)
-		{
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<p3f>::operator= (const unsigned int& _value)
-		{
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<p3f>::operator= (const u64& _value)
-		{
-			return *this;
-		}
-
-
-		template<>
-		inline CoreItem& CoreValue<p3f>::operator=(const v2f& other)
-		{
-			this->mValue.x = other.x;
-			this->mValue.y = other.y;
-
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<p3f>::operator=(const p3f& other)
-		{
-			this->mValue = other;
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<p3f>::operator=(const v4f& other)
-		{
-			this->mValue.x = other.x;
-			this->mValue.y = other.y;
-			this->mValue.z = other.z;
-
-			return *this;
-		}
-
-		template<>
 		inline CoreItem& CoreValue<v2f>::operator= (const bool& _value)
 		{
 			return *this;
@@ -884,13 +777,6 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		inline CoreItem& CoreValue<v2f>::operator=(const v2f& other)
 		{
 			this->mValue = other;
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<v2f>::operator=(const p3f& other)
-		{
-			this->mValue.x = other.x;
-			this->mValue.y = other.y;
 			return *this;
 		}
 		template<>
@@ -944,14 +830,7 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 
 			return *this;
 		}
-		template<>
-		inline CoreItem& CoreValue<v4f>::operator=(const p3f& other)
-		{
-			this->mValue.x = other.x;
-			this->mValue.y = other.y;
-			this->mValue.z = other.z;
-			return *this;
-		}
+		
 		template<>
 		inline CoreItem& CoreValue<v4f>::operator=(const v4f& other)
 		{

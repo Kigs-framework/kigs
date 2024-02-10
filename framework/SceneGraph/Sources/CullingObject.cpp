@@ -18,7 +18,7 @@ using namespace Kigs::Scene;
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(CullingObject, CullingObject, SceneGraph);
 IMPLEMENT_CLASS_INFO(CullingObject)
 
-void  CullingObject::InitPlane(int i, const v3f& n, const p3f& o)
+void  CullingObject::InitPlane(int i, const v3f& n, const v3f& o)
 {
 	mCullPlaneList[(unsigned int)i].mNormal = n;
 	mCullPlaneList[(unsigned int)i].mOrigin = o;
@@ -27,7 +27,7 @@ void  CullingObject::InitPlane(int i, const v3f& n, const p3f& o)
 	mCullPlaneList[(unsigned int)i].mD = d;
 }
 
-void  CullingObject::AddPlane(const v3f& n, const p3f& o)
+void  CullingObject::AddPlane(const v3f& n, const v3f& o)
 {
 	CullPlane  nplane;
 	nplane.mNormal = n;
@@ -54,7 +54,7 @@ CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int&
 
 	int index = 1;
 	v3f  normal;
-	p3f   origin;
+	v3f   origin;
 	
 	const BBox* currentBBoxP;
 	if (isScaled)
@@ -89,8 +89,8 @@ CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int&
 			}
 			else
 			{
-				g2l.TransformVector(&it->mNormal, &normal);
-				g2l.TransformPoint(&it->mOrigin, &origin);
+				normal = transformVector(g2l,it->mNormal);
+				origin = transformPoint(g2l,it->mOrigin);
 
 				d = origin.x*normal.x + origin.y*normal.y + origin.z*normal.z;
 			}
@@ -189,9 +189,9 @@ CullingObject::CULLING_RESULT CullingObject::Cull(Node3D* node, unsigned int& cu
 }
 
 // return intersection point of p1,p2,p3
-p3f	CullingObject::getIntersection(const CullPlane& p1, const  CullPlane& p2, const  CullPlane& p3)
+v3f	CullingObject::getIntersection(const CullPlane& p1, const  CullPlane& p2, const  CullPlane& p3)
 {
-	p3f	result(0.0f, 0.0f, 0.0f);
+	v3f	result(0.0f, 0.0f, 0.0f);
 	// first get line of intersection between p1 & p2
 
 	v3f dnormal;
@@ -203,11 +203,11 @@ p3f	CullingObject::getIntersection(const CullPlane& p1, const  CullPlane& p2, co
 		// project p1.myOrigin on p2 to have a point on the line
 
 		v3f distVector(p1.mOrigin);
-		distVector -= p2.mOrigin;
+		distVector -= (v3f&)p2.mOrigin;
 
 		float dist = dot(distVector, p2.mNormal);
 
-		p3f dpoint(p1.mOrigin);
+		v3f dpoint(p1.mOrigin);
 		dpoint -= p2.mNormal*dist;
 
 		// then compute intersection of this line with p3

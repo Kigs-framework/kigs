@@ -15,15 +15,6 @@ TextureMatrix::~TextureMatrix()
 {
 }    
 
-
-void	TextureMatrix::Init(const mat3x4& matrix)
-{
-	mMatrix[0] = { matrix[0] , 0.0f };
-	mMatrix[1] = { matrix[1] , 0.0f };
-	mMatrix[2] = { matrix[2] , 0.0f };
-	mMatrix[3] = { matrix[3] , 1.0f };
-}
-
 void	TextureMatrix::Init(const mat4& matrix)
 {
 	mMatrix=	matrix;
@@ -31,5 +22,5 @@ void	TextureMatrix::Init(const mat4& matrix)
 
 void	TextureMatrix::InitToIdentity()
 {
-	mMatrix.SetIdentity();
+	mMatrix = mat4(1.0f);
 }

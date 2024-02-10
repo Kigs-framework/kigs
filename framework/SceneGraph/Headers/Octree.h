@@ -32,7 +32,7 @@ namespace Kigs
 			struct PrecomputedCullInfo
 			{
 				v3f		mNormal;
-				p3f		mOrigin;
+				v3f		mOrigin;
 				int			mPreTests[3]; // index
 			};
 

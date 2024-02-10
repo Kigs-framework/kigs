@@ -85,7 +85,6 @@ CoreItemSP::CoreItemSP(const s64& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const u64& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const v2f& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const v3f& value) { *this = MakeCoreValue(value); }
-CoreItemSP::CoreItemSP(const p3f& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const v4f& value) { *this = MakeCoreValue(value); }
 CoreItemSP::CoreItemSP(const std::string& value, CoreModifiable* owner) { *this = MakeCoreValue(value, owner); }
 CoreItemSP::CoreItemSP(const char* value, CoreModifiable* owner) { *this = MakeCoreValue(value, owner); }
@@ -173,16 +172,16 @@ CoreItem::operator v2f() const
 	return result;
 }
 
-CoreItem::operator v4f() const
+CoreItem::operator v3f() const
 {
-	v4f result;
+	v3f result;
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return result;
 }
 
-CoreItem::operator p3f() const
+CoreItem::operator v4f() const
 {
-	p3f result;
+	v4f result;
 	KIGS_ERROR("cast operator called on base CoreItem", 2);
 	return result;
 }
@@ -269,15 +268,6 @@ CoreItemSP Kigs::Core::MakeCoreValue(const v3f& value)
 	return vector;
 }
 
-CoreItemSP Kigs::Core::MakeCoreValue(const p3f& value)
-{
-	auto vector = MakeCoreVector();
-	vector->set("", MakeCoreValue(value.x));
-	vector->set("", MakeCoreValue(value.y));
-	vector->set("", MakeCoreValue(value.z));
-	return vector;
-}
-
 CoreItemSP Kigs::Core::MakeCoreValue(const v4f& value)
 {
 	auto vector = MakeCoreVector();
@@ -335,7 +325,7 @@ CoreItem& CoreItem::operator=(const v2f& other)
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;
 }
-CoreItem& CoreItem::operator=(const p3f& other)
+CoreItem& CoreItem::operator=(const v3f& other)
 {
 	KIGS_WARNING("trying to assign base CoreItem with value", 2);
 	return *this;

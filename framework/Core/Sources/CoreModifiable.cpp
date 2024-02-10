@@ -19,6 +19,7 @@
 #include "XMLNode.h"
 #include "XMLAttribute.h"
 #include "CoreModifiableTemplateImport.h"
+#include "CoreItemOperator.h"
 
 #include "AttributePacking.h"
 #include "JSonFileParser.h"

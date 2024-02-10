@@ -801,15 +801,15 @@ int LuaScalarMult(lua_State* lua)
 }
 
 
-int LuaMatrix3x4Mult(lua_State* lua)
+int LuaMatrix4Mult(lua_State* lua)
 {
 	LuaState L = lua;
 	
 	LuaRef ref_left = L.toValue<LuaRef>(1);
 	LuaRef ref_right = L.toValue<LuaRef>(2);
 	
-	auto left = Lua::objectCast<const mat3x4>(ref_left);
-	auto right = Lua::objectCast<const mat3x4>(ref_right);
+	auto left = Lua::objectCast<const mat4>(ref_left);
+	auto right = Lua::objectCast<const mat4>(ref_right);
 	
 	
 	if (left && right)
@@ -823,7 +823,7 @@ int LuaMatrix3x4Mult(lua_State* lua)
 		auto v = Lua::objectCast<const v3f>(ref_right);
 		if (v)
 		{
-			L.push(*left * *v);
+			L.push(*left * v4f(*v,1.0f));
 			return 1;
 		}
 		
@@ -881,24 +881,24 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addVariable("y", &v3f::y, true)
 		.addVariable("z", &v3f::z, true)
 	
-		.addVariable("xy", &v3f::xy, true)
-		.addVariable("yz", &v3f::yz, true)
+		.addVariable("xy", &v3f::x, true)
+		.addVariable("yz", &v3f::y, true)
 	
-		.addMetaFunction("__add", LUA_FN(v3f, Kigs::Maths::operator+, const v3f&, const v3f&))
-		.addMetaFunction("__sub", LUA_FN(v3f, Kigs::Maths::operator-, const v3f&, const v3f&))
-		.addMetaFunction("__unm", LUA_FN(v3f, Kigs::Maths::operator-, const v3f&))
-		.addMetaFunction("__eq", LUA_FN(bool, Kigs::Maths::operator==, const v3f&, const v3f&))
+		.addMetaFunction("__add", LUA_FN(v3f, operator+, const v3f&, const v3f&))
+		.addMetaFunction("__sub", LUA_FN(v3f, operator-, const v3f&, const v3f&))
+		.addMetaFunction("__unm", LUA_FN(v3f, operator-, const v3f&))
+		.addMetaFunction("__eq", LUA_FN(bool, operator==, const v3f&, const v3f&))
 		.addMetaFunction("__mul", &LuaScalarMult<v3f>)
-		.addMetaFunction("__div", LUA_FN(v3f, Kigs::Maths::operator/, const v3f&, const float&))
+		.addMetaFunction("__div", LUA_FN(v3f, operator/, const v3f&, const float&))
 	
 		.addStaticFunction("Norm", LUA_FN(float, Norm, const v3f&))
 		.addStaticFunction("length2", LUA_FN(float, length2, const v3f&))
-		.addFunction("normalize", &v3f::Normalize)
+		.addFunction("normalize", &v3f::normalize)
 		.addFunction("normalized", &v3f::Normalized)
 		.addFunction("copy", [](const v3f* v) -> v3f { return *v; })
 	
-		.addStaticFunction("Dot", LUA_FN(float, Dot, const v3f&, const v3f&))
-		.addStaticFunction("Cross", LUA_FN(v3f, operator^, const v3f&, const v3f&))
+		.addStaticFunction("Dot", LUA_FN(float, dot, const v3f&, const v3f&))
+		.addStaticFunction("Cross", LUA_FN(v3f, cross, const v3f&, const v3f&))
 	
 		.endClass();
 	
@@ -910,83 +910,82 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addVariable("z", &v4f::z, true)
 		.addVariable("w", &v4f::w, true)
 	
-		.addVariable("xyz", &v4f::xyz, true)
-		.addVariable("yzw", &v4f::yzw, true)
+		.addVariable("xyz", &v4f::x, true)
+		.addVariable("yzw", &v4f::y, true)
 	
-		.addMetaFunction("__add", LUA_FN(v4f, Kigs::Maths::operator+, const v4f&, const v4f&))
-		.addMetaFunction("__sub", LUA_FN(v4f, Kigs::Maths::operator-, const v4f&, const v4f&))
-		.addMetaFunction("__unm", LUA_FN(v4f, Kigs::Maths::operator-, const v4f&))
-		.addMetaFunction("__eq", LUA_FN(bool, Kigs::Maths::operator==, const v4f&, const v4f&))
+		.addMetaFunction("__add", LUA_FN(v4f, operator+, const v4f&, const v4f&))
+		.addMetaFunction("__sub", LUA_FN(v4f, operator-, const v4f&, const v4f&))
+		.addMetaFunction("__unm", LUA_FN(v4f, operator-, const v4f&))
+		.addMetaFunction("__eq", LUA_FN(bool, operator==, const v4f&, const v4f&))
 		.addMetaFunction("__mul", &LuaScalarMult<v4f>)
-		.addMetaFunction("__div", LUA_FN(v4f, Kigs::Maths::operator/, const v4f&, const float&))
-		.addStaticFunction("Dot", LUA_FN(float, Dot, const v4f&, const v4f&))
+		.addMetaFunction("__div", LUA_FN(v4f, operator/, const v4f&, const float&))
+		.addStaticFunction("Dot", LUA_FN(float, dot, const v4f&, const v4f&))
 		//.addStaticFunction("Cross", LUA_FN(v4f, ::operator^, const v4f&, const v4f&))
-	.addStaticFunction("Norm", LUA_FN(float, Norm, const v4f&))
-		.addStaticFunction("length2", LUA_FN(float, length2, const v4f&))
-		.addFunction("normalize", &v4f::Normalize)
-		.addFunction("normalized", &v4f::Normalized)
+	.addStaticFunction("Norm", LUA_FN(float, length, length2, const v4f&))
+		.addFunction("normalize", &glm::normalize)
+		.addFunction("normalized", &glm::normalized)
 		.addFunction("copy", [](const v4f* v) -> v4f { return *v; })
 		.endClass();
 	
-	LuaBinding(L).beginClass<mat3x4>("mat3x4")
-		.addFactory([]() { mat3x4 result; result.SetIdentity(); return result; })
-	
-		.addVariable("XAxis", &mat3x4::XAxis)
-		.addVariable("YAxis", &mat3x4::YAxis)
-		.addVariable("ZAxis", &mat3x4::ZAxis)
-		.addVariable("Pos", &mat3x4::Pos)
-	
-	
+	LuaBinding(L).beginClass<mat4>("mat4")
+		.addFactory([]() { mat4 result; result.SetIdentity(); return result; })
+
+		.addVariable("XAxis", &mat4::XAxis)
+		.addVariable("YAxis", &mat4::YAxis)
+		.addVariable("ZAxis", &mat4::ZAxis)
+		.addVariable("Pos", &mat4::Pos)
+
+
 		.addMetaFunction("__mul", &LuaMatrix3x4Mult)
-	
-		.addMetaFunction("__add", [](const mat3x4* m1, const mat3x4* m2) -> mat3x4 { return *m1 + *m2; })
-		.addMetaFunction("__sub", [](const mat3x4* m1, const mat3x4* m2) -> mat3x4 { return *m1 - *m2; })
-	
-		.addFunction("setRotationX", &mat3x4::SetRotationX)
-		.addFunction("setRotationY", &mat3x4::SetRotationY)
-		.addFunction("setRotationZ", &mat3x4::SetRotationZ)
-	
-		.addFunction("preRotateX", &mat3x4::PreRotateX)
-		.addFunction("preRotateY", &mat3x4::PreRotateY)
-		.addFunction("preRotateZ", &mat3x4::PreRotateZ)
-	
-		.addFunction("postRotateX", &mat3x4::PostRotateX)
-		.addFunction("postRotateY", &mat3x4::PostRotateY)
-		.addFunction("postRotateZ", &mat3x4::PostRotateZ)
-	
-		.addFunction("setScale", &mat3x4::SetScale)
-		.addFunction("preScale", &mat3x4::PreScale)
-		.addFunction("postScale", &mat3x4::PostScale)
-	
-		.addFunction("setTranslation", &mat3x4::SetTranslation)
-		.addFunction("preTranslate", &mat3x4::PreTranslate)
-		.addFunction("postTranslate", &mat3x4::PostTranslate)
-	
-		.addFunction("setRotationXYZ", &mat3x4::SetRotationXYZ)
-		.addFunction("setRotationZYX", &mat3x4::SetRotationZYX)
-	
-		.addFunction("preRotateXYZ", &mat3x4::PreRotateXYZ)
-		.addFunction("preRotateZYX", &mat3x4::PreRotateZYX)
-		.addFunction("postRotateXYZ", &mat3x4::PostRotateXYZ)
-		.addFunction("postRotateZYX", &mat3x4::PostRotateZYX)
-	
-		.addFunction("setIdentity", &mat3x4::SetIdentity)
-		.addFunction("setNull", &mat3x4::SetNull)
-	
-		.addFunction("isIdentity", &mat3x4::IsIdentity)
+
+		.addMetaFunction("__add", [](const mat4* m1, const mat4* m2) -> mat4 { return *m1 + *m2; })
+		.addMetaFunction("__sub", [](const mat4* m1, const mat4* m2) -> mat4 { return *m1 - *m2; })
+
+		.addFunction("setRotationX", &mat4::SetRotationX)
+		.addFunction("setRotationY", &mat4::SetRotationY)
+		.addFunction("setRotationZ", &mat4::SetRotationZ)
+
+		.addFunction("preRotateX", &mat4::PreRotateX)
+		.addFunction("preRotateY", &mat4::PreRotateY)
+		.addFunction("preRotateZ", &mat4::PreRotateZ)
+
+		.addFunction("postRotateX", &mat4::PostRotateX)
+		.addFunction("postRotateY", &mat4::PostRotateY)
+		.addFunction("postRotateZ", &mat4::PostRotateZ)
+
+		.addFunction("setScale", &mat4::SetScale)
+		.addFunction("preScale", &mat4::PreScale)
+		.addFunction("postScale", &mat4::PostScale)
+
+		.addFunction("setTranslation", &mat4::SetTranslation)
+		.addFunction("preTranslate", &mat4::PreTranslate)
+		.addFunction("postTranslate", &mat4::PostTranslate)
+
+		.addFunction("setRotationXYZ", &mat4::SetRotationXYZ)
+		.addFunction("setRotationZYX", &mat4::SetRotationZYX)
+
+		.addFunction("preRotateXYZ", &mat4::PreRotateXYZ)
+		.addFunction("preRotateZYX", &mat4::PreRotateZYX)
+		.addFunction("postRotateXYZ", &mat4::PostRotateXYZ)
+		.addFunction("postRotateZYX", &mat4::PostRotateZYX)
+
+		.addFunction("setIdentity", &mat4::SetIdentity)
+		.addFunction("setNull", &mat4::SetNull)
+
+		.addFunction("isIdentity", &glm::isIdentity)
 		/*
-   .addStaticFunction("Inv", LUA_FN(mat3x4, Inv, const mat3x4&))
-   .addStaticFunction("Det", LUA_FN(float, Det, const mat3x4&))
-   .addStaticFunction("Norm", LUA_FN(float, Norm, const mat3x4&))
-   .addStaticFunction("length2", LUA_FN(float, length2, const mat3x4&))
-   .addStaticFunction("Trace", LUA_FN(float, Trace, const mat3x4&))
+   .addStaticFunction("Inv", LUA_FN(mat4, Inv, const mat4&))
+   .addStaticFunction("Det", LUA_FN(float, Det, const mat4&))
+   .addStaticFunction("Norm", LUA_FN(float, Norm, const mat4&))
+   .addStaticFunction("length2", LUA_FN(float, length2, const mat4&))
+   .addStaticFunction("Trace", LUA_FN(float, Trace, const mat4&))
    */
-	.addFunction("transformPoint", [](const mat3x4* m, v3f* v) { m->TransformPoint(v); })
-		.addFunction("transformPoints", [](const mat3x4* m, const std::vector<v3f*> l) { for (auto v : l) m->TransformPoint(v); })
-		.addFunction("transformVector", [](const mat3x4* m, v3f* v) {m->TransformVector((v3f*)v); })
-		.addFunction("transformVectors", [](const mat3x4* m, const std::vector<v3f*> l) { for (auto v : l) m->TransformVector((v3f*)v); })
+	.addFunction("transformPoint", [](const mat4* m, v3f* v) { transformPoint(*m,*v); })
+		.addFunction("transformPoints", [](const mat4* m, const std::vector<v3f*> l) { for (auto v : l) transformPoint(*m,*v); })
+		.addFunction("transformVector", [](const mat4* m, v3f* v) { transformVector(*m,*v); })
+		.addFunction("transformVectors", [](const mat4* m, const std::vector<v3f*> l) { for (auto v : l) transformVector(*m,*v); })
 	
-		.addFunction("copy", [](const mat3x4* m) -> mat3x4 { return *m; })
+		.addFunction("copy", [](const mat4* m) -> mat4 { return *m; })
 	
 	
 		.endClass();

@@ -25,7 +25,7 @@ DEFINE_CULL_UPGRADOR_METHOD(Node3DCullLodUpgrador)
 		BBox gbb;
 		GetGlobalBoundingBox(gbb.m_Min, gbb.m_Max);
 		auto d = gbb.Distance(state->GetCurrentCamera()->GetGlobalPosition());
-		auto bbsize = Norm(gbb.m_Max - gbb.m_Min);
+		auto bbsize = length(gbb.m_Max - gbb.m_Min);
 
 		if (bbsize == 0.0f)
 			return true;

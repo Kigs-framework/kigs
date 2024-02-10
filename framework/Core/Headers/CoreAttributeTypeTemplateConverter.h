@@ -30,8 +30,6 @@ namespace Kigs
 			template<>
 			struct is_array<v2f> : std::true_type {};
 			template<>
-			struct is_array<p3f> : std::true_type {};
-			template<>
 			struct is_array<v3f> : std::true_type {};
 			template<>
 			struct is_array<v4f> : std::true_type {};
@@ -47,8 +45,6 @@ namespace Kigs
 			struct is_array<v3u> : std::true_type {};
 			template<>
 			struct is_array<mat3> : std::true_type {};
-			template<>
-			struct is_array<mat3x4> : std::true_type {};
 			template<>
 			struct is_array<mat4> : std::true_type {};
 
@@ -79,8 +75,7 @@ namespace Kigs
 
 			// return line number for matrix
 			template<typename T, typename std::enable_if<
-				std::is_same<std::remove_cv_t<T>, p3f>::value
-				|| std::is_same<std::remove_cv_t<T>, v3f>::value
+				std::is_same<std::remove_cv_t<T>, v3f>::value
 				|| std::is_same<std::remove_cv_t<T>, v3i>::value
 				|| std::is_same<std::remove_cv_t<T>, v3u>::value
 				|| std::is_same<std::remove_cv_t<T>, mat3>::value // column first matrix
@@ -94,7 +89,6 @@ namespace Kigs
 			template<typename T, typename std::enable_if<
 				std::is_same<std::remove_cv_t<T>, v4f>::value
 				|| std::is_same<std::remove_cv_t<T>, quat>::value
-				|| std::is_same<std::remove_cv_t<T>, mat3x4>::value // colum first matrix
 				|| std::is_same<std::remove_cv_t<T>, mat4>::value
 			>::type* = nullptr>
 			constexpr size_t arraySize()
@@ -121,7 +115,6 @@ namespace Kigs
 				|| std::is_same<std::remove_cv_t<T>, v2i>::value
 				|| std::is_same<std::remove_cv_t<T>, v2u>::value
 				|| std::is_same<std::remove_cv_t<T>, v3f>::value
-				|| std::is_same<std::remove_cv_t<T>, p3f>::value
 				|| std::is_same<std::remove_cv_t<T>, v3i>::value
 				|| std::is_same<std::remove_cv_t<T>, v3u>::value
 				|| std::is_same<std::remove_cv_t<T>, v4f>::value
@@ -134,7 +127,6 @@ namespace Kigs
 
 			template<typename T, typename std::enable_if<
 				std::is_same<std::remove_cv_t<T>, mat3>::value // column first
-				|| std::is_same<std::remove_cv_t<T>, mat3x4>::value
 			>::type* = nullptr>
 			constexpr size_t arrayLineCount()
 			{

@@ -223,8 +223,7 @@ bool RenderingScreen::GetDataInTouchSupport(const Input::touchPosInfos& posin, I
 	else
 	{
 		//GetMousePosInScreen((s32)posin.pos.x, (s32)posin.pos.y, pout.pos.x, pout.pos.y);
-		pout.pos.xy = GlobalMousePositionToDesignPosition(posin.pos.xy);
-		pout.pos.z = 0;
+		pout.pos = v3f(GlobalMousePositionToDesignPosition(posin.pos),0.0f);
 	}
 
 	if ((pout.pos.x >= 0.0f) && (pout.pos.x < mDesignSize[0]))

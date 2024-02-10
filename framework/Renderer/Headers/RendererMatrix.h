@@ -58,19 +58,12 @@ namespace Kigs
 			}
 
 			/**
-			 * \brief		initialize with a 3x4 matrix
-			 * \fn			void	Init(const mat3x4& matrix);
-			 * \param		matrix : used matrix
-			 */
-			void	Init(const mat3x4& matrix);
-			using	Drawable::Init;
-
-			/**
 			 * \brief		initialize with a 4x4 matrix
 			 * \fn			void	Init(const mat4& matrix);
 			 * \param		matrix : used matrix
 			 */
 			void	Init(const mat4& matrix);
+			using	Drawable::Init;
 
 
 			/**

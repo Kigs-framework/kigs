@@ -930,12 +930,12 @@ void RendererOpenGL::SendLightsInfo(TravState* travstate)
 		return;
 
 	Camera*	cam = travstate->GetCurrentCamera();
-	Point3D lCamPos;
+	v3f lCamPos;
 
 	if (cam)
 	{
-		const mat3x4& lMatCam = cam->GetLocalToGlobal();
-		Point3D outCam(0.0f, 0.0f, 0.0f);
+		const mat4& lMatCam = cam->GetLocalToGlobal();
+		v3f outCam(0.0f, 0.0f, 0.0f);
 		lMatCam.TransformPoint(&outCam, &lCamPos);
 	}
 

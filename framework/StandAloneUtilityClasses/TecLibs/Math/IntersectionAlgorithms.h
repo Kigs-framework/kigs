@@ -24,7 +24,7 @@ namespace Kigs
 		struct Hit
 		{
 			double							HitDistance = DBL_MAX;
-			p3f							HitPosition;
+			v3f							HitPosition;
 			v3f						HitNormal;
 			Core::CoreModifiable*			HitActor = nullptr;
 			Scene::Node3D*					HitNode = nullptr;
@@ -44,9 +44,9 @@ namespace Kigs
 		/*!
 		test if a ray, in fact a segment (Origin, direction, length) intersect a BBox (min and max points)
 		*/
-		inline bool IntersectionFastRayBBoxTest(const p3f& RayOrigin,
+		inline bool IntersectionFastRayBBoxTest(const v3f& RayOrigin,
 			const v3f& RayDirection, float MaxDist,
-			const p3f& BBoxMin, const p3f& BBoxMax)
+			const v3f& BBoxMin, const v3f& BBoxMax)
 		{
 			//! bbox center
 			v3f center(BBoxMin);
@@ -61,7 +61,7 @@ namespace Kigs
 			float r = glm::length2(diag);
 
 			v3f Q(center);
-			Q -= RayOrigin;
+			Q -= v3f(RayOrigin);
 			float c = glm::length2(Q);
 			float v = dot(Q, RayDirection);
 
@@ -83,13 +83,13 @@ namespace Kigs
 		/*!
 		test if a ray(Origin, direction) intersect a Sphere (center, radius) and return minimal distance of intersection
 		*/
-		inline bool IntersectionRaySphere(const p3f& RayOrigin,
+		inline bool IntersectionRaySphere(const v3f& RayOrigin,
 			const v3f& RayDirection,
-			const p3f& SphereCenter,
+			const v3f& SphereCenter,
 			const float SphereRadius,
 			float& FirstIntersectionDistance)
 		{
-			v3f Q = SphereCenter - RayOrigin;
+			v3f Q = v3f(SphereCenter) - RayOrigin;
 
 			float c = length(Q);
 			float v = dot(Q, RayDirection);
@@ -108,9 +108,9 @@ namespace Kigs
 		test if a ray(Origin, direction) intersect a Sphere (center, radius) and return both intersection distance
 		both distances can be equal if ray is tangent to the sphere
 		*/
-		inline bool MultiIntersectionRaySphere(const p3f& RayOrigin,
+		inline bool MultiIntersectionRaySphere(const v3f& RayOrigin,
 			const v3f& RayDirection,
-			const p3f& SphereCenter,
+			const v3f& SphereCenter,
 			const float SphereRadius,
 			float& FirstIntersectionDistance,
 			float& SecondIntersectionDistance)
@@ -132,9 +132,9 @@ namespace Kigs
 		test if a ray(Origin, direction) intersect a BBox (min and max points)
 		return nearest intersection point and distance
 		*/
-		inline bool IntersectionRayBBox(const p3f& RayOrigin, const v3f& RayDirection,
-			const p3f& BBoxMin, const p3f& BBoxMax,
-			p3f& IntersectionPoint, v3f& IntersectionNormal,
+		inline bool IntersectionRayBBox(const v3f& RayOrigin, const v3f& RayDirection,
+			const v3f& BBoxMin, const v3f& BBoxMax,
+			v3f& IntersectionPoint, v3f& IntersectionNormal,
 			double& IntersectionDistance)
 		{
 			enum IRBB_Side
@@ -146,11 +146,11 @@ namespace Kigs
 
 
 			IRBB_Side SideX, SideY, SideZ;
-			p3f candidatePlane;
+			v3f candidatePlane;
 			double MinT = 1000.0;
 			bool Inside = true;
 			bool IntersectionFound = false;
-			p3f CandidatePoint;
+			v3f CandidatePoint;
 
 			//! first test along X axis
 			if (RayOrigin.x < BBoxMin.x)
@@ -310,8 +310,8 @@ namespace Kigs
 		}
 
 
-		inline bool IntersectionRayBBox(const p3f& RayOrigin, const v3f& RayDirection,
-			const p3f& BBoxMin, const p3f& BBoxMax)
+		inline bool IntersectionRayBBox(const v3f& RayOrigin, const v3f& RayDirection,
+			const v3f& BBoxMin, const v3f& BBoxMax)
 		{
 			auto getLimit = [&](int sign) -> auto&
 			{
@@ -347,7 +347,7 @@ namespace Kigs
 			return true;
 		}
 
-		inline bool IntersectionSegmentBBox(const p3f& p1, const p3f& p2, const p3f& BBoxMin, const p3f& BBoxMax)
+		inline bool IntersectionSegmentBBox(const v3f& p1, const v3f& p2, const v3f& BBoxMin, const v3f& BBoxMax)
 		{
 			auto d = (p2 - p1) * 0.5f;
 			auto e = (BBoxMax - BBoxMin) * 0.5f;
@@ -377,8 +377,8 @@ namespace Kigs
 		Return : IntersectionDistance, u,v coords of intersection in triangle coordinates
 		global coordinate system intersection point can be computed by : intersection==A*u + B*v + C*(1-u-v)
 		*/
-		inline bool IntersectionRayTriangle(const p3f& RayOrigin, const v3f& RayDirection,
-			const p3f& A, const p3f& B, const p3f& C,
+		inline bool IntersectionRayTriangle(const v3f& RayOrigin, const v3f& RayDirection,
+			const v3f& A, const v3f& B, const v3f& C,
 			double& IntersectionDistance,
 			float& TriangleCoord_u,
 			float& TriangleCoord_v,
@@ -429,8 +429,8 @@ namespace Kigs
 		/*!	test intersection between a Ray (origin and direction) and a Plane (origin and normal)
 		return intersection distance
 		*/
-		inline bool IntersectRayPlane(const p3f& rOrigin, const v3f& rVector,
-			const p3f& pOrigin, const v3f& pNormal,
+		inline bool IntersectRayPlane(const v3f& rOrigin, const v3f& rVector,
+			const v3f& pOrigin, const v3f& pNormal,
 			double& IntersectionDistance)
 		{
 
@@ -453,8 +453,8 @@ namespace Kigs
 		/*!	test intersection between a Sphere (center, radius) and a BBOX (min and max points)
 		just return true or false
 		*/
-		inline bool IntersectionSphereBBox(const p3f& SphereCenter, float SphereRadius,
-			const p3f& BBoxMin, const p3f& BBoxMax)
+		inline bool IntersectionSphereBBox(const v3f& SphereCenter, float SphereRadius,
+			const v3f& BBoxMin, const v3f& BBoxMax)
 		{
 			float dmin = 0.0f;
 			if (SphereCenter.x < BBoxMin.x)
@@ -492,7 +492,7 @@ namespace Kigs
 
 		/*!	return true if two AABBox intersect
 		*/
-		inline bool IntersectionAABBAABB(const p3f& BMin1, const p3f& BMax1, const p3f& BMin2, const p3f& BMax2)
+		inline bool IntersectionAABBAABB(const v3f& BMin1, const v3f& BMax1, const v3f& BMin2, const v3f& BMax2)
 		{
 			if (BMin1.x > BMax2.x) return false;
 			if (BMin2.x > BMax1.x) return false;
@@ -506,7 +506,7 @@ namespace Kigs
 		/*!	test intersection between a ray (origin, direction) and a cylinder with axis on world Z axis (radius)
 		return both intersections distance
 		*/
-		inline bool IntersectionRayCylinder(const p3f& RayOrigin,
+		inline bool IntersectionRayCylinder(const v3f& RayOrigin,
 			const v3f& RayDirection,
 			const float CylinderRadius,
 			float& FirstIntersectionDistance,
@@ -539,9 +539,9 @@ namespace Kigs
 
 		/*!   \brief return true if ray intersect sphere
 		*/
-		inline bool TestIntersectionRaySphere(const p3f& RayOrigin,
+		inline bool TestIntersectionRaySphere(const v3f& RayOrigin,
 			const v3f& RayDirection,
-			const p3f& SphereCenter,
+			const v3f& SphereCenter,
 			const float SphereRadius)
 		{
 			v3f Q = SphereCenter - RayOrigin;

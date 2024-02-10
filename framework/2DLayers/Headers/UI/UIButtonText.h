@@ -33,7 +33,7 @@ namespace Kigs
 			UIButtonText(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 
 			void				ChangeTexture(std::string& texturename, std::string& overtexturename, std::string& downtexturename);
-			void				ChangeTextureColor(Vector4D& UpColor, Vector4D& OverColor, Vector4D& DownColor);
+			void				ChangeTextureColor(v4f& UpColor, v4f& OverColor, v4f& DownColor);
 			void				GetUpColor(float& R, float& G, float& B);
 			void				GetOverColor(float& R, float& G, float& B);
 			void				GetDownColor(float& R, float& G, float& B);

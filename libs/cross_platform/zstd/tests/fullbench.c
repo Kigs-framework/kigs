@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Yann Collet, Facebook, Inc.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
  *
  * This source code is licensed under both the BSD-style license (found in the
@@ -138,18 +138,24 @@ static size_t local_ZSTD_decompress(const void* src, size_t srcSize,
     return ZSTD_decompress(dst, dstSize, buff2, g_cSize);
 }
 
-static ZSTD_DCtx* g_zdc = NULL;
+static ZSTD_DCtx* g_zdc = NULL; /* will be initialized within benchMem */
+static size_t local_ZSTD_decompressDCtx(const void* src, size_t srcSize,
+                                    void* dst, size_t dstSize,
+                                    void* buff2)
+{
+    (void)src; (void)srcSize;
+    return ZSTD_decompressDCtx(g_zdc, dst, dstSize, buff2, g_cSize);
+}
 
 #ifndef ZSTD_DLL_IMPORT
-typedef enum {
-    not_streaming = 0,
-    is_streaming = 1
-} streaming_operation;
-extern size_t ZSTD_decodeLiteralsBlock(ZSTD_DCtx* ctx, const void* src, size_t srcSize, void* dst, size_t dstCapacity, const streaming_operation streaming);
+
+extern size_t ZSTD_decodeLiteralsBlock_wrapper(ZSTD_DCtx* dctx,
+                          const void* src, size_t srcSize,
+                          void* dst, size_t dstCapacity);
 static size_t local_ZSTD_decodeLiteralsBlock(const void* src, size_t srcSize, void* dst, size_t dstSize, void* buff2)
 {
     (void)src; (void)srcSize; (void)dst; (void)dstSize;
-    return ZSTD_decodeLiteralsBlock(g_zdc, buff2, g_cSize, dst, dstSize, not_streaming);
+    return ZSTD_decodeLiteralsBlock_wrapper(g_zdc, buff2, g_cSize, dst, dstSize);
 }
 
 static size_t local_ZSTD_decodeSeqHeaders(const void* src, size_t srcSize, void* dst, size_t dstSize, void* buff2)
@@ -171,6 +177,7 @@ FORCE_NOINLINE size_t ZSTD_decodeLiteralsHeader(ZSTD_DCtx* dctx, void const* src
                 size_t lhSize, litSize, litCSize;
                 U32 const lhlCode = (istart[0] >> 2) & 3;
                 U32 const lhc = MEM_readLE32(istart);
+                int const flags = ZSTD_DCtx_get_bmi2(dctx) ? HUF_flags_bmi2 : 0;
                 switch(lhlCode)
                 {
                 case 0: case 1: default:   /* note : default is impossible, since lhlCode into [0..3] */
@@ -195,16 +202,16 @@ FORCE_NOINLINE size_t ZSTD_decodeLiteralsHeader(ZSTD_DCtx* dctx, void const* src
                 RETURN_ERROR_IF(litSize > ZSTD_BLOCKSIZE_MAX, corruption_detected, "");
                 RETURN_ERROR_IF(litCSize + lhSize > srcSize, corruption_detected, "");
 #ifndef HUF_FORCE_DECOMPRESS_X2
-                return HUF_readDTableX1_wksp_bmi2(
+                return HUF_readDTableX1_wksp(
                         dctx->entropy.hufTable,
                         istart+lhSize, litCSize,
                         dctx->workspace, sizeof(dctx->workspace),
-                        ZSTD_DCtx_get_bmi2(dctx));
+                        flags);
 #else
                 return HUF_readDTableX2_wksp(
                         dctx->entropy.hufTable,
                         istart+lhSize, litCSize,
-                        dctx->workspace, sizeof(dctx->workspace));
+                        dctx->workspace, sizeof(dctx->workspace), flags);
 #endif
             }
         }
@@ -452,6 +459,9 @@ static int benchMem(unsigned benchNb,
     case 3:
         benchFunction = local_ZSTD_compress_freshCCtx; benchName = "compress_freshCCtx";
         break;
+    case 4:
+        benchFunction = local_ZSTD_decompressDCtx; benchName = "decompressDCtx";
+        break;
 #ifndef ZSTD_DLL_IMPORT
     case 11:
         benchFunction = local_ZSTD_compressContinue; benchName = "compressContinue";
@@ -551,6 +561,9 @@ static int benchMem(unsigned benchNb,
     case 3:
         payload = &cparams;
         break;
+    case 4:
+        g_cSize = ZSTD_compress(dstBuff2, dstBuffSize, src, srcSize, cLevel);
+        break;
 #ifndef ZSTD_DLL_IMPORT
     case 11:
         payload = &cparams;
@@ -605,7 +618,7 @@ static int benchMem(unsigned benchNb,
             ip += ZSTD_blockHeaderSize;    /* skip block header */
             ZSTD_decompressBegin(g_zdc);
             CONTROL(iend > ip);
-            ip += ZSTD_decodeLiteralsBlock(g_zdc, ip, (size_t)(iend-ip), dstBuff, dstBuffSize, not_streaming);   /* skip literal segment */
+            ip += ZSTD_decodeLiteralsBlock_wrapper(g_zdc, ip, (size_t)(iend-ip), dstBuff, dstBuffSize);   /* skip literal segment */
             g_cSize = (size_t)(iend-ip);
             memcpy(dstBuff2, ip, g_cSize);   /* copy rest of block (it starts by SeqHeader) */
             srcSize = srcSize > 128 KB ? 128 KB : srcSize;   /* speed relative to block */
@@ -773,7 +786,9 @@ static int benchFiles(U32 benchNb,
             } else {
                 for (benchNb=0; benchNb<100; benchNb++) {
                     benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
-            }   }
+                }
+                benchNb = 0;
+            }
 
             free(origBuff);
     }   }

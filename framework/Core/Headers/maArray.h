@@ -136,7 +136,7 @@ namespace Kigs
 				at(0, 1) = (T)pt.y;
 				return *this;
 			}
-			auto& operator=(p3f pt)
+			auto& operator=(v3f pt)
 			{
 				if (nbColumns < 3) return *this;
 				at(0, 0) = (T)pt.x;
@@ -188,9 +188,9 @@ namespace Kigs
 				return tmpValue;
 			}
 
-			virtual operator p3f() const
+			virtual operator v3f() const
 			{
-				p3f tmpValue(0.0f, 0.0f, 0.0f);
+				v3f tmpValue(0.0f, 0.0f, 0.0f);
 				if ((nbLines == 1) && (nbColumns >= 3))
 				{
 					tmpValue.x = (float)this->at(0, 0);

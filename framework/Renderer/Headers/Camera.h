@@ -72,7 +72,7 @@ namespace Kigs
 			}
 
 
-			void ChangeMatrix(const mat3x4&) override;
+			void ChangeMatrix(const mat4&) override;
 
 			/**
 				* \brief	set the position of the camera
@@ -89,7 +89,7 @@ namespace Kigs
 				RecomputeMatrix();
 			}
 
-			void	SetPosition(const p3f& pt)
+			void	SetPosition(const v3f& pt)
 			{
 				SetPosition(pt.x, pt.y, pt.z);
 			}
@@ -107,9 +107,9 @@ namespace Kigs
 				y = mPosition[1];
 				z = mPosition[2];
 			}
-			p3f GetPosition() const { return p3f(mPosition[0], mPosition[1], mPosition[2]); }
+			v3f GetPosition() const { return v3f(mPosition[0], mPosition[1], mPosition[2]); }
 
-			p3f GetGlobalPosition() { return column(GetLocalToGlobal(),3); }
+			v3f GetGlobalPosition() { return column(GetLocalToGlobal(),3); }
 			/**
 				* \brief	set the view factor
 				* \fn 		void	SetViewVector(float x,float y,float z)
@@ -124,7 +124,7 @@ namespace Kigs
 				mViewVector[2] = z;
 				RecomputeMatrix();
 			}
-			void SetViewVector(const p3f& v)
+			void SetViewVector(const v3f& v)
 			{
 				SetViewVector(v.x, v.y, v.z);
 			}
@@ -142,8 +142,8 @@ namespace Kigs
 				y = mViewVector[1];
 				z = mViewVector[2];
 			}
-			p3f GetViewVector() const { return p3f(mViewVector[0], mViewVector[1], mViewVector[2]); }
-			p3f GetGlobalViewVector() { return normalize(column(GetLocalToGlobal(),0)); }
+			v3f GetViewVector() const { return v3f(mViewVector[0], mViewVector[1], mViewVector[2]); }
+			v3f GetGlobalViewVector() { return normalize(column(GetLocalToGlobal(),0)); }
 
 
 			std::pair<v3f, v3f> GetGlobalRay() { return { GetGlobalPosition(), GetGlobalViewVector() }; }
@@ -165,7 +165,7 @@ namespace Kigs
 				RecomputeMatrix();
 			}
 
-			void SetUpVector(const p3f& v)
+			void SetUpVector(const v3f& v)
 			{
 				SetUpVector(v.x, v.y, v.z);
 			}
@@ -183,10 +183,10 @@ namespace Kigs
 				y = mUpVector[1];
 				z = mUpVector[2];
 			}
-			p3f GetUpVector() const { return p3f(mUpVector[0], mUpVector[1], mUpVector[2]); }
-			p3f GetGlobalUpVector() { return normalize(column(GetLocalToGlobal(),2)); }
+			v3f GetUpVector() const { return v3f(mUpVector[0], mUpVector[1], mUpVector[2]); }
+			v3f GetGlobalUpVector() { return normalize(column(GetLocalToGlobal(),2)); }
 
-			p3f GetGlobalRightVector() { return normalize(column(GetLocalToGlobal(),1)); }
+			v3f GetGlobalRightVector() { return normalize(column(GetLocalToGlobal(),1)); }
 
 			/**
 			* \brief	special case for camera has we want it to be init even if have no bounding box
@@ -255,17 +255,17 @@ namespace Kigs
 
 			/**
 				* \brief	get the ray from a pixel
-				* \fn 		virtual void getRay(const float &ScreenX, const float &ScreenY, p3f &RayOrigin, v3f &RayDirection);
+				* \fn 		virtual void getRay(const float &ScreenX, const float &ScreenY, v3f &RayOrigin, v3f &RayDirection);
 				* \param	ScreenX : position in x axis of the pixel
 				* \param	ScreenY : position in y axis of the pixel
 				* \param	RayOrigin : origin of the ray (in/out param)
 				* \param	RayDirection : direction of the ray (in/out param)
 				*/
-			virtual void getRay(const float& ScreenX, const float& ScreenY, p3f& RayOrigin, v3f& RayDirection);
+			virtual void getRay(const float& ScreenX, const float& ScreenY, v3f& RayOrigin, v3f& RayDirection);
 
 			//! project given point 3D using camera projection
 			// return true if point is in front of camera, false if behind it
-			virtual bool Project(float&/* ScreenX */, float& /* ScreenY */, p3f /* Pt */);
+			virtual bool Project(float&/* ScreenX */, float& /* ScreenY */, v3f /* Pt */);
 
 			/**
 				* \brief	do a Node3D cull but always return true
@@ -426,15 +426,15 @@ namespace Kigs
 			struct touchControlledDataStruct
 			{
 				// data
-				v2f		mStartPt; // used for rotation
-				float		mOneOnCoef; // used for rotation and zoom
-				float		mTargetPointDist; // used for rotation and zoom
-				v3f	mStartV; // used for rotation and zoom
+				v2f			mStartPt; // used for rotation
+				f32			mOneOnCoef; // used for rotation and zoom
+				f32			mTargetPointDist; // used for rotation and zoom
+				v3f			mStartV; // used for rotation and zoom
 
 				// store starting camera data
-				mat3x4	mStartMatrix;
+				mat4		mStartMatrix;
 
-				unsigned int mState;
+				u32			mState;
 			};
 
 			// remove touchControlledDataStruct if needed

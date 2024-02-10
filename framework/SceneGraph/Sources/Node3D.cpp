@@ -23,9 +23,9 @@ IMPLEMENT_CONSTRUCTOR(Node3D)
 {
 	setUserFlag(UserFlagNode3D);
 	//! init matrix to identity
-	mTransform.SetIdentity();
-	mLocalToGlobal.SetIdentity();
-	mGlobalToLocal.SetIdentity();
+	mTransform = mat4(1.0f);
+	mLocalToGlobal = mat4(1.0f);
+	mGlobalToLocal = mat4(1.0f);
 
 	//! init visibility flag
 	mIsVisible=0;
@@ -36,9 +36,9 @@ IMPLEMENT_CONSTRUCTOR(Node3D)
 void Node3D::PrepareExport(ExportSettings* settings)
 {
 	ParentClassType::PrepareExport(settings);
-	if (!mTransform.IsIdentity())
+	if (!isIdentity(mTransform))
 	{
-		AddDynamicVectorAttribute("LocalMatrix", &mTransform.e[0][0], 3 * 4);
+		AddDynamicVectorAttribute("LocalMatrix", &mTransform[0][0], 3 * 4);
 	}
 }
 
@@ -59,19 +59,19 @@ bool Node3D::addItem(const CMSP& item,ItemPosition pos DECLARE_LINK_NAME)
 			// Support for older xml files
 			RendererMatrix* m = (RendererMatrix*)item.get();
 			const float* values = m->GetMatrixValues();
-			mat3x4 matrix = mat3x4::IdentityMatrix();
-			matrix.e[0][0] = values[0];
-			matrix.e[0][1] = values[1];
-			matrix.e[0][2] = values[2];
-			matrix.e[1][0] = values[4];
-			matrix.e[1][1] = values[5];
-			matrix.e[1][2] = values[6];
-			matrix.e[2][0] = values[8];
-			matrix.e[2][1] = values[9];
-			matrix.e[2][2] = values[10];
-			matrix.e[3][0] = values[12];
-			matrix.e[3][1] = values[13];
-			matrix.e[3][2] = values[14];
+			mat4 matrix = mat4(1.0f);
+			matrix[0][0] = values[0];
+			matrix[0][1] = values[1];
+			matrix[0][2] = values[2];
+			matrix[1][0] = values[4];
+			matrix[1][1] = values[5];
+			matrix[1][2] = values[6];
+			matrix[2][0] = values[8];
+			matrix[2][1] = values[9];
+			matrix[2][2] = values[10];
+			matrix[3][0] = values[12];
+			matrix[3][1] = values[13];
+			matrix[3][2] = values[14];
 			ChangeMatrix(matrix);
 			return false;
 		}
@@ -143,8 +143,8 @@ bool Node3D::Draw(TravState* state)
 void Node3D::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	mat3x4 m;
-	if (getArrayValue("LocalMatrix", &m.e[0][0], 3 * 4))
+	mat4 m;
+	if (getArrayValue("LocalMatrix", &m[0][0], 4 * 4))
 	{
 		ChangeMatrix(m);
 		RemoveDynamicAttribute("LocalMatrix");
@@ -159,7 +159,7 @@ void Node3D::InitModifiable()
 	}
 }
 
-void Node3D::ChangeMatrix(const mat3x4& newmatrix)
+void Node3D::ChangeMatrix(const mat4& newmatrix)
 {
 	if (!CompareMatrix(newmatrix, mTransform))
 	{
@@ -175,9 +175,9 @@ void Node3D::ChangeMatrix(const mat3x4& newmatrix)
 //! move local node position ( pos = move + pos )
 void	Node3D::localMove(const v3f& move)
 {
-	v3f pos = mTransform.GetTranslation();
+	v3f pos = column(mTransform,3);
 	pos += move;
-	mTransform.SetTranslation(pos);
+	column(mTransform,3,v4f(pos,1.0f));
 	setUserFlag(LocalToGlobalMatrixIsDirty | GlobalToLocalMatrixIsDirty | BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
 
 	PropagateDirtyFlagsToSons(this);
@@ -188,7 +188,7 @@ void	Node3D::localMove(const v3f& move)
 void	Node3D::globalMove(const v3f& move)
 {
 	v3f lmove=move;
-	mGlobalToLocal.TransformVector(&lmove);
+	transformVector(mGlobalToLocal,lmove);
 	localMove(lmove);
 }
 
@@ -427,8 +427,8 @@ void Node3D::TravDraw(TravState* state)
 		state->SetCurrentGlobalToLocalMatrix(mGlobalToLocal);
 
 		//! prepare drawing (save states)
-		mat3x4 PrevL2GMatrix = state->GetCurrentLocalToGlobalMatrix();
-		mat3x4 PrevG2LMatrix = state->GetCurrentGlobalToLocalMatrix();
+		mat4 PrevL2GMatrix = state->GetCurrentLocalToGlobalMatrix();
+		mat4 PrevG2LMatrix = state->GetCurrentGlobalToLocalMatrix();
 
 
 		bool OldVisibility = state->IsAllVisible();
@@ -625,7 +625,7 @@ void Node3D::TravCull(TravState* state)
 	if (isUserFlagSet(UserFlagCameraSort))
 	{
 		Camera* cam = state->GetCurrentCamera();
-		Point3D	camPos;
+		v3f	camPos;
 		cam->GetPosition(camPos.x, camPos.y, camPos.z);
 		v3f	viewVector;
 		cam->GetViewVector(viewVector.x, viewVector.y, viewVector.z);
@@ -644,11 +644,11 @@ void Node3D::TravCull(TravState* state)
 				{
 					nodeDistPair toAdd;
 					toAdd.node = node;
-					const mat3x4& nodemat = node->GetLocalToGlobal();
-					Point3D	nodepos(nodemat.GetTranslation());
-					nodepos -= camPos;
+					const mat4& nodemat = node->GetLocalToGlobal();
+					v3f	nodepos(column(nodemat,3));
+					nodepos -= (v3f&)camPos;
 
-					toAdd.dist = Dot(viewVector, nodepos);
+					toAdd.dist = dot(viewVector, nodepos);
 
 					visibleSet.insert(toAdd);
 				}
@@ -689,14 +689,14 @@ void Node3D::TravCull(TravState* state)
 					
 					BBox nodeBBox;
 					node->GetGlobalBoundingBox(nodeBBox.m_Min, nodeBBox.m_Max);
-					Point3D testPos(nodeBBox[state->mManageFrontToBackStruct->BBoxPointToTestIndexes[0]],
+					v3f testPos(nodeBBox[state->mManageFrontToBackStruct->BBoxPointToTestIndexes[0]],
 						nodeBBox[state->mManageFrontToBackStruct->BBoxPointToTestIndexes[1]],
 						nodeBBox[state->mManageFrontToBackStruct->BBoxPointToTestIndexes[2]]);
 
 					
 					testPos -= state->mManageFrontToBackStruct->camPos;
 
-					toAdd.dist = Dot(state->mManageFrontToBackStruct->camViewVector, testPos);
+					toAdd.dist = dot(state->mManageFrontToBackStruct->camViewVector, testPos);
 					visibleSet.insert(toAdd);
 				}
 			}
@@ -780,7 +780,7 @@ void Node3D::RecomputeLocalToGlobal()
 		father = father->getFather();
 	}
 
-	mat3x4 father_local_to_global = mat3x4::IdentityMatrix();
+	mat4 father_local_to_global = mat4(1.0f);
 	if (father)
 	{
 		father_local_to_global = father->mLocalToGlobal;
@@ -789,12 +789,12 @@ void Node3D::RecomputeLocalToGlobal()
 	for (int i = current_index - 1; i >= 0; --i)
 	{
 		nodes[i]->mLocalToGlobal = nodes[i]->mTransform;
-		nodes[i]->mLocalToGlobal.PostMultiply(father_local_to_global);
+		nodes[i]->mLocalToGlobal *= father_local_to_global;
 
 		const auto& l2g = nodes[i]->mLocalToGlobal;
-		float sx = 1.0f / (l2g.e[0][0] * l2g.e[0][0] + l2g.e[0][1] * l2g.e[0][1] + l2g.e[0][2] * l2g.e[0][2]);
-		float sy = 1.0f / (l2g.e[1][0] * l2g.e[1][0] + l2g.e[1][1] * l2g.e[1][1] + l2g.e[1][2] * l2g.e[1][2]);
-		float sz = 1.0f / (l2g.e[2][0] * l2g.e[2][0] + l2g.e[2][1] * l2g.e[2][1] + l2g.e[2][2] * l2g.e[2][2]);
+		float sx = 1.0f / (l2g[0][0] * l2g[0][0] + l2g[0][1] * l2g[0][1] + l2g[0][2] * l2g[0][2]);
+		float sy = 1.0f / (l2g[1][0] * l2g[1][0] + l2g[1][1] * l2g[1][1] + l2g[1][2] * l2g[1][2]);
+		float sz = 1.0f / (l2g[2][0] * l2g[2][0] + l2g[2][1] * l2g[2][1] + l2g[2][2] * l2g[2][2]);
 
 		if (length2(v3f{ sx - 1.0f, sy - 1.0f, sz - 1.0f }) > 0.001f)
 			nodes[i]->setUserFlag(IsScaledFlag);
@@ -811,31 +811,31 @@ void Node3D::RecomputeGlobalToLocal()
 	if (isUserFlagSet(LocalToGlobalMatrixIsDirty))
 		RecomputeLocalToGlobal();
 
-	float sx = 1.0f / (mLocalToGlobal.e[0][0] * mLocalToGlobal.e[0][0] + mLocalToGlobal.e[0][1] * mLocalToGlobal.e[0][1] + mLocalToGlobal.e[0][2] * mLocalToGlobal.e[0][2]);
-	float sy = 1.0f / (mLocalToGlobal.e[1][0] * mLocalToGlobal.e[1][0] + mLocalToGlobal.e[1][1] * mLocalToGlobal.e[1][1] + mLocalToGlobal.e[1][2] * mLocalToGlobal.e[1][2]);
-	float sz = 1.0f / (mLocalToGlobal.e[2][0] * mLocalToGlobal.e[2][0] + mLocalToGlobal.e[2][1] * mLocalToGlobal.e[2][1] + mLocalToGlobal.e[2][2] * mLocalToGlobal.e[2][2]);
+	float sx = 1.0f / (mLocalToGlobal[0][0] * mLocalToGlobal[0][0] + mLocalToGlobal[0][1] * mLocalToGlobal[0][1] + mLocalToGlobal[0][2] * mLocalToGlobal[0][2]);
+	float sy = 1.0f / (mLocalToGlobal[1][0] * mLocalToGlobal[1][0] + mLocalToGlobal[1][1] * mLocalToGlobal[1][1] + mLocalToGlobal[1][2] * mLocalToGlobal[1][2]);
+	float sz = 1.0f / (mLocalToGlobal[2][0] * mLocalToGlobal[2][0] + mLocalToGlobal[2][1] * mLocalToGlobal[2][1] + mLocalToGlobal[2][2] * mLocalToGlobal[2][2]);
 
 	//! use 3x3 transpose matrix * invscale
-	mGlobalToLocal.e[0][0] = mLocalToGlobal.e[0][0] * sx;
-	mGlobalToLocal.e[0][1] = mLocalToGlobal.e[1][0] * sy;
-	mGlobalToLocal.e[0][2] = mLocalToGlobal.e[2][0] * sz;
+	mGlobalToLocal[0][0] = mLocalToGlobal[0][0] * sx;
+	mGlobalToLocal[0][1] = mLocalToGlobal[1][0] * sy;
+	mGlobalToLocal[0][2] = mLocalToGlobal[2][0] * sz;
 
-	mGlobalToLocal.e[1][0] = mLocalToGlobal.e[0][1] * sx;
-	mGlobalToLocal.e[1][1] = mLocalToGlobal.e[1][1] * sy;
-	mGlobalToLocal.e[1][2] = mLocalToGlobal.e[2][1] * sz;
+	mGlobalToLocal[1][0] = mLocalToGlobal[0][1] * sx;
+	mGlobalToLocal[1][1] = mLocalToGlobal[1][1] * sy;
+	mGlobalToLocal[1][2] = mLocalToGlobal[2][1] * sz;
 
-	mGlobalToLocal.e[2][0] = mLocalToGlobal.e[0][2] * sx;
-	mGlobalToLocal.e[2][1] = mLocalToGlobal.e[1][2] * sy;
-	mGlobalToLocal.e[2][2] = mLocalToGlobal.e[2][2] * sz;
+	mGlobalToLocal[2][0] = mLocalToGlobal[0][2] * sx;
+	mGlobalToLocal[2][1] = mLocalToGlobal[1][2] * sy;
+	mGlobalToLocal[2][2] = mLocalToGlobal[2][2] * sz;
 
 	//! then compute inverse translation
-	v3f  invtrans(mLocalToGlobal.e[3][0], mLocalToGlobal.e[3][1], mLocalToGlobal.e[3][2]);
-	mGlobalToLocal.TransformVector(&invtrans);
+	v3f  invtrans(mLocalToGlobal[3][0], mLocalToGlobal[3][1], mLocalToGlobal[3][2]);
+	transformVector(mGlobalToLocal ,invtrans);
 
 	//! then set global to local translation
-	mGlobalToLocal.e[3][0] = -invtrans[0];
-	mGlobalToLocal.e[3][1] = -invtrans[1];
-	mGlobalToLocal.e[3][2] = -invtrans[2];
+	mGlobalToLocal[3][0] = -invtrans[0];
+	mGlobalToLocal[3][1] = -invtrans[1];
+	mGlobalToLocal[3][2] = -invtrans[2];
 
 	unsetUserFlag(GlobalToLocalMatrixIsDirty);
 }
@@ -848,13 +848,13 @@ void Node3D::RecomputeBoundingBox()
 	bool isInit = false;
 
 	//! init local and "local in father coordinate system" bounding box to "invalid" 
-	mLocalBBox.m_Min.Set((0.0f), (0.0f), (0.0f));
-	mLocalBBox.m_Max.Set((-1.0f), (-1.0f), (-1.0f));
+	mLocalBBox.m_Min = { (0.0f), (0.0f), (0.0f) };
+	mLocalBBox.m_Max = { (-1.0f), (-1.0f), (-1.0f) };
 
-	mBBox.m_Min.Set((0.0f), (0.0f), (0.0f));
-	mBBox.m_Max.Set((-1.0f), (-1.0f), (-1.0f));
+	mBBox.m_Min = { (0.0f), (0.0f), (0.0f) };
+	mBBox.m_Max = { (-1.0f), (-1.0f), (-1.0f) };
 
-	Point3D boundingp[2];
+	v3f boundingp[2];
 	bool	hasDrawable = false;
 	//! first check drawable sons bounding box 
 	std::vector<ModifiableItemStruct>::const_iterator it;
@@ -874,11 +874,11 @@ void Node3D::RecomputeBoundingBox()
 				{
 					if (isInit)
 					{
-						mLocalBBox.Update((Point3D *)boundingp, 2);
+						mLocalBBox.Update((v3f *)boundingp, 2);
 					}
 					else
 					{
-						mLocalBBox.Init((Point3D *)boundingp, 2);
+						mLocalBBox.Init((v3f *)boundingp, 2);
 						isInit = true;
 					}
 				}
@@ -902,11 +902,11 @@ void Node3D::RecomputeBoundingBox()
 			{
 				if (isInit)
 				{
-					mLocalBBox.Update((Point3D *)boundingp, 2);
+					mLocalBBox.Update((v3f *)boundingp, 2);
 				}
 				else
 				{
-					mLocalBBox.Init((Point3D *)boundingp, 2);
+					mLocalBBox.Init((v3f *)boundingp, 2);
 					isInit = true;
 				}
 			}
@@ -921,11 +921,11 @@ void Node3D::RecomputeBoundingBox()
 	{
 		if (isInit)
 		{
-			mLocalBBox.Update((Point3D *)boundingp, 2);
+			mLocalBBox.Update((v3f *)boundingp, 2);
 		}
 		else
 		{
-			mLocalBBox.Init((Point3D *)boundingp, 2);
+			mLocalBBox.Init((v3f *)boundingp, 2);
 			isInit = true;
 		}
 	}
@@ -933,7 +933,7 @@ void Node3D::RecomputeBoundingBox()
 	//! ok still not init but has drawable ... Init bbox at our position
 	if ((!isInit) && (hasDrawable))
 	{
-		Point3D	zeroPos(0.0f, 0.0f, 0.0f);
+		v3f	zeroPos(0.0f, 0.0f, 0.0f);
 		mLocalBBox.Init(zeroPos);
 		isInit = true;
 	}
@@ -942,19 +942,19 @@ void Node3D::RecomputeBoundingBox()
 	//! if Node3D has a valid local BBox, then we can compute BBox in father coordinate system  
 	if (isInit)
 	{
-		mat3x4		BBoxTransformMatrix(mTransform);
+		mat4		BBoxTransformMatrix(mTransform);
 
-		BBoxTransformMatrix.e[0][0] = fabsf(BBoxTransformMatrix.e[0][0]);
-		BBoxTransformMatrix.e[1][0] = fabsf(BBoxTransformMatrix.e[1][0]);
-		BBoxTransformMatrix.e[2][0] = fabsf(BBoxTransformMatrix.e[2][0]);
+		BBoxTransformMatrix[0][0] = fabsf(BBoxTransformMatrix[0][0]);
+		BBoxTransformMatrix[1][0] = fabsf(BBoxTransformMatrix[1][0]);
+		BBoxTransformMatrix[2][0] = fabsf(BBoxTransformMatrix[2][0]);
 
-		BBoxTransformMatrix.e[0][1] = fabsf(BBoxTransformMatrix.e[0][1]);
-		BBoxTransformMatrix.e[1][1] = fabsf(BBoxTransformMatrix.e[1][1]);
-		BBoxTransformMatrix.e[2][1] = fabsf(BBoxTransformMatrix.e[2][1]);
+		BBoxTransformMatrix[0][1] = fabsf(BBoxTransformMatrix[0][1]);
+		BBoxTransformMatrix[1][1] = fabsf(BBoxTransformMatrix[1][1]);
+		BBoxTransformMatrix[2][1] = fabsf(BBoxTransformMatrix[2][1]);
 
-		BBoxTransformMatrix.e[0][2] = fabsf(BBoxTransformMatrix.e[0][2]);
-		BBoxTransformMatrix.e[1][2] = fabsf(BBoxTransformMatrix.e[1][2]);
-		BBoxTransformMatrix.e[2][2] = fabsf(BBoxTransformMatrix.e[2][2]);
+		BBoxTransformMatrix[0][2] = fabsf(BBoxTransformMatrix[0][2]);
+		BBoxTransformMatrix[1][2] = fabsf(BBoxTransformMatrix[1][2]);
+		BBoxTransformMatrix[2][2] = fabsf(BBoxTransformMatrix[2][2]);
 
 		//! compute center of the bbox so we can move it around origin
 		v3f translation(mLocalBBox.m_Min);
@@ -965,16 +965,15 @@ void Node3D::RecomputeBoundingBox()
 		mBBox.m_Max -= translation;
 
 		//! transform diagonal to compute diagonal in father coordinate system
-		BBoxTransformMatrix.TransformVector((v3f*)&mBBox.m_Max);
-		v3f finaltranslate;
-		mTransform.TransformPoint((Point3D*)&translation, (Point3D*)&finaltranslate);
+		transformVector(BBoxTransformMatrix,mBBox.m_Max);
+		transformPoint(mTransform,translation);
 
 		//! and translate computed bbox at its final position in father coordinate system
 		//translation+=mTransform.GetTranslation();
 
 		mBBox.m_Min = -mBBox.m_Max;
-		mBBox.m_Max += finaltranslate;
-		mBBox.m_Min += finaltranslate;
+		mBBox.m_Max += translation;
+		mBBox.m_Min += translation;
 	}
 	unsetUserFlag(BoundingBoxIsDirty);
 	setUserFlag(GlobalBoundingBoxIsDirty);
@@ -986,19 +985,19 @@ void Node3D::RecomputeGlobalBoundingBox()
 		RecomputeBoundingBox();
 
 	//! use abs(3x3 local to global matrix) to transform bbox
-	mat3x4 BBoxTransformMatrix(mLocalToGlobal);
+	mat4 BBoxTransformMatrix(mLocalToGlobal);
 
-	BBoxTransformMatrix.e[0][0] = fabsf(BBoxTransformMatrix.e[0][0]);
-	BBoxTransformMatrix.e[1][0] = fabsf(BBoxTransformMatrix.e[1][0]);
-	BBoxTransformMatrix.e[2][0] = fabsf(BBoxTransformMatrix.e[2][0]);
+	BBoxTransformMatrix[0][0] = fabsf(BBoxTransformMatrix[0][0]);
+	BBoxTransformMatrix[1][0] = fabsf(BBoxTransformMatrix[1][0]);
+	BBoxTransformMatrix[2][0] = fabsf(BBoxTransformMatrix[2][0]);
 
-	BBoxTransformMatrix.e[0][1] = fabsf(BBoxTransformMatrix.e[0][1]);
-	BBoxTransformMatrix.e[1][1] = fabsf(BBoxTransformMatrix.e[1][1]);
-	BBoxTransformMatrix.e[2][1] = fabsf(BBoxTransformMatrix.e[2][1]);
+	BBoxTransformMatrix[0][1] = fabsf(BBoxTransformMatrix[0][1]);
+	BBoxTransformMatrix[1][1] = fabsf(BBoxTransformMatrix[1][1]);
+	BBoxTransformMatrix[2][1] = fabsf(BBoxTransformMatrix[2][1]);
 
-	BBoxTransformMatrix.e[0][2] = fabsf(BBoxTransformMatrix.e[0][2]);
-	BBoxTransformMatrix.e[1][2] = fabsf(BBoxTransformMatrix.e[1][2]);
-	BBoxTransformMatrix.e[2][2] = fabsf(BBoxTransformMatrix.e[2][2]);
+	BBoxTransformMatrix[0][2] = fabsf(BBoxTransformMatrix[0][2]);
+	BBoxTransformMatrix[1][2] = fabsf(BBoxTransformMatrix[1][2]);
+	BBoxTransformMatrix[2][2] = fabsf(BBoxTransformMatrix[2][2]);
 
 	//! compute origin to bbox center so we can "move" the bbox at the origin
 	v3f translation(mLocalBBox.m_Min);
@@ -1010,19 +1009,16 @@ void Node3D::RecomputeGlobalBoundingBox()
 	mGlobalBBox.m_Max -= translation;
 
 	//! transform BBox diagonal vector by BBoxTransformMatrix
-	BBoxTransformMatrix.TransformVector((v3f*)&mGlobalBBox.m_Max);
+	transformVector(BBoxTransformMatrix,mGlobalBBox.m_Max);
 	//! transform local translation in global coordinates
-	Point3D	finalTranslate;
-	mLocalToGlobal.TransformPoint((Point3D*)&translation, (Point3D*)&finalTranslate);
+	transformPoint(mLocalToGlobal,translation);
 
-	//! and add local to global translation 
-	//translation+=mLocalToGlobal.GetTranslation();
 
 	//! min is -max in local coordinates
 	mGlobalBBox.m_Min = -mGlobalBBox.m_Max;
 	//! move the global BBox at its final destination
-	mGlobalBBox.m_Max += finalTranslate;
-	mGlobalBBox.m_Min += finalTranslate;
+	mGlobalBBox.m_Max += translation;
+	mGlobalBBox.m_Min += translation;
 
 	unsetUserFlag(GlobalBoundingBoxIsDirty);
 }
@@ -1074,38 +1070,38 @@ int	Node3D::ComputeNodePriority()
 	return mDrawPriority;
 }
 
-mat3x4 GetLocalLookAtPoint(Node3D* node, v3f global_point, bool force_up, v3f up_axis)
+mat4 GetLocalLookAtPoint(Node3D* node, v3f global_point, bool force_up, v3f up_axis)
 {
-	v3f view = global_point - node->GetLocalToGlobal().Pos;
-	view.Normalize();
+	v3f view = normalize(global_point - v3f(column(node->GetLocalToGlobal(),3)));
 
 	auto g2l = node->getFather()->GetGlobalToLocal();
-	g2l.TransformVector(&view);
-	view.Normalize();
+	transformVector(g2l ,view);
+	view=normalize(view);
 
 	auto up = up_axis;
-	auto right = view ^ up; right.Normalize();
+	auto right = cross(view,up); 
+	right=normalize(right);
 	if (force_up)
 	{
-		view = up ^ right;
-		view.Normalize();
+		view = cross(up, right);
+		view=normalize(view);
 	}
 	else
 	{
-		up = right ^ view;
-		up.Normalize();
+		up = cross(right, view);
+		up = normalize(up);
 	}
-	mat3x4 m = mat3x4::LookAt(node->GetLocal().Pos, node->GetLocal().Pos + view, up);
+	mat4 m = lookAt(v3f(column(node->GetLocal(),3)), v3f(column(node->GetLocal(),3)) + view, up);
 	return m;
 }
 
-void Node3D::ApplyLocalTransform(const mat3x4& transform)
+void Node3D::ApplyLocalTransform(const mat4& transform)
 {
 	auto m = GetLocal();
 	ChangeMatrix(transform * m);
 }
 
-void Node3D::ApplyGlobalTransform(const mat3x4& transform)
+void Node3D::ApplyGlobalTransform(const mat4& transform)
 {
 	auto f = getFather();
 	if (!f) 
@@ -1114,7 +1110,7 @@ void Node3D::ApplyGlobalTransform(const mat3x4& transform)
 		ChangeMatrix(f->GetGlobalToLocal() * transform * f->GetLocalToGlobal() * GetLocal());
 }
 
-void Node3D::ChangeMatrixGlobal(const mat3x4& new_global_matrix)
+void Node3D::ChangeMatrixGlobal(const mat4& new_global_matrix)
 {
 	auto f = getFather();
 	if (!f) ChangeMatrix(new_global_matrix);

@@ -176,11 +176,11 @@ class Material;
 
 		/**
 		* \brief	retreive the bounding box of the bitmap (point min and point max)
-		* \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
+		* \fn 		virtual void	GetBoundingBox(v3f& pmin,v3f& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
 		* \param	pmin : point min of the bounding box (in/out param)
 		* \param	pmax : point max of the bounding box (in/out param)
 		*/
-		void	GetNodeBoundingBox(Point3D& pmin,Point3D& pmax) const override
+		void	GetNodeBoundingBox(v3f& pmin,v3f& pmax) const override
 		{
 			pmin = mBoundingBox.m_Min;
 			pmax = mBoundingBox.m_Max;
@@ -203,12 +203,12 @@ class Material;
 
 		/**
 		* \brief	get a vertex from its index
-		* \fn 		bool getVertex(int index, Point3D &Pt);
+		* \fn 		bool getVertex(int index, v3f &Pt);
 		* \param	index : index of the vertex to get
 		* \param	Pt : the asked vertex (in/out param)
 		* \return	TRUE if the vertex exist, FALSE otherwise
 		*/
-		bool getVertex(unsigned int index, Point3D &Pt);
+		bool getVertex(unsigned int index, v3f &Pt);
 
 		/**
 		* \brief	get a triangle from its index
@@ -223,14 +223,14 @@ class Material;
 
 		/**
 		* \brief	copy the triangle list and the vertice list
-		* \fn 		bool CopyVertexAndTriangle(int &VCount, int &TCount, Point3D *&VArray, int *&IndexArray);
+		* \fn 		bool CopyVertexAndTriangle(int &VCount, int &TCount, v3f *&VArray, int *&IndexArray);
 		* \param	VCount : number of vertice (in/out param)
 		* \param	TCount : number of triangles (in/out param)
 		* \param	VArray : list of vertice (in/out param)
 		* \param	IndexArray : list of triangle's vertice index (in/out param)
 		* \return	TRUE if the copy has been done, FALSE otherwise
 		*/
-		bool CopyVertexAndTriangle(int &VCount, int &TCount, Point3D *&VArray, int *&IndexArray);
+		bool CopyVertexAndTriangle(int &VCount, int &TCount, v3f *&VArray, int *&IndexArray);
 
 		// ****************************************
 		// * TexCoord class
@@ -386,21 +386,21 @@ class Material;
 
 			/**
 			* \brief	Compute the normal at triangle vertices ponderated by the angle
-			* \fn 		void NormalAngle(const Point3D* VertexArray, v3f &Na, v3f &Nb,v3f &Nc);
+			* \fn 		void NormalAngle(const v3f* VertexArray, v3f &Na, v3f &Nb,v3f &Nc);
 			* \param	VertexArray : list of vertice
 			* \param	Na : normal vector at the first triangle's vertex (in/out param)
 			* \param	Nb : normal vector at the second triangle's vertex (in/out param)
 			* \param	Nc : normal vector at the third triangle's vertex (in/out param)
 			*/
-			void NormalAngle(const Point3D* VertexArray, v3f &Na, v3f &Nb,v3f &Nc);
+			void NormalAngle(const v3f* VertexArray, v3f &Na, v3f &Nb,v3f &Nc);
 
 			/**
 			* \brief	Compute the normal at triangle 
-			* \fn 		void Normal(const Point3D* VertexArray, v3f &Na);
+			* \fn 		void Normal(const v3f* VertexArray, v3f &Na);
 			* \param	VertexArray : list of vertice
 			* \param	Na : normal vector at the triangle (in/out param)
 			*/
-			void Normal(const Point3D* VertexArray, v3f &Na)
+			void Normal(const v3f* VertexArray, v3f &Na)
 			{
 				v3f u(VertexArray[a]);
 				u-=VertexArray[b];
@@ -408,8 +408,7 @@ class Material;
 				v3f v(VertexArray[c]);
 				v-=VertexArray[b];
 			
-				Na=cross(u,v);
-				Na.Normalize();
+				Na=normalize(cross(u,v));
 			}
 		};
 
@@ -1375,35 +1374,35 @@ class Material;
 
 		/**
 		* \brief	get a vertex from its index
-		* \fn 		const Point3D&	GetVertex(unsigned int index)
+		* \fn 		const v3f&	GetVertex(unsigned int index)
 		* \param	index : index asked
 		* \return	vertex asked (in/out param)
 		*/	
-		const Point3D&	GetVertex(unsigned int index){return mVertexArray[index];}
+		const v3f&	GetVertex(unsigned int index){return mVertexArray[index];}
 
 		/**
 		* \brief	set a vertex to an index
-		* \fn 		void SetVertex(unsigned int index, const Point3D &v);
+		* \fn 		void SetVertex(unsigned int index, const v3f &v);
 		* \param	index : new vertex index
 		* \param	v : new vertex
 		*/	
-		void SetVertex(unsigned int index, const Point3D &v);
+		void SetVertex(unsigned int index, const v3f &v);
 
 		/**
 		* \brief	get a color from its index
-		* \fn 		const Vector4D&	GetColor(unsigned int index)
+		* \fn 		const v4f&	GetColor(unsigned int index)
 		* \param	index : index asked
 		* \return	color asked (in/out param)
 		*/	
-		const Vector4D&	GetColor(unsigned int index){return mColorArray[index];}
+		const v4f&	GetColor(unsigned int index){return mColorArray[index];}
 
 		/**
 		* \brief	set a color to an index
-		* \fn 		void SetColor(unsigned int index, const Vector4D &v);
+		* \fn 		void SetColor(unsigned int index, const v4f &v);
 		* \param	index : new color index
 		* \param	v : new color
 		*/
-		void SetColor(unsigned int index, const Vector4D &v);
+		void SetColor(unsigned int index, const v4f &v);
 
 		/**
 		* \brief	get a normal from its index
@@ -1513,7 +1512,7 @@ class Material;
 		//! number of vertice
 		unsigned int		mVertexCount;
 		//! List of All Vertice
-		Point3D*			mVertexArray;	
+		v3f*			mVertexArray;	
 
 		//! number of normal
 		unsigned int		mNormalCount;
@@ -1528,7 +1527,7 @@ class Material;
 		//! number of color
 		unsigned int		mColorCount;
 		//! List of All colors
-		Vector4D*			mColorArray;
+		v4f*			mColorArray;
 
 
 		/**
@@ -1561,7 +1560,7 @@ class Material;
 		inline void Set_VertexCount(unsigned int _value){mVertexCount = _value;}
 
 		//! Set List of All Vertice
-		inline void Set_VertexArray(Point3D* _value){mVertexArray = _value;}	
+		inline void Set_VertexArray(v3f* _value){mVertexArray = _value;}	
 
 		//! Set number of normal
 		inline void Set_NormalCount(unsigned int _value){mNormalCount = _value;}
@@ -1579,7 +1578,7 @@ class Material;
 		inline void Set_ColorCount(unsigned int _value){mColorCount = _value;}
 
 		//! Set List of All colors
-		inline void Set_ColorArray(Vector4D* _value){mColorArray = _value;}
+		inline void Set_ColorArray(v4f* _value){mColorArray = _value;}
 
 		inline unsigned int Get_NormalCount() const {return mNormalCount;}
 #ifdef WIN32

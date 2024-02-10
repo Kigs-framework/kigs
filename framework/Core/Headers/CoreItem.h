@@ -60,7 +60,6 @@ namespace Kigs
 			CoreItemSP(const u64&);
 			CoreItemSP(const v2f&);
 			CoreItemSP(const v3f&);
-			CoreItemSP(const p3f&);
 			CoreItemSP(const v4f&);
 
 			CoreItemSP(const std::string&, CoreModifiable* owner = nullptr);
@@ -85,7 +84,6 @@ namespace Kigs
 			operator usString() const;
 			operator v2f() const;
 			operator v3f() const;
-			operator p3f() const;
 			operator v4f() const;
 
 			template<typename T>
@@ -309,7 +307,6 @@ namespace Kigs
 			virtual operator usString() const;
 			virtual operator v2f() const;
 			virtual operator v3f() const;
-			virtual operator p3f() const;
 			virtual operator v4f() const;
 
 			bool getValue(bool& _value) const {
@@ -362,11 +359,6 @@ namespace Kigs
 				return true;
 			}
 
-			bool getValue(p3f& _value) const {
-				_value = this->operator p3f();
-				return true;
-			}
-
 			bool getValue(v4f& _value) const {
 				_value = this->operator v4f();
 				return true;
@@ -388,7 +380,6 @@ namespace Kigs
 			virtual CoreItem& operator=(const usString& other);
 			virtual CoreItem& operator=(const v2f& other);
 			virtual CoreItem& operator=(const v3f& other);
-			virtual CoreItem& operator=(const p3f& other);
 			virtual CoreItem& operator=(const v4f& other);
 
 			virtual std::string toString() const { return ""; }
@@ -463,7 +454,6 @@ namespace Kigs
 		DECLARE_MAKE_COREVALUE(const double&);
 		DECLARE_MAKE_COREVALUE(const v2f&);
 		DECLARE_MAKE_COREVALUE(const v3f&);
-		DECLARE_MAKE_COREVALUE(const p3f&);
 		DECLARE_MAKE_COREVALUE(const v4f&);
 
 		CoreItemSP MakeCoreValue(const std::string& value, CoreModifiable* owner = nullptr);
@@ -564,11 +554,6 @@ namespace Kigs
 		inline CoreItemSP::operator v3f() const
 		{
 			return get()->operator v3f();
-		}
-
-		inline CoreItemSP::operator p3f() const
-		{
-			return get()->operator p3f();
 		}
 
 		inline CoreItemSP::operator v4f() const

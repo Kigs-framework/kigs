@@ -51,7 +51,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 	getValue("Camera", checkcurrentCamera);
 	if (checkcurrentCamera)
 	{
-		Point3D currentPos(m3DPosition[0], m3DPosition[1], m3DPosition[2]);
+		v3f currentPos(m3DPosition[0], m3DPosition[1], m3DPosition[2]);
 
 		CMSP checkcurrentnode;
 		getValue("Node", checkcurrentnode);
@@ -60,7 +60,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 		if (checkcurrentnode)
 		{
 			SP<Node3D>	currentnode = checkcurrentnode;
-			Point3D toTransform(currentPos);
+			v3f toTransform(currentPos);
 			currentnode->GetLocalToGlobal().TransformPoint(&toTransform, &currentPos);
 		}
 		SP<Camera>	currentCamera = checkcurrentCamera;
@@ -69,7 +69,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 		if (currentCamera->Project(result.x, result.y, currentPos))
 		{
 			// fast check if point is in front
-			Point3D	cameraView,cameraPos,camObjectVect;
+			v3f	cameraView,cameraPos,camObjectVect;
 			currentCamera->GetViewVector(cameraView.x, cameraView.y, cameraView.z);
 			cameraView.Normalize();
 			currentCamera->GetPosition(cameraPos.x, cameraPos.y, cameraPos.z);
@@ -88,7 +88,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 				if (mUseUpOrientation)
 				{
 					// get camera up
-					Point3D	cameraUp;
+					v3f	cameraUp;
 					v2f resultUp;
 					currentCamera->GetUpVector(cameraUp.x, cameraUp.y, cameraUp.z);
 					if (currentCamera->Project(resultUp.x, resultUp.y, currentPos + cameraUp))

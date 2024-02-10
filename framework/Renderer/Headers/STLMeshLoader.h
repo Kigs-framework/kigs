@@ -95,7 +95,7 @@ namespace Kigs
 			struct readFacet
 			{
 				v3f	mNormal;
-				Point3D		mVertex[3];
+				v3f		mVertex[3];
 			};
 
 			//! link to the readed file which contain the binMesh

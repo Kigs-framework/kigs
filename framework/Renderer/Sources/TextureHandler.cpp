@@ -238,23 +238,23 @@ v2f	TextureHandler::getDrawablePos(const v2f& pos)
 void	TextureHandler::refreshSizeAndUVs(const SpriteSheetFrameData* ssf)
 {
 	bool perfectPix = mTexture->isUserFlagSet(Texture::hasNearestPixelSet);
-	mUVTexture.SetIdentity();
+	mUVTexture = mat4(1.0f);
 
 	v2f uvSize;
 
 	if (ssf)
 	{
-		mUVTexture.e[0][2] = (ssf->FramePos_X) * mOneOnPower2Size.x;
-		mUVTexture.e[1][2] = (ssf->FramePos_Y) * mOneOnPower2Size.y;
+		mUVTexture[0][2] = (ssf->FramePos_X) * mOneOnPower2Size.x;
+		mUVTexture[1][2] = (ssf->FramePos_Y) * mOneOnPower2Size.y;
 
 		if (ssf->Rotated)
 		{
 			// 2d 90° rotation matrix
-			mUVTexture.e[0][0] = 0.0f;
-			mUVTexture.e[0][1] = -1.0f;
-			mUVTexture.e[1][0] = 1.0f;
-			mUVTexture.e[1][1] = 0.0f;
-			mUVTexture.e[0][2] += ssf->FrameSize_Y * mOneOnPower2Size.x;
+			mUVTexture[0][0] = 0.0f;
+			mUVTexture[0][1] = -1.0f;
+			mUVTexture[1][0] = 1.0f;
+			mUVTexture[1][1] = 0.0f;
+			mUVTexture[0][2] += ssf->FrameSize_Y * mOneOnPower2Size.x;
 			uvSize.x = ssf->FrameSize_Y;
 			uvSize.y = ssf->FrameSize_X;
 		}
@@ -278,23 +278,23 @@ void	TextureHandler::refreshSizeAndUVs(const SpriteSheetFrameData* ssf)
 	{
 		if (ssf && ssf->Rotated)
 		{
-			mUVTexture.e[0][2] -= 0.5f * mOneOnPower2Size.x;
+			mUVTexture[0][2] -= 0.5f * mOneOnPower2Size.x;
 		}
 		else
 		{
-			mUVTexture.e[0][2] += 0.5f * mOneOnPower2Size.x;
+			mUVTexture[0][2] += 0.5f * mOneOnPower2Size.x;
 		}
-		mUVTexture.e[1][2] += 0.5f * mOneOnPower2Size.y;
+		mUVTexture[1][2] += 0.5f * mOneOnPower2Size.y;
 		uvSize.x -= 1.0f;
 		uvSize.y -= 1.0f;
 	}
 
 	uvSize *= mOneOnPower2Size;
 	
-	mUVTexture.e[0][0] *= uvSize.x;
-	mUVTexture.e[1][0] *= uvSize.y;
-	mUVTexture.e[0][1] *= uvSize.x;
-	mUVTexture.e[1][1] *= uvSize.y;
+	mUVTexture[0][0] *= uvSize.x;
+	mUVTexture[1][0] *= uvSize.y;
+	mUVTexture[0][1] *= uvSize.x;
+	mUVTexture[1][1] *= uvSize.y;
 }
 
 void	TextureHandler::refreshTextureInfos()

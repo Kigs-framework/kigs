@@ -44,7 +44,7 @@ void maCoreItemValue::InitWithJSON(const std::string& currentval, CoreModifiable
 			else if (currentval.substr(4, 2) == "3D")
 			{
 				std::string toeval = currentval.substr(6, currentval.length() - 6);
-				item = CoreItemOperator<p3f>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				item = CoreItemOperator<v3f>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 			}
 			else if (currentval.substr(4, 2) == "4D")
 			{

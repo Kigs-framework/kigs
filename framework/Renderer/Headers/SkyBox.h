@@ -43,11 +43,11 @@ namespace Kigs
 
 			/**
 			 * \brief	retreive the bounding box of the bitmap (point min and point max)
-			 * \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
+			 * \fn 		virtual void	GetBoundingBox(v3f& pmin,v3f& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
 			 * \param	pmin : point min of the bounding box (in/out param)
 			 * \param	pmax : point max of the bounding box (in/out param)
 			 */
-			void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const  override { pmin = mBBoxMin; pmax = mBBoxMax; }
+			void	GetNodeBoundingBox(v3f& pmin, v3f& pmax) const  override { pmin = mBBoxMin; pmax = mBBoxMax; }
 
 
 			/**
@@ -74,9 +74,9 @@ namespace Kigs
 
 
 			//! point min of the bounding box
-			Point3D		mBBoxMin;
+			v3f		mBBoxMin;
 			//! point max of the bounding box
-			Point3D		mBBoxMax;
+			v3f		mBBoxMax;
 
 			//! size of the SkyBox
 			float			mSize = 5000.0f;

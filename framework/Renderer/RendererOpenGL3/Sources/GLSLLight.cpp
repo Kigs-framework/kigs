@@ -150,7 +150,7 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 	}
 }
 
-bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D & camPos)
+bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, v3f & camPos)
 {
 	if (!mIsOn)
 		return false;
@@ -170,13 +170,13 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 	
 	static_cast<API3DUniformFloat3*>(mCamPosUniform.get())->SetValue(&camPos.x);
 
-	Point3D outP;
+	v3f outP;
 	v3f outV;
 
 	SetupNodeIfNeeded();
-	const mat3x4& lMat = GetLocalToGlobal();
+	const mat4& lMat = GetLocalToGlobal();
 
-	Point3D PosOffset(0,0,0);
+	v3f PosOffset(0,0,0);
 	lMat.TransformPoint(&PosOffset, &outP);
 
 	if (GetTypeOfLight() == DIRECTIONAL_LIGHT) // for directional light, position gives direction as a normal vector
@@ -213,19 +213,19 @@ bool	API3DLight::Draw(TravState* state)
 	case 0:
 	case 1:
 	{
-		Point3D outP;
-		const mat3x4& lMat = GetLocalToGlobal();
-		Point3D PosOffset(0,0,0);
+		v3f outP;
+		const mat4& lMat = GetLocalToGlobal();
+		v3f PosOffset(0,0,0);
 		lMat.TransformPoint(&PosOffset, &outP);
 		dd::sphere(outP, v3f(1, 0, 0), 0.05);
 	}
 	break;
 	case 2:
 	{
-		Point3D outP;
+		v3f outP;
 		v3f outDir;
-		const mat3x4& lMat = GetLocalToGlobal();
-		Point3D PosOffset(0, 0, 0);
+		const mat4& lMat = GetLocalToGlobal();
+		v3f PosOffset(0, 0, 0);
 		lMat.TransformPoint(&PosOffset, &outP);
 
 		v3f dir(0.0f,0.0f,-1.0f);

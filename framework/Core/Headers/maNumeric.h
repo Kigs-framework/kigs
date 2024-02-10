@@ -148,7 +148,7 @@ namespace Kigs
 			DECLARE_SET(const usString&);
 			DECLARE_SET(const UTF8Char*);
 			DECLARE_SET(const v2f&);
-			DECLARE_SET(const p3f&);
+			DECLARE_SET(const v3f&);
 			DECLARE_SET(const v4f&);
 
 #define DECLARE_GET(type)	bool getValue(type val,const CoreModifiable* owner) const override { if(mGetter!=""){ T tmpValue = const_cast<CoreModifiable*>(owner)->template SimpleCall<T>(mGetter);  return CoreConvertValue(tmpValue,val);} return false; }
@@ -157,7 +157,7 @@ namespace Kigs
 			DECLARE_GET(std::string&);
 			DECLARE_GET(usString&);
 			DECLARE_GET(v2f&);
-			DECLARE_GET(p3f&);
+			DECLARE_GET(v3f&);
 			DECLARE_GET(v4f&);
 
 

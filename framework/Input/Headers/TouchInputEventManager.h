@@ -152,8 +152,8 @@ namespace Kigs
 		struct touchPosInfos
 		{
 			v3f				dir;							// 3D direction if available
-			p3f				origin;							// 3D origin if available
-			p3f				pos;							// 3D position (z is 0 for 2d mouse or touch)
+			v3f				origin;							// 3D origin if available
+			v3f				pos;							// 3D position (z is 0 for 2d mouse or touch)
 			unsigned int	flag;
 			Maths::Hit		hit = {};
 			double			min_distance = -DBL_MAX;

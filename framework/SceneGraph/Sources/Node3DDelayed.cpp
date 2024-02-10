@@ -137,7 +137,7 @@ bool Node3DDelayed::Draw(TravState* state)
 
 
 
-void Node3DDelayed::GetNodeBoundingBox(Point3D &pmin, Point3D &pmax) const
+void Node3DDelayed::GetNodeBoundingBox(v3f &pmin, v3f &pmax) const
 {
 	if (mDisplayState == DisplayState::Displayed)
 	{

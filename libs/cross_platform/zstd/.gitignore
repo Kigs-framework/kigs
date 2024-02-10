@@ -27,6 +27,8 @@ tmp*
 dictionary.
 dictionary
 NUL
+cmakebuild/
+install/
 
 # Build artefacts
 contrib/linux-kernel/linux/
@@ -42,6 +44,7 @@ build-*
 _codelite/
 _zstdbench/
 .clang_complete
+compile_flags.txt
 *.idea
 *.swp
 .DS_Store

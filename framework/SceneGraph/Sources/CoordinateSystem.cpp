@@ -98,7 +98,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		quat q;
 		q.SetAngAxis(axis, angle);
 
-		mat3x4	angAxis(q);
+		mat4	angAxis(q);
 
 		v3f	rot;
 		v3f pos;
@@ -108,7 +108,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		mat3x4 matrix;
+		mat4 matrix;
 		matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
 		matrix.PreScale(scale, scale, scale);
 		matrix.SetTranslation(pos);
@@ -164,7 +164,7 @@ DEFINE_UPGRADOR_UPDATE(CoordinateSystemUp)
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		mat3x4 matrix;
+		mat4 matrix;
 		matrix.SetRotationXYZ(rot.x,rot.y,rot.z);
 		matrix.PreScale(scale, scale, scale);
 		matrix.SetTranslation(pos);
@@ -260,7 +260,7 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		bool isGlobal;
 
 		// get local matrix
-		mat3x4 matrix = GetUpgrador()->mInitMatrix;
+		mat4 matrix = GetUpgrador()->mInitMatrix;
 		v3f	ppos;
 		v3f paxis;
 		float	pangle;
@@ -279,7 +279,7 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		quat q;
 		q.SetAngAxis(paxis, pangle);
 
-		mat3x4 transform(q);
+		mat4 transform(q);
 
 		v3f originPos = matrix.GetTranslation();
 		matrix.SetTranslation({ 0,0,0 });

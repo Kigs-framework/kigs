@@ -35,23 +35,23 @@ void ModuleCoreAnimation::Init(KigsCore* core, const std::vector<CoreModifiableA
 	// action using "slow" setValue
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear1D",CoreActionLinear<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Linear2D",CoreActionLinear<v2f>);
-	MiniFactoryRegister(mPrivateMiniFactory,"Linear3D",CoreActionLinear<Point3D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"Linear4D",CoreActionLinear<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Linear3D",CoreActionLinear<v3f>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Linear4D",CoreActionLinear<v4f>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Hermite1D",CoreActionHermite<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"Hermite2D",CoreActionHermite<v2f>);
-	MiniFactoryRegister(mPrivateMiniFactory,"Hermite3D",CoreActionHermite<Point3D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"Hermite4D",CoreActionHermite<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Hermite3D",CoreActionHermite<v3f>);
+	MiniFactoryRegister(mPrivateMiniFactory,"Hermite4D",CoreActionHermite<v4f>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValueString", CoreActionSetValue<std::string>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValue1D",CoreActionSetValue<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"SetValue2D",CoreActionSetValue<v2f>);
-	MiniFactoryRegister(mPrivateMiniFactory,"SetValue3D",CoreActionSetValue<Point3D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"SetValue4D",CoreActionSetValue<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValue3D",CoreActionSetValue<v3f>);
+	MiniFactoryRegister(mPrivateMiniFactory,"SetValue4D",CoreActionSetValue<v4f>);
 
 	// Keyframe
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame1D",CoreActionKeyFrame<float>);
 	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame2D",CoreActionKeyFrame<v2f>);
-	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame3D",CoreActionKeyFrame<Point3D>);
-	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<Vector4D>);
+	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame3D",CoreActionKeyFrame<v3f>);
+	MiniFactoryRegister(mPrivateMiniFactory,"KeyFrame4D",CoreActionKeyFrame<v4f>);
 
 	MiniFactoryRegister(mPrivateMiniFactory,"RemoveFromParent",CoreActionRemoveFromParent);
 	MiniFactoryRegister(mPrivateMiniFactory,"Notification",CoreActionSendMessage);

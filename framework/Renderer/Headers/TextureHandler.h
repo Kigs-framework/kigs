@@ -149,7 +149,7 @@ namespace Kigs
 
 				if (!mTexture)
 				{
-					mSize.Set(0.0f, 0.0f);
+					mSize = { 0.0f, 0.0f };
 				}
 			}
 

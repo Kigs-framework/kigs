@@ -28,10 +28,10 @@ void	OrbitCameraUp::Init(CoreModifiable* toUpgrade)
 	auto pos = camera->GetPosition();
 	auto view = camera->GetViewVector();
 
-	(*mOrbitDistance) = Norm(pos);
+	(*mOrbitDistance) = length(pos);
 
 	*mOrbitDirection = view;
-	*mOrbitPoint = pos + view * (*mOrbitDistance);
+	*mOrbitPoint = pos + view * (f32)(*mOrbitDistance);
 	*mOrbitUp = camera->GetUpVector();
 
 	toUpgrade->setOwnerNotification("OrbitDirection", true);
@@ -131,19 +131,16 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 			v3f pos = GetUpgrador()->mOperationStartOrbitPosition;
 			v3f up = GetUpgrador()->mOperationStartOrbitUp;
 
-			auto right = v3f(0, 1, 0) ^ dir; right.Normalize();
+			auto right = normalize(cross(v3f(0, 1, 0) , dir));
 
 			v2f size; getRenderingScreen()->GetSize(size.x, size.y);
 			size = 1.0f / size;
 
 			auto rotation_axis = v3f(0, 1, 0);
-			if (Dot(rotation_axis, up) < 0) right = -right;
+			if (dot(rotation_axis, up) < 0) right = -right;
 
-			quat q;
-			q.SetAngAxis(v3f(0, 1, 0), 2 * dt.x * size.x);
-
-			quat q2;
-			q2.SetAngAxis(right, -2 * dt.y * size.y);
+			quat q = angleAxis(2.0f * dt.x * size.x, v3f(0, 1, 0));
+			quat q2 = angleAxis(-2.0f * dt.y * size.y, right);
 
 			dir = q2 * q * dir;
 			*GetUpgrador()->mOrbitDirection = dir;
@@ -155,7 +152,7 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 			v2f size; getRenderingScreen()->GetSize(size.x, size.y);
 			size = 1.0f / size;
 			auto right = GetUpgrador()->mOperationStartOrbitUp ^ GetUpgrador()->mOperationStartOrbitView;
-			auto pos = GetUpgrador()->mOperationStartOrbitPosition + (dt.x * right * size.x + dt.y * GetUpgrador()->mOperationStartOrbitUp * size.y) * *GetUpgrador()->mOrbitDistance;
+			auto pos = GetUpgrador()->mOperationStartOrbitPosition + (dt.x * right * size.x + dt.y * GetUpgrador()->mOperationStartOrbitUp * size.y) * (f32)(*GetUpgrador()->mOrbitDistance);
 
 			*GetUpgrador()->mOrbitPoint = pos;
 			GetUpgrador()->mIsDirty = true;
@@ -204,7 +201,7 @@ DEFINE_UPGRADOR_UPDATE(OrbitCameraUp)
 	if (GetUpgrador()->mIsDirty)
 	{
 		GetUpgrador()->mIsDirty = false;
-		SetPosition((*GetUpgrador()->mOrbitPoint) - (*GetUpgrador()->mOrbitDistance) * (v3f)(*GetUpgrador()->mOrbitDirection));
+		SetPosition((v3f)(*GetUpgrador()->mOrbitPoint) - (f32)(*GetUpgrador()->mOrbitDistance) * (v3f)(*GetUpgrador()->mOrbitDirection));
 		SetViewVector(*GetUpgrador()->mOrbitDirection);
 		SetUpVector(*GetUpgrador()->mOrbitUp);
 		*GetUpgrador()->mOrbitUp = GetUpVector();

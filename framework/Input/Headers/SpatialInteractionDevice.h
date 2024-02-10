@@ -36,7 +36,7 @@ namespace Kigs
 			double TimeStill = 0.0;
 			double DT = 0.0;
 
-			p3f Position;
+			v3f Position;
 
 			v3f Forward;
 			v3f Up;
@@ -53,7 +53,7 @@ namespace Kigs
 
 			struct Joint
 			{
-				p3f position;
+				v3f position;
 				// Transform Z-unit vector for tip direction (joint to joint), Y-unit for up direction (from joint to back of the hand), X-unit vector for side direction
 				quat orientation;
 			};
@@ -63,7 +63,7 @@ namespace Kigs
 			std::optional<Joint> middle_tip;
 			Maths::Hit current_near_interaction_hit;
 
-			p3f SmoothPosition{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
+			v3f SmoothPosition{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
 			v3f SmoothDirection{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
 		};
 

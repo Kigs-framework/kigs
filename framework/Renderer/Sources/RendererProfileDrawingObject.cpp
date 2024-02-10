@@ -20,30 +20,30 @@ RendererProfileDrawingObject::RendererProfileDrawingObject(const std::string& na
 	// global timer is pure Red, don't use this color here
 
 	// GREEN
-	mColors[0].Set(0.0f,1.0f,0.0f);
+	mColors[0] = v3f(0.0f,1.0f,0.0f);
 	// BLUE
-	mColors[1].Set(0.0f,0.0f,1.0f);
+	mColors[1] = v3f(0.0f,0.0f,1.0f);
 	// 
-	mColors[2].Set(1.0f,1.0f,0.0f);
+	mColors[2] = v3f(1.0f,1.0f,0.0f);
 	//
-	mColors[3].Set(0.0f,1.0f,1.0f);
+	mColors[3] = v3f(0.0f,1.0f,1.0f);
 	//
-	mColors[4].Set(1.0f,0.0f,1.0f);
+	mColors[4] = v3f(1.0f,0.0f,1.0f);
 	//
-	mColors[5].Set(0.5f,1.0f,0.5f);
+	mColors[5] = v3f(0.5f,1.0f,0.5f);
 	//
-	mColors[6].Set(1.0f,0.5f,0.5f);
+	mColors[6] = v3f(1.0f,0.5f,0.5f);
 	//
-	mColors[7].Set(0.5f,0.5f,1.0f);
+	mColors[7] = v3f(0.5f,0.5f,1.0f);
 	//
-	mColors[8].Set(1.0f,1.0f,0.5f);
-	mColors[9].Set(0.5f,1.0f,1.0f);
+	mColors[8] = v3f(1.0f,1.0f,0.5f);
+	mColors[9] = v3f(0.5f,1.0f,1.0f);
 
 	// more than 10 timers ?
 	int i;
 	for(i=10;i<MAX_PROFILER_COUNT;i++)
 	{
-		mColors[i].Set((float)Platform_rand()/((float)RAND_MAX),(float)Platform_rand()/((float)RAND_MAX),(float)Platform_rand()/((float)RAND_MAX));
+		mColors[i] = v3f((float)Platform_rand()/((float)RAND_MAX),(float)Platform_rand()/((float)RAND_MAX),(float)Platform_rand()/((float)RAND_MAX));
 	}
 
 	mFirstDraw=true;
