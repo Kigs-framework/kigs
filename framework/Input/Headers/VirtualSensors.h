@@ -30,11 +30,8 @@ namespace Kigs
 
 			void setQuaternion(quat q)
 			{
-				q.Normalize();
-				mRotationQuaternion[0] = q.V.x;
-				mRotationQuaternion[1] = q.V.y;
-				mRotationQuaternion[2] = q.V.z;
-				mRotationQuaternion[3] = q.w;
+				normalize(q);
+				mRotationQuaternion=q;
 			}
 
 		protected:

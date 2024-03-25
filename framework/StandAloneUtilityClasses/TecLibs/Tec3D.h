@@ -120,17 +120,24 @@ using quat = glm::quat;
 
 namespace glm
 {
-	inline void transformPoint(mat4 const& x, v3f& v)
+
+	// mat4 v3f
+	inline void transformPoint(const mat4& x, v3f& v)
 	{
 		v = x * v4f(v, 1.0);
 	}
 
-	inline v3f transformPoint(mat4 const& x, v3f const & v)
+	inline void transformPoint(const mat4& x, const v3f& in, v3f& out)
+	{
+		out = x * v4f(in, 1.0);
+	}
+
+	inline v3f transformPoint(const mat4& x, v3f const & v)
 	{
 		return x* v4f(v, 1.0);
 	}
 
-	inline void transformPoints(mat4 const& x, v3f* v , size_t count)
+	inline void transformPoints(const mat4& x, v3f* v , size_t count)
 	{
 		for (size_t i = 0; i < count; i++)
 		{
@@ -138,17 +145,17 @@ namespace glm
 		}
 	}
 
-	inline void transformVector(mat4 const& x, v3f& v)
+	inline void transformVector(const mat4& x, v3f& v)
 	{
 		v = x * v4f(v, 0.0);
 	}
 
-	inline v3f transformVector(mat4 const& x, v3f const & v)
+	inline v3f transformVector(const mat4& x, v3f const & v)
 	{
 		return x * v4f(v, 0.0);
 	}
 
-	inline void transformVectors(mat4 const& x, v3f* v, size_t count)
+	inline void transformVectors(const mat4& x, v3f* v, size_t count)
 	{
 		for (size_t i = 0; i < count; i++)
 		{
@@ -156,7 +163,7 @@ namespace glm
 		}
 	}
 
-	inline bool isIdentity(mat4 const& x)
+	inline bool isIdentity(const mat4& x)
 	{
 		for (mat4::length_type r = 0; r < 4; r++)
 		{
@@ -169,6 +176,101 @@ namespace glm
 			}
 		}
 		return true;
+	}
+
+	inline v3f projectOnPlane(const v3f& q, const v3f& o, const v3f& n)
+	{
+		return q - (dot(v3f(q - o), n) * n);
+	}
+
+	// mat3 v2f
+	inline void transformPoint(const mat3& x, v2f& v)
+	{
+		v = x * v3f(v, 1.0);
+	}
+
+	inline void transformPoint(const mat3& x, const v2f& in, v2f& out)
+	{
+		out = x * v3f(in, 1.0);
+	}
+
+	inline v3f transformPoint(const mat3& x, v2f const& v)
+	{
+		return x * v3f(v, 1.0);
+	}
+
+	inline void transformPoints(const mat3& x, v2f* v, size_t count)
+	{
+		for (size_t i = 0; i < count; i++)
+		{
+			v[i] = x * v3f(v[i], 1.0);
+		}
+	}
+
+	inline void transformVector(const mat3& x, v2f& v)
+	{
+		v = x * v3f(v, 0.0);
+	}
+
+	inline v3f transformVector(const mat3& x, v2f const& v)
+	{
+		return x * v3f(v, 0.0);
+	}
+
+	inline void transformVectors(const mat3& x, v2f* v, size_t count)
+	{
+		for (size_t i = 0; i < count; i++)
+		{
+			v[i] = x * v3f(v[i], 0.0);
+		}
+	}
+
+	inline mat3 preScale(const mat3& m,const float ScaleX, const float ScaleY, const float ScaleZ)
+	{
+		mat3 result;
+		result[0][0] = m[0][0] * ScaleX;
+		result[0][1] = m[0][1] * ScaleX;
+		result[0][2] = m[0][2] * ScaleX;
+		result[1][0] = m[1][0] * ScaleY;
+		result[1][1] = m[1][1] * ScaleY;
+		result[1][2] = m[1][2] * ScaleY;
+		result[2][0] = m[2][0] * ScaleZ;
+		result[2][1] = m[2][1] * ScaleZ;
+		result[2][2] = m[2][2] * ScaleZ;
+		return result;
+	}
+
+
+	// +---------
+	// | PostScale   =  Scale_Matrix * (*this)
+	// +---------
+	inline mat3 postScale(const mat3& m, const float ScaleX, const float ScaleY, const float ScaleZ)
+	{
+		mat3 result;
+		result[0][0] = m[0][0] * ScaleX;
+		result[0][1] = m[0][1] * ScaleY;
+		result[0][2] = ScaleZ * m[0][2];
+		result[1][0] = ScaleX * m[1][0];
+		result[1][1] = m[1][1] * ScaleY;
+		result[1][2] = ScaleZ * m[1][2];
+		result[2][0] = ScaleX * m[2][0];
+		result[2][1] = m[2][1] * ScaleY;
+		result[2][2] = m[2][2] * ScaleZ;
+		return result;
+	}
+
+	inline mat3 preRotateZ(const mat3& m, const float angle)
+	{
+		mat3 result;
+		float COS = cosf(angle);
+		float SIN = sinf(angle);
+		result[1][0] = -m[0][0] * SIN + m[1][0] * COS;
+		result[1][1] = -m[0][1] * SIN + m[1][1] * COS;
+		result[1][2] = -m[0][2] * SIN + m[1][2] * COS;
+		result[0][0] = m[0][0] * COS + m[1][0] * SIN;
+		result[0][1] = m[0][1] * COS + m[1][1] * SIN;
+		result[0][2] = m[0][2] * COS + m[1][2] * SIN;
+		return result;
 	}
 
 }

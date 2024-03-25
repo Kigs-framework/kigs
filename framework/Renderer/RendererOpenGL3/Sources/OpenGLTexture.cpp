@@ -26,7 +26,7 @@
 #include "ModuleSceneGraph.h"
 
 using namespace Kigs::Draw;
-
+using namespace Kigs;
 
 #define FREETYPE_SIZE_COEFF	0.65f
 

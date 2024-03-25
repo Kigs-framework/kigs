@@ -95,15 +95,15 @@ void UIRoundHUD::UpdateSlots()
 	{
 		if (divCount == 0)
 		{
-			float radians = deg2rad(angleStart);
+			float radians = glm::radians(angleStart);
 			points.push_back({ sinf(radians)*radius,cosf(radians)*radius });
 		}
 		else
 		{
-			float ratio = (angleWide / 360.0f) *(fPI * 2.0f) / divCount;
+			float ratio = (angleWide / 360.0f) *(glm::pi<float>() * 2.0f) / divCount;
 			for (int i = 0; i < divCount+1; ++i)
 			{
-				float radians = deg2rad(angleStart) + ratio * (float)i;
+				float radians = glm::radians(angleStart) + ratio * (float)i;
 				points.push_back({ sinf(radians)*radius,cosf(radians)*radius });
 			}
 		}
@@ -203,9 +203,9 @@ bool UIRoundHUD::ManageDirectTouchEvent(Input::DirectTouchEvent& direct_touch)
 {
 	bool ret = false;
 	int slot = mSelectedSlot;
-	float dist = length2(mMidPoint - direct_touch.position.xy);
+	float dist = length2(mMidPoint - v2f(direct_touch.position));
 
-	bool can_interact = mIsEnabled && mIsTouchable && !mIsHidden && !IsHiddenFlag() && IsInClip(direct_touch.position.xy);
+	bool can_interact = mIsEnabled && mIsTouchable && !mIsHidden && !IsHiddenFlag() && IsInClip(v2f(direct_touch.position));
 	float allowedRadius = (mRadius + mRadiusOffset) * (mRadius + mRadiusOffset);
 	// touch is possible in the radius or when isDown
 	if (direct_touch.state == Input::StatePossible) // check for hover
@@ -247,11 +247,11 @@ bool UIRoundHUD::ManageDirectTouchEvent(Input::DirectTouchEvent& direct_touch)
 		}
 		else
 		{
-			float nearest = Float_Max;
+			float nearest = std::numeric_limits<float>::max();
 			for (int i = 0; i < mRealSlotCount; i++)
 			{
 				v2f center = mMidPoint + mSlot[i];
-				float tmpDist = length2(center - direct_touch.position.xy);
+				float tmpDist = length2(center - v2f(direct_touch.position));
 
 				if (tmpDist < nearest)
 				{

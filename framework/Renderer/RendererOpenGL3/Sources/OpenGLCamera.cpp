@@ -58,9 +58,9 @@ bool	OpenGLCamera::ProtectedSetActive(TravState* state)
 			auto l2g = GetLocalToGlobal();
 			renderer->Perspective(MATRIX_MODE_PROJECTION, mVerticalFOV, aspect, mNearPlane, mFarPlane);
 			renderer->LookAt(MATRIX_MODE_VIEW,
-				l2g.e[3][0], l2g.e[3][1], l2g.e[3][2],
-				l2g.e[0][0] + l2g.e[3][0], l2g.e[0][1] + l2g.e[3][1], l2g.e[0][2] + l2g.e[3][2],
-				l2g.e[2][0], l2g.e[2][1], l2g.e[2][2]);
+				l2g[3][0], l2g[3][1], l2g[3][2],
+				l2g[0][0] + l2g[3][0], l2g[0][1] + l2g[3][1], l2g[0][2] + l2g[3][2],
+				l2g[2][0], l2g[2][1], l2g[2][2]);
 			renderer->LoadIdentity(MATRIX_MODE_MODEL);
 
 		//	renderer->SetScissorValue(0, 0, (int)width, (int)height);

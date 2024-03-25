@@ -1023,7 +1023,7 @@ void ModernMeshItemGroup::GetTangent(unsigned char* v1, unsigned char* v2, unsig
 	float t2 = w3.y - w1.y;
 
 	float r = 1.0F / (s1 * t2 - s2 * t1);
-	sdir.Set((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+	sdir = v3f((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
 		(t2 * z1 - t1 * z2) * r);
 
 
@@ -1105,7 +1105,7 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 				unsigned char* v2 = vertexStart + vsize*triangles[i].indices[1];
 				unsigned char* v3 = vertexStart + vsize*triangles[i].indices[2];
 
-				sdir.Set(0.0f, 0.0f, 0.0f);
+				sdir = { 0.0f, 0.0f, 0.0f };
 				GetTangent(v1, v2, v3, textcoordpos, sdir);
 
 				tangentArray[triangles[i].indices[0]] += sdir;
@@ -1125,7 +1125,7 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 				unsigned char* v2 = vertexStart + vsize*triangles[i].indices[1];
 				unsigned char* v3 = vertexStart + vsize*triangles[i].indices[2];
 
-				sdir.Set(0.0f, 0.0f, 0.0f);
+				sdir = { 0.0f, 0.0f, 0.0f };
 				GetTangent(v1, v2, v3, textcoordpos, sdir);
 
 				tangentArray[triangles[i].indices[0]] += sdir;
@@ -1159,29 +1159,27 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 		v3f	t1;
 		if (!useTextureCoords)
 		{
-			n.Normalize();
+			n=normalize(n);
 
 			if (fabsf(n.z) > 0.8)
 			{
-				t.Set(1, 0, 0);
+				t = { 1, 0, 0 };
 			}
 			else
 			{
-				t.Set(0, 0, 1);
+				t = { 0, 0, 1 };
 			}
 	
 		}
 		else
 		{
-			t.Normalize();
+			t=normalize(t);
 		}
 		
-		t1=cross(n, t);
+		t1=normalize(cross(n, t));
 
-		t1.Normalize();
 		// and t again
-		t=cross(t1, n);
-		t.Normalize();
+		t=normalize(cross(t1, n));
 
 
 		unsigned int*		writeTangent = (unsigned int*)(writeVertex + vsize);
@@ -1243,8 +1241,7 @@ void ModernMeshItemGroup::ComputeNormals()
 			v3f* v2 = (v3f*)(vertexStart + vsize*triangles[i].indices[1]);
 			v3f* v3 = (v3f*)(vertexStart + vsize*triangles[i].indices[2]);
 
-			N=cross(*v2 - *v1, *v3 - *v1);
-			N.Normalize();
+			N = normalize(cross(*v2 - *v1, *v3 - *v1));
 
 			nArray[triangles[i].indices[0]] += N;
 			nArray[triangles[i].indices[1]] += N;
@@ -1261,8 +1258,7 @@ void ModernMeshItemGroup::ComputeNormals()
 			v3f* v2 = (v3f*)(vertexStart + vsize*triangles[i].indices[1]);
 			v3f* v3 = (v3f*)(vertexStart + vsize*triangles[i].indices[2]);
 
-			N=cross(*v2 - *v1, *v3 - *v1);
-			N.Normalize();
+			N=normalize(cross(*v2 - *v1, *v3 - *v1));
 
 			nArray[triangles[i].indices[0]] += N;
 			nArray[triangles[i].indices[1]] += N;
@@ -1285,7 +1281,7 @@ void ModernMeshItemGroup::ComputeNormals()
 	{
 		memcpy(write, read, vsize);
 
-		nArray[i].Normalize();
+		nArray[i]=normalize(nArray[i]);
 
 		unsigned int*		writeNormal = (unsigned int*)(write + vsize);
 		signed char*		component = (signed char*)writeNormal;
@@ -1326,19 +1322,18 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 	unsigned int   vsize = mVertexSize;
 
 
-	mat3 flipped;
-	flipped.Clear();
+	mat4 flipped(1.0f);
 
-	flipped.XAxis[abs(axisX) - 1] = (axisX < 0) ? -1 : 1;
-	flipped.YAxis[abs(axisY) - 1] = (axisY < 0) ? -1 : 1;
-	flipped.ZAxis[abs(axisZ) - 1] = (axisZ < 0) ? -1 : 1;
+	column(flipped,0)[abs(axisX) - 1] = (axisX < 0) ? -1 : 1;
+	column(flipped,1)[abs(axisY) - 1] = (axisY < 0) ? -1 : 1;
+	column(flipped,2)[abs(axisZ) - 1] = (axisZ < 0) ? -1 : 1;
 
 	// flip vertex
 	for (int i = 0; i < mVertexCount; i++)
 	{
 		v3f& v1 = (v3f&)*((v3f*)(vertexStart + vsize*i));
 		
-		flipped.TransformVector(&v1);
+		transformVector(flipped,v1);
 	}
 
 	// flip normals
@@ -1351,7 +1346,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 		{
 			v3f& n1 = (v3f&)*((v3f*)(normalStart + vsize*i));
 
-			flipped.TransformVector(&n1);
+			transformVector(flipped ,n1);
 		}
 	}
 
@@ -1365,7 +1360,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 		{
 			v3f& t1 = (v3f&)*((v3f*)(tangentStart + vsize*i));
 
-			flipped.TransformVector(&t1);
+			transformVector(flipped,t1);
 		}
 	}
 

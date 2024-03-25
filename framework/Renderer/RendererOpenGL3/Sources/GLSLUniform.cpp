@@ -207,7 +207,7 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 void API3DUniformFloat3::Normalize()
 {
 	v3f v(mValue[0], mValue[1], mValue[2]);
-	v.Normalize();
+	v=normalize(v);
 
 	mValue[0] = v.x;
 	mValue[1] = v.y;
@@ -536,7 +536,7 @@ void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 		mMatrixArrayPointer = new mat4[mArraySize];
 		for (int i = 0; i < mArraySize; i++)
 		{
-			mMatrixArrayPointer[i].SetIdentity();
+			mMatrixArrayPointer[i]=mat4(1.0f);
 		}
 		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(mat4), false);
 	}
@@ -546,7 +546,7 @@ void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 void	API3DUniformMatrixArray::Activate(unsigned int a_Location)
 {
 	GLPRINT("%s (matrix) %d\n", getName().c_str(), a_Location);
-	glUniformMatrix4fv(a_Location, mArraySize, false, &((mMatrixArrayPointer[0]).e[0][0]));
+	glUniformMatrix4fv(a_Location, mArraySize, false, &((mMatrixArrayPointer[0])[0][0]));
 }
 
 API3DUniformMatrixArray::~API3DUniformMatrixArray()

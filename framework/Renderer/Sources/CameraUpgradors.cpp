@@ -151,7 +151,7 @@ DEFINE_UPGRADOR_METHOD(OrbitCameraUp, ManageDirectTouch)
 		{
 			v2f size; getRenderingScreen()->GetSize(size.x, size.y);
 			size = 1.0f / size;
-			auto right = GetUpgrador()->mOperationStartOrbitUp ^ GetUpgrador()->mOperationStartOrbitView;
+			auto right = cross(GetUpgrador()->mOperationStartOrbitUp, GetUpgrador()->mOperationStartOrbitView);
 			auto pos = GetUpgrador()->mOperationStartOrbitPosition + (dt.x * right * size.x + dt.y * GetUpgrador()->mOperationStartOrbitUp * size.y) * (f32)(*GetUpgrador()->mOrbitDistance);
 
 			*GetUpgrador()->mOrbitPoint = pos;

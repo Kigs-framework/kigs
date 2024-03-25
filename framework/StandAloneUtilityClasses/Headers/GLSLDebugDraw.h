@@ -1917,9 +1917,9 @@ namespace dd
 				pt = { 0, 1, 0 };
 			}
 			ddVec3 p1 = ddVec3(0, 0, 0);
-			auto p2 = ProjectOnPlane(pt, v3f(0, 0, 0), v);
-			left = (p2 - p1).Normalized();
-			up = (left ^ v).Normalized();
+			auto p2 = projectOnPlane(pt, v3f(0, 0, 0), v);
+			left = normalize(p2 - p1);
+			up = normalize(cross(left , v));
 			/*
 			// Produces two orthogonal vectors for normalized vector v.
 			float lenSqr, invLen;

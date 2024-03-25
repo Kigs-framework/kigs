@@ -61,7 +61,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 		{
 			SP<Node3D>	currentnode = checkcurrentnode;
 			v3f toTransform(currentPos);
-			currentnode->GetLocalToGlobal().TransformPoint(&toTransform, &currentPos);
+			transformPoint(currentnode->GetLocalToGlobal(),toTransform, currentPos);
 		}
 		SP<Camera>	currentCamera = checkcurrentCamera;
 
@@ -71,13 +71,13 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 			// fast check if point is in front
 			v3f	cameraView,cameraPos,camObjectVect;
 			currentCamera->GetViewVector(cameraView.x, cameraView.y, cameraView.z);
-			cameraView.Normalize();
+			cameraView = normalize(cameraView);
 			currentCamera->GetPosition(cameraPos.x, cameraPos.y, cameraPos.z);
 			camObjectVect = currentPos;
 			camObjectVect -=cameraPos;
-			camObjectVect.Normalize();
+			camObjectVect = normalize(camObjectVect);
 
-			float objectinfront = Dot(camObjectVect, cameraView);
+			float objectinfront = dot(camObjectVect, cameraView);
 			if (objectinfront < 0)
 			{
 				mIsHidden = true;
@@ -94,8 +94,8 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 					if (currentCamera->Project(resultUp.x, resultUp.y, currentPos + cameraUp))
 					{
 						resultUp -= result;
-						resultUp.Normalize();
-						mRotationAngle = (fPI / 2.0f) - atan2f(resultUp.y, resultUp.x);
+						resultUp = normalize(resultUp);
+						mRotationAngle = (glm::pi<float>() / 2.0f) - atan2f(resultUp.y, resultUp.x);
 					}
 				}
 

@@ -45,8 +45,8 @@ DebugDraw::~DebugDraw()
 
 void DebugDraw::GetNodeBoundingBox(v3f& pmin, v3f& pmax) const
 {
-	pmin.Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-	pmax.Set(FLT_MAX, FLT_MAX, FLT_MAX);
+	pmin = v3f(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	pmax = v3f(FLT_MAX, FLT_MAX, FLT_MAX);
 }
 
 TravState* DebugDraw::currentState = nullptr;
@@ -181,9 +181,9 @@ dd::CameraPoints dd::camera_points(Camera* cam)
 	float aspect = cam->getValue<float>("AspectRatio");
 	if (aspect == 0) aspect = (rs.x*cam->getValue<float>("ViewportSizeX")) / (rs.y*cam->getValue<float>("ViewportSizeY"));
 
-	float frustumHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * fPI / 360.0f) * nearZ;
+	float frustumHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * glm::pi<float>() / 360.0f) * nearZ;
 
-	float farHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * fPI / 360.0f) * farZ;
+	float farHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * glm::pi<float>() / 360.0f) * farZ;
 	float farWidth = farHeight * aspect;
 
 	float frustumWidth = frustumHeight * aspect;
@@ -191,7 +191,7 @@ dd::CameraPoints dd::camera_points(Camera* cam)
 	v3f pos = cam->GetGlobalPosition();
 	v3f view = cam->GetGlobalViewVector();
 	v3f up = cam->GetGlobalUpVector();
-	v3f right = up^view;
+	v3f right = cross(up,view);
 
 	result.ptnear[0] = pos + view*nearZ + right*frustumWidth + up*frustumHeight;
 	result.ptnear[1] = pos + view*nearZ + right*frustumWidth - up*frustumHeight;
@@ -205,13 +205,13 @@ dd::CameraPoints dd::camera_points(Camera* cam)
 	return result;
 }
 
-void dd::camera(Camera* cam, ddVec3Param color, u32 flags, int duration)
+void dd::camera(Camera* cam, ddVec3Param color, Kigs::u32 flags, int duration)
 {
 	auto pts = dd::camera_points(cam);
 	dd::camera(pts, color, flags, duration);
 }
 
-void dd::camera(const dd::CameraPoints& pts, ddVec3Param color, u32 flags, int duration)
+void dd::camera(const dd::CameraPoints& pts, ddVec3Param color, Kigs::u32 flags, int duration)
 {
 	dd::line(pts.ptnear[0], pts.ptnear[1], color, duration);
 	dd::line(pts.ptnear[1], pts.ptnear[2], color, duration);
@@ -242,6 +242,6 @@ void dd::local_bbox(const mat4& local_to_global, BBox bbox, ddVec3Param color, i
 {
 	v3f pts[8];
 	bbox.ConvertToPoint(pts);
-	local_to_global.TransformPoints(pts, 8);
+	transformPoints(local_to_global,pts, 8);
 	dd::box(pts, color, duration, depth_enabled);
 }

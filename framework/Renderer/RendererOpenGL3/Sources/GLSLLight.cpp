@@ -170,26 +170,25 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, v3f & cam
 	
 	static_cast<API3DUniformFloat3*>(mCamPosUniform.get())->SetValue(&camPos.x);
 
-	v3f outP;
-	v3f outV;
+	v3f outP(0, 0, 0);
+	
 
 	SetupNodeIfNeeded();
 	const mat4& lMat = GetLocalToGlobal();
 
-	v3f PosOffset(0,0,0);
-	lMat.TransformPoint(&PosOffset, &outP);
+	transformPoint(lMat,outP);
 
 	if (GetTypeOfLight() == DIRECTIONAL_LIGHT) // for directional light, position gives direction as a normal vector
 	{
-		outP.Normalize();
+		outP=normalize(outP);
 	}
 	static_cast<API3DUniformFloat3*>(mPositionUniform.get())->SetValue(&outP.x);
 
 	if (mSpotDirUniform)
 	{
 		// spot direction is minus z axis
-		v3f dir(0.0f, 0.0f, -1.0f);
-		lMat.TransformVector((v3f*)&dir.x, &outV);
+		v3f outV(0.0f, 0.0f, -1.0f);
+		transformVector(lMat,outV);
 		static_cast<API3DUniformFloat3*>(mSpotDirUniform.get())->SetValue(&outV.x);
 	}
 

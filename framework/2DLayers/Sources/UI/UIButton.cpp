@@ -135,15 +135,18 @@ bool UIButton::isAlpha(float X, float Y)
 
 bool UIButton::ManageClickTouchEvent(Input::ClickEvent& click_event)
 {
-	bool allow = CanInteract(click_event.position.xy);
+
+	v2f pos2d(click_event.position);
+
+	bool allow = CanInteract(pos2d);
 	
 	if (allow)
 	{
 		v2f pts[4];
 		GetTransformedPoints(pts);
 		v2f position_in_button;
-		position_in_button.x = ProjectOnLineScalar(click_event.position.xy, pts[0], pts[3]);
-		position_in_button.y = ProjectOnLineScalar(click_event.position.xy, pts[0], pts[1]);
+		position_in_button.x = ProjectOnLineScalar(pos2d, pts[0], pts[3]);
+		position_in_button.y = ProjectOnLineScalar(pos2d, pts[0], pts[1]);
 		allow = allow && !isAlpha(position_in_button.x, position_in_button.y);
 	}
 
@@ -171,15 +174,16 @@ bool UIButton::ManageClickTouchEvent(Input::ClickEvent& click_event)
 
 bool UIButton::ManageDirectTouchEvent(DirectTouchEvent& direct_touch)
 {
-	bool allow = CanInteract(direct_touch.position.xy);
+	v2f pos2d(direct_touch.position);
+	bool allow = CanInteract(pos2d);
 
 	if (allow)
 	{
 		v2f pts[4];
 		GetTransformedPoints(pts);
 		v2f position_in_button;
-		position_in_button.x = ProjectOnLineScalar(direct_touch.position.xy, pts[0], pts[3]);
-		position_in_button.y = ProjectOnLineScalar(direct_touch.position.xy, pts[0], pts[1]);
+		position_in_button.x = ProjectOnLineScalar(pos2d, pts[0], pts[3]);
+		position_in_button.y = ProjectOnLineScalar(pos2d, pts[0], pts[1]);
 		allow = allow && !isAlpha(position_in_button.x, position_in_button.y);
 	}
 
