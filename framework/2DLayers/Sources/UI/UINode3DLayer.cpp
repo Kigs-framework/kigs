@@ -187,7 +187,7 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 		auto hit_pos = pos + ((float)dist * dir);
 
 		v3f up(0,1,0);
-		v3f left = up ^ v3f(0,0,1);
+		v3f left = cross(up , v3f(0,0,1));
 
 		pout.pos = v3f((dot(left, hit_pos) / mSize[0]) + 0.5f, (dot(up, hit_pos) / mSize[1]) + 0.5f, pout.pos.z);
 		

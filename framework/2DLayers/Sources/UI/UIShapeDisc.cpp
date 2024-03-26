@@ -30,7 +30,7 @@ void UIShapeDisc::SetTexUV(UIItem* item, UIVerticesInfo* aQI)
 	std::vector<v2f>	circlePos;
 	circlePos.resize(sliceCount + 1);
 
-	float angle = (2.0 * PI) / ((double)sliceCount);
+	float angle = (2.0 * glm::pi<float>()) / ((double)sliceCount);
 	circlePos[0] = center;
 	for (int i = 1; i <= sliceCount; i++)
 	{
@@ -65,7 +65,7 @@ void UIShapeDisc::SetVertexArray(UIItem* item, UIVerticesInfo* aQI)
 	std::vector<v2f>	circlePos;
 	circlePos.resize(sliceCount + 1) ;
 
-	float angle = (2.0 * PI) / ((double)sliceCount);
+	float angle = (2.0 * glm::pi<float>()) / ((double)sliceCount);
 	circlePos[0] = center;
 	for (int i = 1; i <= sliceCount; i++)
 	{

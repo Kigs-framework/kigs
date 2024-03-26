@@ -185,7 +185,7 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 		mat3 m = GetGlobalTransform();
 		mat4 m4 = (mat4)m;
 		//renderer->PushMatrix(MATRIX_MODE_MODEL);
-		renderer->PushAndMultMatrix(Draw::MATRIX_MODE_MODEL, &m4.e[0][0]);
+		renderer->PushAndMultMatrix(Draw::MATRIX_MODE_MODEL, &m4[0][0]);
 	}
 
 	// ** Manage Transparency (after texture init) **

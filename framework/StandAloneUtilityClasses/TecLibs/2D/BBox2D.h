@@ -34,8 +34,8 @@ namespace Kigs
 
 			void SetEmpty(void)
 			{
-				m_Min.x = m_Min.y = Float_Max;
-				m_Max.x = m_Max.y = -Float_Max;
+				m_Min.x = m_Min.y = std::numeric_limits<float>::max();
+				m_Max.x = m_Max.y = -std::numeric_limits<float>::max();
 			}
 
 			bool IsEmpty(void) const

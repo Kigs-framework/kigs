@@ -15,6 +15,7 @@
 #include <tuple>
 
 using namespace LuaIntf;
+using namespace Kigs;
 using namespace Kigs::Lua;
 using namespace Kigs::Core;
 using namespace Kigs::Input;
@@ -278,19 +279,19 @@ int Kigs::Lua::CoreModifiableSetAttributeLua(lua_State* lua)
 			v4f* pt4 = nullptr;
 			CoreModifiable* obj = nullptr;
 			char str[128];
-			if ((pt2 = ::Lua::objectCast<v2f>(ref)))
+			if ((pt2 = LuaIntf::Lua::objectCast<v2f>(ref)))
 			{
 				snprintf(str, 128, "[%f,%f]", pt2->x, pt2->y);
 			}
-			else if((pt3 = ::Lua::objectCast<v3f>(ref)))
+			else if((pt3 = LuaIntf::Lua::objectCast<v3f>(ref)))
 			{
 				snprintf(str, 128, "[%f,%f,%f]", pt3->x, pt3->y, pt3->z);
 			}
-			else if ((pt4 = ::Lua::objectCast<v4f>(ref)))
+			else if ((pt4 = LuaIntf::Lua::objectCast<v4f>(ref)))
 			{
 				snprintf(str, 128, "[%f,%f,%f,%f]", pt4->x, pt4->y, pt4->z, pt4->w);
 			}
-			else if((obj = ::Lua::objectCast<CoreModifiable>(ref)))
+			else if((obj = LuaIntf::Lua::objectCast<CoreModifiable>(ref)))
 			{
 				attr->setValue(obj, cm);
 				return 0;
@@ -438,19 +439,19 @@ CoreModifiableAttribute* Kigs::Lua::MakeAttributeFromLuaStack(lua_State* lua, in
 			v4f* pt4 = nullptr;
 			CoreModifiable* obj = nullptr;
 
-			if ((pt2 = ::Lua::objectCast<v2f>(ref)))
+			if ((pt2 = LuaIntf::Lua::objectCast<v2f>(ref)))
 			{
 				return MakeAttribute(std::move(*pt2), owner, name);
 			}
-			else if ((pt3 = ::Lua::objectCast<v3f>(ref)))
+			else if ((pt3 = LuaIntf::Lua::objectCast<v3f>(ref)))
 			{
 				return MakeAttribute(std::move(*pt3), owner, name);
 			}
-			else if ((pt4 = ::Lua::objectCast<v4f>(ref)))
+			else if ((pt4 = LuaIntf::Lua::objectCast<v4f>(ref)))
 			{
 				return MakeAttribute(std::move(*pt4), owner, name);
 			}
-			else if ((obj = ::Lua::objectCast<CoreModifiable>(ref)))
+			else if ((obj = LuaIntf::Lua::objectCast<CoreModifiable>(ref)))
 			{
 				return MakeAttribute(obj, owner, name);
 			}
@@ -480,7 +481,7 @@ static int CoreModifiableMethodCaller(lua_State* lua)
 	const std::string name = L.toString(lua_upvalueindex(1));
 	
 	LuaRef ref = L.toValue<LuaRef>(1);
-	CoreModifiable* cm = Lua::objectCast<CoreModifiable>(ref);
+	CoreModifiable* cm = LuaIntf::Lua::objectCast<CoreModifiable>(ref);
 	if(!cm)
 	{
 		L.push("Attempting to call a method but the first argument is not a CoreModifiable");
@@ -630,15 +631,15 @@ int CoreModifiableAddDynamicAttribute(CoreModifiable* obj, lua_State* lua)
 			v3f* pt3 = nullptr;
 			v4f* pt4 = nullptr;
 			char str[128];
-			if ((pt2 = Lua::objectCast<v2f>(ref)))
+			if ((pt2 = LuaIntf::Lua::objectCast<v2f>(ref)))
 			{
 				snprintf(str, 128, "[%f,%f]", pt2->x, pt2->y);
 			}
-			else if((pt3 = Lua::objectCast<v3f>(ref)))
+			else if((pt3 = LuaIntf::Lua::objectCast<v3f>(ref)))
 			{
 				snprintf(str, 128, "[%f,%f,%f]", pt3->x, pt3->y, pt3->z);
 			}
-			else if ((pt4 = Lua::objectCast<v4f>(ref)))
+			else if ((pt4 = LuaIntf::Lua::objectCast<v4f>(ref)))
 			{
 				snprintf(str, 128, "[%f,%f,%f,%f]", pt4->x, pt4->y, pt4->z, pt4->w);
 			}
@@ -766,8 +767,8 @@ int LuaScalarMult(lua_State* lua)
 	
 	LuaRef ref = L.toValue<LuaRef>(1);
 	LuaRef ref2 = L.toValue<LuaRef>(2);
-	auto left = Lua::objectCast<Vec>(ref);
-	auto right  = Lua::objectCast<Vec>(ref2);
+	auto left = LuaIntf::Lua::objectCast<Vec>(ref);
+	auto right  = LuaIntf::Lua::objectCast<Vec>(ref2);
 	if(left)
 	{
 		if(L.isNumber(2))
@@ -808,8 +809,8 @@ int LuaMatrix4Mult(lua_State* lua)
 	LuaRef ref_left = L.toValue<LuaRef>(1);
 	LuaRef ref_right = L.toValue<LuaRef>(2);
 	
-	auto left = Lua::objectCast<const mat4>(ref_left);
-	auto right = Lua::objectCast<const mat4>(ref_right);
+	auto left = LuaIntf::Lua::objectCast<const mat4>(ref_left);
+	auto right = LuaIntf::Lua::objectCast<const mat4>(ref_right);
 	
 	
 	if (left && right)
@@ -820,7 +821,7 @@ int LuaMatrix4Mult(lua_State* lua)
 	
 	if (left)
 	{
-		auto v = Lua::objectCast<const v3f>(ref_right);
+		auto v = LuaIntf::Lua::objectCast<const v3f>(ref_right);
 		if (v)
 		{
 			L.push(*left * v4f(*v,1.0f));
@@ -865,9 +866,9 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addFunction("__eq", &v2f::operator==)
 		.addMetaFunction("__mul", &LuaScalarMult<v2f>)
 		.addMetaFunction("__div", LUA_FN(v2f, Kigs::Maths::operator/, const v2f&, const float&))
-		.addStaticFunction("Dot", LUA_FN(float, Kigs::Maths::Dot, const v2f&, const v2f&))
-		.addStaticFunction("Cross", LUA_FN(float, Kigs::Maths::Cross, const v2f&, const v2f&))
-		.addStaticFunction("Norm", LUA_FN(float, Kigs::Maths::Norm, const v2f&))
+		.addStaticFunction("Dot", LUA_FN(float, dot, const v2f&, const v2f&))
+		.addStaticFunction("Cross", LUA_FN(float, cross, const v2f&, const v2f&))
+		.addStaticFunction("Norm", LUA_FN(float, Length, const v2f&))
 		.addStaticFunction("length2", LUA_FN(float, length2, const v2f&))
 		.addFunction("normalize", &v2f::Normalize)
 		.addFunction("normalized", &v2f::Normalized)

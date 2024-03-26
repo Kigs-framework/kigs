@@ -217,10 +217,10 @@ void UITextArea::ProtectedDraw(TravState* state)
 	float posY = mSize[1] - ty;
 
 	v2f pt[4];
-	pt[0].Set(0.0f, posY);
-	pt[1].Set(0.0f, posY + ty);
-	pt[2].Set(tx, posY + ty);
-	pt[3].Set(tx, posY);
+	pt[0]=v2f(0.0f, posY);
+	pt[1]=v2f(0.0f, posY + ty);
+	pt[2]=v2f(tx, posY + ty);
+	pt[3]=v2f(tx, posY);
 
 	TransformPoints(pt, 4);
 

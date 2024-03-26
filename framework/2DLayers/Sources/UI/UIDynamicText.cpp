@@ -220,7 +220,7 @@ bool UIDynamicText::ManageClickTouchEvent(Input::ClickEvent& click_event)
 		// Left click only
 		if (click_event.button_state_mask & Input::ClickEvent::LeftButton)
 		{
-			auto result = PickCharacter(click_event.position.xy);
+			auto result = PickCharacter(v2f(click_event.position));
 			if (result.current_clickable_tag)
 			{
 				result.current_clickable_tag->item->SimpleCall(result.current_clickable_tag->clickID, this, result.current_clickable_tag->clickParam);
@@ -233,7 +233,7 @@ bool UIDynamicText::ManageClickTouchEvent(Input::ClickEvent& click_event)
 		}
 		return true;
 	}
-	return CanInteract(click_event.position.xy);
+	return CanInteract(v2f(click_event.position));
 }
 
 // func need the following signature bool func(unsigned short character, v2f position, stbtt_aligned_quad quad, int current_character_index, int current_line)
@@ -863,7 +863,7 @@ v4f HexaToV4(const std::string& hexa)
 		case 'F': value = 15; break;
 		}
 		if (i % 2 == 0) value *= 16;
-		result.data[i / 2] += value;
+		result[i / 2] += value;
 	}
 	result /= 255;
 	return result;

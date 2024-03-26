@@ -161,7 +161,7 @@ bool UIItem::CanInteract(v2f pos, bool must_contain)
 
 bool UIItem::ManageInputSwallowEvent(Input::InputEvent& ev)
 {
-	bool b = CanInteract(ev.position.xy);
+	bool b = CanInteract(v2f(ev.position));
 	if (b) *ev.swallow_mask = 0xFFFFFFFF;
 	return b;
 }

@@ -146,7 +146,7 @@ bool UITextInput::ManageClickTouchEvent(Input::ClickEvent& click_event)
 	if(!swallow)
 		result = ParentClassType::ManageClickTouchEvent(click_event);
 
-	if (click_event.state == Input::StatePossible && !CanInteract(click_event.position.xy))
+	if (click_event.state == Input::StatePossible && !CanInteract(v2f(click_event.position)))
 	{
 		LoseFocus();
 	}
