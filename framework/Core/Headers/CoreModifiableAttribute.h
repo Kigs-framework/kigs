@@ -12,6 +12,12 @@
 #include <any>
 #include <type_traits>
 
+#pragma warning( push )
+#pragma warning( disable : 4267 )
+
+
+
+
 namespace Kigs
 {
 	namespace Core
@@ -905,3 +911,5 @@ namespace Kigs
 		}
 	}
 }
+
+#pragma warning( pop )

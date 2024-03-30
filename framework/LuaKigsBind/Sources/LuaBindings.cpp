@@ -860,8 +860,9 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addConstructor(LUA_ARGS(float, float))
 		.addVariable("x", &v2f::x, true)
 		.addVariable("y", &v2f::y, true)
-		.addFunction("__add", &v2f::operator+)
-		.addFunction("__sub", &v2f::operator-)
+		.addFunction("__add", v2f::operator+=)/*
+		.addFunction("__add", &v2f::operator+=)
+		.addFunction("__sub", &v2f::operator-=)
 		.addMetaFunction("__unm", LUA_FN(v2f, Kigs::Maths::operator-, const v2f&))
 		.addFunction("__eq", &v2f::operator==)
 		.addMetaFunction("__mul", &LuaScalarMult<v2f>)
@@ -872,7 +873,7 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addStaticFunction("length2", LUA_FN(float, length2, const v2f&))
 		.addFunction("normalize", &v2f::Normalize)
 		.addFunction("normalized", &v2f::Normalized)
-		.addFunction("copy", [](const v2f* v) -> v2f { return *v; })
+		.addFunction("copy", [](const v2f* v) -> v2f { return *v; })*/
 		.endClass();
 	
 	
@@ -885,7 +886,7 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addVariable("xy", &v3f::x, true)
 		.addVariable("yz", &v3f::y, true)
 	
-		.addMetaFunction("__add", LUA_FN(v3f, operator+, const v3f&, const v3f&))
+		/*.addMetaFunction("__add", LUA_FN(v3f, operator+, const v3f&, const v3f&))
 		.addMetaFunction("__sub", LUA_FN(v3f, operator-, const v3f&, const v3f&))
 		.addMetaFunction("__unm", LUA_FN(v3f, operator-, const v3f&))
 		.addMetaFunction("__eq", LUA_FN(bool, operator==, const v3f&, const v3f&))
@@ -899,7 +900,7 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addFunction("copy", [](const v3f* v) -> v3f { return *v; })
 	
 		.addStaticFunction("Dot", LUA_FN(float, dot, const v3f&, const v3f&))
-		.addStaticFunction("Cross", LUA_FN(v3f, cross, const v3f&, const v3f&))
+		.addStaticFunction("Cross", LUA_FN(v3f, cross, const v3f&, const v3f&))*/
 	
 		.endClass();
 	
@@ -914,7 +915,7 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addVariable("xyz", &v4f::x, true)
 		.addVariable("yzw", &v4f::y, true)
 	
-		.addMetaFunction("__add", LUA_FN(v4f, operator+, const v4f&, const v4f&))
+		/*.addMetaFunction("__add", LUA_FN(v4f, operator+, const v4f&, const v4f&))
 		.addMetaFunction("__sub", LUA_FN(v4f, operator-, const v4f&, const v4f&))
 		.addMetaFunction("__unm", LUA_FN(v4f, operator-, const v4f&))
 		.addMetaFunction("__eq", LUA_FN(bool, operator==, const v4f&, const v4f&))
@@ -925,13 +926,13 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 	.addStaticFunction("Norm", LUA_FN(float, length, length2, const v4f&))
 		.addFunction("normalize", &glm::normalize)
 		.addFunction("normalized", &glm::normalized)
-		.addFunction("copy", [](const v4f* v) -> v4f { return *v; })
+		.addFunction("copy", [](const v4f* v) -> v4f { return *v; })*/
 		.endClass();
 	
 	LuaBinding(L).beginClass<mat4>("mat4")
-		.addFactory([]() { mat4 result; result.SetIdentity(); return result; })
+		.addFactory([]() { mat4 result(1.0f); return result; })
 
-		.addVariable("XAxis", &mat4::XAxis)
+		/*.addVariable("XAxis", &mat4::XAxis)
 		.addVariable("YAxis", &mat4::YAxis)
 		.addVariable("ZAxis", &mat4::ZAxis)
 		.addVariable("Pos", &mat4::Pos)
@@ -973,7 +974,7 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addFunction("setIdentity", &mat4::SetIdentity)
 		.addFunction("setNull", &mat4::SetNull)
 
-		.addFunction("isIdentity", &glm::isIdentity)
+		.addFunction("isIdentity", &glm::isIdentity)*/
 		/*
    .addStaticFunction("Inv", LUA_FN(mat4, Inv, const mat4&))
    .addStaticFunction("Det", LUA_FN(float, Det, const mat4&))

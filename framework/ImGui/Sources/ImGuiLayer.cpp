@@ -507,7 +507,7 @@ namespace Kigs
 						mStartTouchPos = mCurrentPos;
 						mStartGazePos = ev.interaction->Position;
 						mStartGazeUp = v3f(0, -1, 0);
-						mStartGazeRight = ev.direction ^ v3f(0, 1, 0);
+						mStartGazeRight = cross(ev.direction , v3f(0, 1, 0));
 					}
 					mClickSource = ev.touch_id;
 					io.MouseDown[0] = (ev.button_state & 1);
