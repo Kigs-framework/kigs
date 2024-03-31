@@ -132,7 +132,7 @@ namespace glm
 		out = x * v4f(in, 1.0);
 	}
 
-	inline v3f transformPoint(const mat4& x, v3f const & v)
+	inline v3f transformedPoint(const mat4& x, const v3f  & v)
 	{
 		return x* v4f(v, 1.0);
 	}
@@ -150,7 +150,12 @@ namespace glm
 		v = x * v4f(v, 0.0);
 	}
 
-	inline v3f transformVector(const mat4& x, v3f const & v)
+	inline void transformVector(const mat4& x, const v3f& in, v3f& out)
+	{
+		out = x * v4f(in, 0.0);
+	}
+
+	inline v3f transformedVector(const mat4& x, const v3f  & v)
 	{
 		return x * v4f(v, 0.0);
 	}
@@ -261,7 +266,7 @@ namespace glm
 
 	inline mat3 preRotateZ(const mat3& m, const float angle)
 	{
-		mat3 result;
+		mat3 result(m);
 		float COS = cosf(angle);
 		float SIN = sinf(angle);
 		result[1][0] = -m[0][0] * SIN + m[1][0] * COS;
@@ -270,6 +275,43 @@ namespace glm
 		result[0][0] = m[0][0] * COS + m[1][0] * SIN;
 		result[0][1] = m[0][1] * COS + m[1][1] * SIN;
 		result[0][2] = m[0][2] * COS + m[1][2] * SIN;
+		return result;
+	}
+
+	inline mat4 preRotateXYZ(const mat4 &in,const float& AngleX, const float& AngleY, const float& AngleZ)
+	{
+		mat4 result(1.0f);
+		float CX = cosf(AngleX);
+		float SX = sinf(AngleX);
+		float CY = cosf(AngleY);
+		float SY = sinf(AngleY);
+		float CZ = cosf(AngleZ);
+		float SZ = sinf(AngleZ);
+		float t19 = CZ * SY;
+		float t22 = t19 * SX - SZ * CX;
+		float t24 = SZ * SY;
+		float t27 = t24 * SX + CZ * CX;
+		float t29 = in[2][0] * CY;
+		float t34 = in[2][1] * CY;
+		float t39 = in[2][2] * CY;
+		float t44 = t19 * CX + SZ * SX;
+		float t48 = t24 * CX - CZ * SX;
+		float tmp00 = in[0][0] * CZ * CY + in[1][0] * SZ * CY - in[2][0] * SY;
+		float tmp01 = in[0][1] * CZ * CY + in[1][1] * SZ * CY - in[2][1] * SY;
+		float tmp02 = in[0][2] * CZ * CY + in[1][2] * SZ * CY - in[2][2] * SY;
+		float tmp10 = in[0][0] * t22 + in[1][0] * t27 + t29 * SX;
+		float tmp11 = in[0][1] * t22 + in[1][1] * t27 + t34 * SX;
+		float tmp12 = in[0][2] * t22 + in[1][2] * t27 + t39 * SX;
+		result[2][0] = in[0][0] * t44 + in[1][0] * t48 + t29 * CX;
+		result[2][1] = in[0][1] * t44 + in[1][1] * t48 + t34 * CX;
+		result[2][2] = in[0][2] * t44 + in[1][2] * t48 + t39 * CX;
+		result[0][0] = tmp00;
+		result[0][1] = tmp01;
+		result[0][2] = tmp02;
+		result[1][0] = tmp10;
+		result[1][1] = tmp11;
+		result[1][2] = tmp12;
+
 		return result;
 	}
 

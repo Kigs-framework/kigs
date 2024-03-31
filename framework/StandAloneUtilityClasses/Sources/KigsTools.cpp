@@ -1595,7 +1595,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 			STACK_STRING(str, 128, "%.0f°", amount);
 			ImGui::SameLine();
 			if (ImGui::SmallButton(str))
-				*v = amount * fPI_180;
+				*v = amount * glm::pi<float>()/180.0f;
 		};
 		v3f rot(0, 0, 0);
 		if (ImGui::CollapsingHeader("Controls"))
@@ -1636,17 +1636,17 @@ void CustomAttributeEditor(CoreModifiable* item)
 			//auto m = Matrix3x4::IdentityMatrix();
 			//m.SetRotationXYZ(rot.x, rot.y, rot.z);
 			auto m = n->GetLocal();
-			m.PreRotateXYZ(rot.x, rot.y, rot.z);
+			m = preRotateXYZ(m,rot.x, rot.y, rot.z);
 			n->ChangeMatrix(m);
 		}
 
 		if (ImGui::CollapsingHeader("Matrix"))
 		{
 			auto& m = item->as<Node3D>()->GetLocal();
-			ImGui::Text(V3F_FMT(3), V3F_EXP(m.XAxis));
-			ImGui::Text(V3F_FMT(3), V3F_EXP(m.YAxis));
-			ImGui::Text(V3F_FMT(3), V3F_EXP(m.ZAxis));
-			ImGui::Text(V3F_FMT(3), V3F_EXP(m.Pos));
+			ImGui::Text(V3F_FMT(3), V3F_EXP(column(m,0)));
+			ImGui::Text(V3F_FMT(3), V3F_EXP(column(m, 1)));
+			ImGui::Text(V3F_FMT(3), V3F_EXP(column(m, 2)));
+			ImGui::Text(V3F_FMT(3), V3F_EXP(column(m, 3)));
 		}
 
 		if (ImGui::Button("Fit To View"))
@@ -1659,7 +1659,7 @@ void CustomAttributeEditor(CoreModifiable* item)
 				auto n = item->as<Node3D>();
 				auto bbox = n->GetGlobalBoundingBox();
 				auto view = active_cam->GetViewVector();
-				auto d = (Norm(bbox.Size()) / 2) / tan(deg2rad(active_cam->template getValue<float>("VerticalFOV")) / 2);
+				auto d = (length(bbox.Size()) / 2) / tan(glm::radians(active_cam->template getValue<float>("VerticalFOV")) / 2);
 				auto target = bbox.Center() - view * d;
 				active_cam->setValue("Position", target);
 			}
@@ -1707,14 +1707,14 @@ void CustomAttributeEditor(CoreModifiable* item)
 				auto bbox = n->as<Node3D>()->GetLocalBoundingBox();
 				auto g2l = n->as<Node3D>()->GetGlobalToLocal();
 
-				auto origin_local = g2l * origin_global;
-				auto direction_local = g2l * direction_global;
+				auto origin_local = transformedPoint(g2l, origin_global);
+				auto direction_local = transformedVector(g2l,direction_global);
 				double dist = FLT_MAX;
 				v3f intersection;
 				v3f normal;
 				if (Maths::IntersectionRayBBox(origin_local, direction_local, bbox.m_Min, bbox.m_Max, intersection, normal,dist))
 				{
-					hit.push_back({ NormSquare(n->as<Node3D>()->GetLocalToGlobal() * intersection - origin_global), n->as<Node3D>() });
+					hit.push_back({ length2(v3f(n->as<Node3D>()->GetLocalToGlobal() * v4f(intersection,1.0f)) - origin_global), n->as<Node3D>() });
 				}
 			}
 			std::sort(hit.begin(), hit.end(), [](auto&& a, auto&& b) { return a.first < b.first; });
@@ -3213,7 +3213,7 @@ void DrawEditor()
 			Node3D* node = gKigsTools->HierarchyWindow.SelectedItem;
 			auto l2g = node->GetLocalToGlobal();
 			mat4 m{ l2g };
-			dd::axisTriad(&m.e[0][0], 0.1f, 0.2f);
+			dd::axisTriad(&m[0][0], 0.1f, 0.2f);
 		}
 			
 	}

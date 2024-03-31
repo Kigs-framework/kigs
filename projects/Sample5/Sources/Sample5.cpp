@@ -93,7 +93,7 @@ void	Sample5::ProtectedInit()
 	std::cout << "]" << std::endl;
 
 	// push back another vector on obj3, created from a Point3D
-	Point3D	toPush(5.0f, 4.0f, 3.0f);
+	v3f	toPush(5.0f, 4.0f, 3.0f);
 	obj1["obj3"]->set("", CoreItemSP(toPush));
 
 	// Export JSON item as attribute of an empty object
@@ -135,7 +135,7 @@ void	Sample5::ProtectedInit()
 
 	// It's also possible to compute 2D or 3D expressions
 	tsteval = std::string("eval2D(#/Sample5->EvalResult#+[1.0,#/Sample5->EvalResult.x#])");
-	Point2D checkresult = *tsteval;
+	v2f checkresult = *tsteval;
 	std::cout << "checkresult = [ " << checkresult[0] << "," << checkresult[1] << " ]" << std::endl;
 
 	// Load AppInit, GlobalConfig then launch first sequence

@@ -215,7 +215,7 @@ namespace Kigs
 		{
 			for (int i = 0; i < 4; ++i)
 			{
-				CHECK_SERIALIZE(serialize(stream, value.Axis[i]));
+				CHECK_SERIALIZE(serialize(stream, column(value,i)));
 			}
 			return true;
 		}
