@@ -362,7 +362,7 @@ auto& operator=(const CurrentAttributeType& value)\
 
 			explicit CoreModifiableAttributeDataInterface(InheritanceSwitch tag) : CoreModifiableAttributeTemplated<notifOwnerT, isInitT, isReadOnlyT, isOrphanT>(tag) {}
 
-
+			T& operator* () { return valueProtectedAccess(nullptr); }
 			inline T& ref() { return valueProtectedAccess(nullptr); }
 			inline const T& const_ref() const { return valueProtectedAccess(nullptr); }
 

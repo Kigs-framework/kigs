@@ -100,6 +100,8 @@ namespace Kigs
 				return true;
 			}
 
+			CoreItemSP operator* () { return mValue.item; }
+
 			operator CoreItemSP() { return mValue.item; }
 
 			//! return a reference on internal value

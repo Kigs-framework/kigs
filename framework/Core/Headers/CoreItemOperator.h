@@ -865,7 +865,7 @@ namespace Kigs
 				++itOperand;
 				if (itOperand != itOperandEnd)
 				{
-					result= (*itOperand)->operator operandType();
+					(*result) = (*itOperand)->operator operandType();
 				}
 				return result.operator operandType();
 
