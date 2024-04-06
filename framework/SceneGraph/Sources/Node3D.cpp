@@ -38,7 +38,7 @@ void Node3D::PrepareExport(ExportSettings* settings)
 	ParentClassType::PrepareExport(settings);
 	if (!isIdentity(mTransform))
 	{
-		AddDynamicVectorAttribute("LocalMatrix", &mTransform[0][0], 3 * 4);
+		AddDynamicVectorAttribute("LocalMatrix", &mTransform[0][0], 4 * 4);
 	}
 }
 
@@ -143,7 +143,7 @@ bool Node3D::Draw(TravState* state)
 void Node3D::InitModifiable()
 {
 	ParentClassType::InitModifiable();
-	mat4 m;
+	mat4 m(1);
 	if (getArrayValue("LocalMatrix", &m[0][0], 4 * 4))
 	{
 		ChangeMatrix(m);

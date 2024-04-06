@@ -99,7 +99,7 @@ void Camera::RecomputeMatrix()
 	
 	up=cross(view,right);
 
-	mat4 matrix(glm::vec4(view,0.0f), glm::vec4(right,0.0f), glm::vec4(up,0.0f), glm::vec4(pos,0.0f));
+	mat4 matrix(glm::vec4(view,0.0f), glm::vec4(right,0.0f), glm::vec4(up,0.0f), glm::vec4(pos,1.0f));
 	ParentClassType::ChangeMatrix(matrix);
 }
 

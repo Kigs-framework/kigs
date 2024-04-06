@@ -847,6 +847,75 @@ int LuaMatrix4Mult(lua_State* lua)
 
 #include "GLSLDebugDraw.h"
 
+class v2fExtention : public v2f
+{
+public:
+
+	using v2f::operator=;
+
+	bool operator==(const v2f& other) const
+	{
+		return (this->x==other.x) && (this->y == other.y);
+	}
+
+	v2f& normalize()
+	{
+		*this=glm::normalize(*this);
+		return *this;
+	}
+
+	v2f normalized() const
+	{
+		return glm::normalize(*this);
+	}
+};
+
+class v3fExtention : public v3f
+{
+public:
+
+	using v3f::operator=;
+
+	bool operator==(const v3f& other) const
+	{
+		return (this->x == other.x) && (this->y == other.y) && (this->z == other.z);
+	}
+
+	v3f& normalize()
+	{
+		*this = glm::normalize(*this);
+		return *this;
+	}
+
+	v3f normalized() const
+	{
+		return glm::normalize(*this);
+	}
+};
+
+class v4fExtention : public v4f
+{
+public:
+
+	using v4f::operator=;
+
+	bool operator==(const v4f& other) const
+	{
+		return (this->x == other.x) && (this->y == other.y) && (this->z == other.z) && (this->w == other.w);
+	}
+
+	v4f& normalize()
+	{
+		*this = glm::normalize(*this);
+		return *this;
+	}
+
+	v4f normalized() const
+	{
+		return glm::normalize(*this);
+	}
+};
+
 void Kigs::Lua::setup_bindings(lua_State* lua)
 {
 	LuaState L = lua;
@@ -860,20 +929,19 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addConstructor(LUA_ARGS(float, float))
 		.addVariable("x", &v2f::x, true)
 		.addVariable("y", &v2f::y, true)
-		//.addFunction("__add", &v2f::operator+=, LUA_ARGS(const v2f&))
-		/*.addFunction("__add", &v2f::operator+=)
-		.addFunction("__sub", &v2f::operator-=)
-		.addMetaFunction("__unm", LUA_FN(v2f, Kigs::Maths::operator-, const v2f&))
-		.addFunction("__eq", &v2f::operator==)
+		.addFunction("__add", static_cast<v2f & (v2f::*)(const v2f & other)>(&v2f::operator+=))
+		.addFunction("__sub", static_cast<v2f & (v2f::*)(const v2f & other)>(&v2f::operator-=))
+		.addMetaFunction("__unm", [](const v2f& other)->v2f {return v2f{ -other.x,-other.y }; })
+		.addFunction("__eq", static_cast<bool (v2f::*)(const v2f & other) const>(&v2fExtention::operator==))
 		.addMetaFunction("__mul", &LuaScalarMult<v2f>)
-		.addMetaFunction("__div", LUA_FN(v2f, Kigs::Maths::operator/, const v2f&, const float&))
-		.addStaticFunction("Dot", LUA_FN(float, dot, const v2f&, const v2f&))
-		.addStaticFunction("Cross", LUA_FN(float, cross, const v2f&, const v2f&))
-		.addStaticFunction("Norm", LUA_FN(float, Length, const v2f&))
-		.addStaticFunction("length2", LUA_FN(float, length2, const v2f&))
-		.addFunction("normalize", &v2f::Normalize)
-		.addFunction("normalized", &v2f::Normalized)
-		.addFunction("copy", [](const v2f* v) -> v2f { return *v; })*/
+		.addMetaFunction("__div", [](const v2f& other, float d)->v2f {return v2f{ other.x/d,other.y/d }; })
+		.addStaticFunction("Dot", LUA_FN(float, glm::dot, const v2f&, const v2f&))
+		.addStaticFunction("Cross", [](const v2f& first, const v2f& second)->float {return first.x*second.y-first.y*second.x; })
+		.addStaticFunction("Norm", LUA_FN(float, glm::length, const v2f&))
+		.addStaticFunction("length2", LUA_FN(float, glm::length2, const v2f&))
+		.addFunction("normalize", static_cast<v2f & (v2f::*)()>(&v2fExtention::normalize))
+		.addFunction("normalized", static_cast<v2f  (v2f::*)() const>(&v2fExtention::normalized))
+		.addFunction("copy", static_cast<v2f & (v2f::*)(const v2f & other)>(&v2f::operator=))
 		.endClass();
 	
 	
@@ -886,21 +954,19 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addVariable("xy", &v3f::x, true)
 		.addVariable("yz", &v3f::y, true)
 	
-		/*.addMetaFunction("__add", LUA_FN(v3f, operator+, const v3f&, const v3f&))
-		.addMetaFunction("__sub", LUA_FN(v3f, operator-, const v3f&, const v3f&))
-		.addMetaFunction("__unm", LUA_FN(v3f, operator-, const v3f&))
-		.addMetaFunction("__eq", LUA_FN(bool, operator==, const v3f&, const v3f&))
+		.addFunction("__add", static_cast<v3f & (v3f::*)(const v3f & other)>(&v3f::operator+=))
+		.addFunction("__sub", static_cast<v3f & (v3f::*)(const v3f & other)>(&v3f::operator-=))
+		.addMetaFunction("__unm", [](const v3f& other)->v3f {return v3f{ -other.x,-other.y, -other.z }; })
+		.addFunction("__eq", static_cast<bool (v3f::*)(const v3f & other) const>(&v3fExtention::operator==))
 		.addMetaFunction("__mul", &LuaScalarMult<v3f>)
-		.addMetaFunction("__div", LUA_FN(v3f, operator/, const v3f&, const float&))
-	
-		.addStaticFunction("Norm", LUA_FN(float, Norm, const v3f&))
-		.addStaticFunction("length2", LUA_FN(float, length2, const v3f&))
-		.addFunction("normalize", &v3f::normalize)
-		.addFunction("normalized", &v3f::Normalized)
-		.addFunction("copy", [](const v3f* v) -> v3f { return *v; })
-	
-		.addStaticFunction("Dot", LUA_FN(float, dot, const v3f&, const v3f&))
-		.addStaticFunction("Cross", LUA_FN(v3f, cross, const v3f&, const v3f&))*/
+		.addMetaFunction("__div", [](const v3f& other, float d)->v3f {return v3f{ other.x / d,other.y / d,other.z / d }; })
+		.addStaticFunction("Dot", LUA_FN(float, glm::dot, const v3f&, const v3f&))
+		.addStaticFunction("Cross", [](const v3f& first, const v3f& second)->v3f {return glm::cross(first, second); })
+		.addStaticFunction("Norm", LUA_FN(float, glm::length, const v3f&))
+		.addStaticFunction("length2", LUA_FN(float, glm::length2, const v3f&))
+		.addFunction("normalize", static_cast<v3f & (v3f::*)()>(&v3fExtention::normalize))
+		.addFunction("normalized", static_cast<v3f(v3f::*)() const>(&v3fExtention::normalized))
+		.addFunction("copy", static_cast<v3f & (v3f::*)(const v3f & other)>(&v3f::operator=))
 	
 		.endClass();
 	
@@ -915,24 +981,26 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
 		.addVariable("xyz", &v4f::x, true)
 		.addVariable("yzw", &v4f::y, true)
 	
-		/*.addMetaFunction("__add", LUA_FN(v4f, operator+, const v4f&, const v4f&))
-		.addMetaFunction("__sub", LUA_FN(v4f, operator-, const v4f&, const v4f&))
-		.addMetaFunction("__unm", LUA_FN(v4f, operator-, const v4f&))
-		.addMetaFunction("__eq", LUA_FN(bool, operator==, const v4f&, const v4f&))
+		.addFunction("__add", static_cast<v4f & (v4f::*)(const v4f & other)>(&v4f::operator+=))
+		.addFunction("__sub", static_cast<v4f & (v4f::*)(const v4f & other)>(&v4f::operator-=))
+		.addMetaFunction("__unm", [](const v4f& other)->v4f {return v4f{ -other.x,-other.y, -other.z, -other.w }; })
+		.addFunction("__eq", static_cast<bool (v4f::*)(const v4f & other) const>(&v4fExtention::operator==))
 		.addMetaFunction("__mul", &LuaScalarMult<v4f>)
-		.addMetaFunction("__div", LUA_FN(v4f, operator/, const v4f&, const float&))
-		.addStaticFunction("Dot", LUA_FN(float, dot, const v4f&, const v4f&))
-		//.addStaticFunction("Cross", LUA_FN(v4f, ::operator^, const v4f&, const v4f&))
-	.addStaticFunction("Norm", LUA_FN(float, length, length2, const v4f&))
-		.addFunction("normalize", &glm::normalize)
-		.addFunction("normalized", &glm::normalized)
-		.addFunction("copy", [](const v4f* v) -> v4f { return *v; })*/
+		.addMetaFunction("__div", [](const v4f& other, float d)->v4f {return v4f{ other.x / d,other.y / d,other.z / d,other.w / d }; })
+		.addStaticFunction("Dot", LUA_FN(float, glm::dot, const v4f&, const v4f&))
+		.addStaticFunction("Norm", LUA_FN(float, glm::length, const v4f&))
+		.addStaticFunction("length2", LUA_FN(float, glm::length2, const v4f&))
+		.addFunction("normalize", static_cast<v4f & (v4f::*)()>(&v4fExtention::normalize))
+		.addFunction("normalized", static_cast<v4f(v4f::*)() const>(&v4fExtention::normalized))
+		.addFunction("copy", static_cast<v4f & (v4f::*)(const v4f & other)>(&v4f::operator=))
+
 		.endClass();
 	
 	LuaBinding(L).beginClass<mat4>("mat4")
 		.addFactory([]() { mat4 result(1.0f); return result; })
 
-		/*.addVariable("XAxis", &mat4::XAxis)
+		// TODO
+		/*.addVariable("XAxis", &mat4:::XAxis)
 		.addVariable("YAxis", &mat4::YAxis)
 		.addVariable("ZAxis", &mat4::ZAxis)
 		.addVariable("Pos", &mat4::Pos)
