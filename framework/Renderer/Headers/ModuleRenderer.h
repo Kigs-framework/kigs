@@ -1111,8 +1111,7 @@ namespace Kigs
 				mDirtyMatrix |= (1 << mode);
 				mat4& m1 = mMatrixStack[mode].back();
 				mat4& m2 = *((mat4*)m);
-				mMatrixStack[mode].push_back();
-				mMatrixStack[mode].back()=m2*m1;
+				mMatrixStack[mode].push_back(m2 * m1);
 			}
 
 
