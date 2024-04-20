@@ -26,6 +26,9 @@ extern "C" void		JSDrawMultilineTextUTF16(const unsigned short* TextToWrite, int
 extern "C" void		JSInitImageData(void* pixels, int width, int height);
 #endif
 
+using namespace Kigs::Draw;
+using namespace Kigs;
+
 #define FREETYPE_SIZE_COEFF	0.65f
 
 int	GetFirstLeftBit(u32 n);

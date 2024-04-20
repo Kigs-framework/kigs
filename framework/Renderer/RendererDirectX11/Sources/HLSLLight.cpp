@@ -46,7 +46,7 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 	
 }
 
-bool API3DLight::PreRendering(RendererDX11 * renderer, Camera * cam, Point3D & camPos)
+bool API3DLight::PreRendering(RendererDX11 * renderer, Camera * cam, v3f & camPos)
 {
 	if (!mIsOn)
 		return false;
@@ -62,48 +62,47 @@ void API3DLight::PrepareLightInfo(LightStruct& light_data, Camera* cam)
 	if (!mIsOn)
 		return;
 
-	Point3D outP;
-	Vector3D outV;
+	v3f outP;
+	v3f outV;
 	SetupNodeIfNeeded();
-	const Matrix3x4& lMat = GetLocalToGlobal();
-	Point3D PosOffset(0, 0, 0);
-	lMat.TransformPoint(&PosOffset, &outP);
+	const mat4& lMat = GetLocalToGlobal();
+	v3f PosOffset(0, 0, 0);
+	transformPoint3(lMat ,PosOffset, outP);
 
 	switch (GetTypeOfLight())
 	{
 	case POINT_LIGHT:
 	{
 		PointLight light;
-		light.position.xyz = outP;
-		light.ambient.xyz = (v3f)mAmbientColor;
-		light.diffuse.xyz = (v3f)mDiffuseColor;
-		light.specular.xyz = (v3f)mSpecularColor;
-		light.attenuation.xyz = v3f(mConstAttenuation, mLinAttenuation, mQuadAttenuation);
+		light.position = v4f(outP,1.0f);
+		light.ambient = v4f(mAmbientColor,0.0);
+		light.diffuse = v4f(mDiffuseColor, 0.0);
+		light.specular = v4f(mSpecularColor, 0.0);
+		light.attenuation = v4f(mConstAttenuation, mLinAttenuation, mQuadAttenuation,0.0);
 		light_data.pointlights.push_back(light);
 		break;
 	}
 	case DIRECTIONAL_LIGHT:
 	{
 		DirLight light;
-		light.position.xyz = outP.Normalized();
-		light.ambient.xyz = (v3f)mAmbientColor;
-		light.diffuse.xyz = (v3f)mDiffuseColor;
-		light.specular.xyz = (v3f)mSpecularColor;
+		light.position = v4f(normalize(outP),1.0f);
+		light.ambient = v4f(mAmbientColor, 0.0);
+		light.diffuse = v4f(mDiffuseColor, 0.0);
+		light.specular = v4f(mSpecularColor, 0.0);
 		light_data.dirlights.push_back(light);
 		break;
 	}
 	case SPOT_LIGHT:
 	{
 		SpotLight light;
-		light.position.xyz = outP;
-		light.ambient.xyz = (v3f)mAmbientColor;
-		light.diffuse.xyz = (v3f)mDiffuseColor;
-		light.specular.xyz = (v3f)mSpecularColor;
+		light.position = v4f(outP, 1.0f);
+		light.ambient = v4f(mAmbientColor, 0.0);
+		light.diffuse = v4f(mDiffuseColor, 0.0);
+		light.specular = v4f(mSpecularColor, 0.0);
 		light.attenuationAndSpotExponent = v4f(mConstAttenuation, mLinAttenuation, mQuadAttenuation, mSpotAttenuation);
-		Vector3D dir(0.0f, 0.0f, -1.0f);
-		lMat.TransformVector((Vector3D*)&dir.x, &outV);
-		light.directionAndCutOff.xyz = outV;
-		light.directionAndCutOff.w = cosf(mSpotCutOff); // send cos directly
+		v3f dir(0.0f, 0.0f, -1.0f);
+		transformVector3(lMat,dir, outV);
+		light.directionAndCutOff = v4f(outV, cosf(mSpotCutOff));// send cos directly
 		light_data.spotlights.push_back(light);
 		break;
 	}
@@ -127,26 +126,26 @@ bool	API3DLight::Draw(TravState* state)
 	case 0:
 	case 1:
 	{
-		Point3D outP;
-		const Matrix3x4& lMat = GetFather()->GetLocalToGlobal();
-		Point3D* PosOffset = (Point3D*)myPosOffset.getVector();
+		v3f outP;
+		const mat4& lMat = GetFather()->GetLocalToGlobal();
+		v3f* PosOffset = (v3f*)myPosOffset.getVector();
 		lMat.TransformPoint(PosOffset, &outP);
-		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
+		dd::sphere(outP, v3f(1, 0, 0), 0.05);
 	}
 	break;
 	case 2:
 	{
-		Point3D outP;
-		Vector3D outDir;
-		const Matrix3x4& lMat = GetFather()->GetLocalToGlobal();
-		Point3D *PosOffset = (Point3D*)myPosOffset.getVector();
+		v3f outP;
+		v3f outDir;
+		const mat4& lMat = GetFather()->GetLocalToGlobal();
+		v3f *PosOffset = (v3f*)myPosOffset.getVector();
 		lMat.TransformPoint(PosOffset, &outP);
 
-		Vector3D *mDir = (Vector3D*)mySpotDirection.getVector();
+		v3f *mDir = (v3f*)mySpotDirection.getVector();
 		lMat.TransformVector(mDir, &outDir);
-		//dd::cone(outP, outDir*10, Vector3D(1, 0, 0),((1-mySpotCutOff)/PI)*100, 0);
-		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
-		dd::line(outP, outP + outDir, Vector3D(1, 0, 0));
+		//dd::cone(outP, outDir*10, v3f(1, 0, 0),((1-mySpotCutOff)/PI)*100, 0);
+		dd::sphere(outP, v3f(1, 0, 0), 0.05);
+		dd::line(outP, outP + outDir, v3f(1, 0, 0));
 	}
 	break;
 	}

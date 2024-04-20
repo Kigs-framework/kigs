@@ -39,7 +39,7 @@ namespace Kigs
 				API3DLight(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 			virtual ~API3DLight();
 
-			virtual bool PreRendering(RendererDX11* renderer, Camera* cam, Point3D& camPos);
+			virtual bool PreRendering(RendererDX11* renderer, Camera* cam, v3f& camPos);
 
 			void PrepareLightInfo(LightStruct& light_data, Camera* cam);
 
