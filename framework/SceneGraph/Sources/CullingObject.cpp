@@ -73,7 +73,7 @@ CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int&
 	if (currentBBox.m_Max.x < currentBBox.m_Min.x) // bbox not init ?
 		return all_out;
 
-	auto& g2l = node->GetGlobalToLocal();
+	const mat4& g2l = node->GetGlobalToLocal();
 	float dot1;
 
 	while (it != itend)
@@ -89,8 +89,8 @@ CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int&
 			}
 			else
 			{
-				normal = transformVector(g2l,it->mNormal);
-				origin = transformPoint(g2l,it->mOrigin);
+				normal = transformVector3(g2l,it->mNormal);
+				origin = transformPoint3(g2l,it->mOrigin);
 
 				d = origin.x*normal.x + origin.y*normal.y + origin.z*normal.z;
 			}

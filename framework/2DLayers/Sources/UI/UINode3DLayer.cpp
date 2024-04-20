@@ -179,8 +179,8 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 
 	//! transform Ray in local mesh coordinate system if needed				
 	const mat4& inverseMatrix = GetGlobalToLocal();
-	transformPoint(inverseMatrix ,pos);
-	transformVector(inverseMatrix ,dir);
+	pos = transformPoint3(inverseMatrix ,pos);
+	dir = transformVector3(inverseMatrix ,dir);
 
 	if (Maths::IntersectRayPlane(pos, dir, planePos, planeNorm, dist))
 	{
@@ -205,8 +205,8 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 		auto& l2g = GetLocalToGlobal();
 		pout.hit.HitPosition = pos + dir * dist;
 		pout.hit.HitNormal = planeNorm;
-		transformPoint(l2g ,pout.hit.HitPosition);
-		transformVector(l2g ,pout.hit.HitNormal);
+		pout.hit.HitPosition=transformPoint3(l2g ,pout.hit.HitPosition);
+		pout.hit.HitNormal=transformVector3(l2g ,pout.hit.HitNormal);
 		pout.hit.HitNode = this;
 		pout.hit.HitActor = mCollider.get();
 		//pout.hit.HitCollisionObject = (CollisionBaseObject*)mCollider.get();

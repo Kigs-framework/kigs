@@ -177,7 +177,7 @@ void	Node3D::localMove(const v3f& move)
 {
 	v3f pos = column(mTransform,3);
 	pos += move;
-	column(mTransform,3,v4f(pos,1.0f));
+	mTransform = column(mTransform,3,v4f(pos,1.0f));
 	setUserFlag(LocalToGlobalMatrixIsDirty | GlobalToLocalMatrixIsDirty | BoundingBoxIsDirty | GlobalBoundingBoxIsDirty);
 
 	PropagateDirtyFlagsToSons(this);
@@ -187,8 +187,8 @@ void	Node3D::localMove(const v3f& move)
 //! move global node position ( gpos = gmove + gpos )
 void	Node3D::globalMove(const v3f& move)
 {
-	v3f lmove=move;
-	transformVector(mGlobalToLocal,lmove);
+	v3f lmove;
+	lmove = transformVector3(mGlobalToLocal,move);
 	localMove(lmove);
 }
 
@@ -789,7 +789,7 @@ void Node3D::RecomputeLocalToGlobal()
 	for (int i = current_index - 1; i >= 0; --i)
 	{
 		nodes[i]->mLocalToGlobal = nodes[i]->mTransform;
-		nodes[i]->mLocalToGlobal *= father_local_to_global;
+		nodes[i]->mLocalToGlobal = father_local_to_global * nodes[i]->mLocalToGlobal;
 
 		const auto& l2g = nodes[i]->mLocalToGlobal;
 		float sx = 1.0f / (l2g[0][0] * l2g[0][0] + l2g[0][1] * l2g[0][1] + l2g[0][2] * l2g[0][2]);
@@ -830,7 +830,7 @@ void Node3D::RecomputeGlobalToLocal()
 
 	//! then compute inverse translation
 	v3f  invtrans(mLocalToGlobal[3][0], mLocalToGlobal[3][1], mLocalToGlobal[3][2]);
-	transformVector(mGlobalToLocal ,invtrans);
+	invtrans = transformVector3(mGlobalToLocal ,invtrans);
 
 	//! then set global to local translation
 	mGlobalToLocal[3][0] = -invtrans[0];
@@ -965,8 +965,8 @@ void Node3D::RecomputeBoundingBox()
 		mBBox.m_Max -= translation;
 
 		//! transform diagonal to compute diagonal in father coordinate system
-		transformVector(BBoxTransformMatrix,mBBox.m_Max);
-		transformPoint(mTransform,translation);
+		mBBox.m_Max=transformVector3(BBoxTransformMatrix,mBBox.m_Max);
+		translation=transformPoint3(mTransform,translation);
 
 		//! and translate computed bbox at its final position in father coordinate system
 		//translation+=mTransform.GetTranslation();
@@ -1009,9 +1009,9 @@ void Node3D::RecomputeGlobalBoundingBox()
 	mGlobalBBox.m_Max -= translation;
 
 	//! transform BBox diagonal vector by BBoxTransformMatrix
-	transformVector(BBoxTransformMatrix,mGlobalBBox.m_Max);
+	mGlobalBBox.m_Max=transformVector3(BBoxTransformMatrix,mGlobalBBox.m_Max);
 	//! transform local translation in global coordinates
-	transformPoint(mLocalToGlobal,translation);
+	translation=transformPoint3(mLocalToGlobal,translation);
 
 
 	//! min is -max in local coordinates
@@ -1075,7 +1075,7 @@ mat4 GetLocalLookAtPoint(Node3D* node, v3f global_point, bool force_up, v3f up_a
 	v3f view = normalize(global_point - v3f(column(node->GetLocalToGlobal(),3)));
 
 	auto g2l = node->getFather()->GetGlobalToLocal();
-	transformVector(g2l ,view);
+	view = transformVector3(g2l ,view);
 	view=normalize(view);
 
 	auto up = up_axis;

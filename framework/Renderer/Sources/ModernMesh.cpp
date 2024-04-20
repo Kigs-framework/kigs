@@ -1333,7 +1333,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 	{
 		v3f& v1 = (v3f&)*((v3f*)(vertexStart + vsize*i));
 		
-		transformVector(flipped,v1);
+		v1 = transformVector3(flipped,v1);
 	}
 
 	// flip normals
@@ -1346,7 +1346,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 		{
 			v3f& n1 = (v3f&)*((v3f*)(normalStart + vsize*i));
 
-			transformVector(flipped ,n1);
+			n1 = transformVector3(flipped ,n1);
 		}
 	}
 
@@ -1360,7 +1360,7 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 		{
 			v3f& t1 = (v3f&)*((v3f*)(tangentStart + vsize*i));
 
-			transformVector(flipped,t1);
+			t1 = transformVector3(flipped,t1);
 		}
 	}
 

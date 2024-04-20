@@ -61,7 +61,7 @@ void UI3DLinkedItem::Update(const Timer&  timer, void* addParam)
 		{
 			SP<Node3D>	currentnode = checkcurrentnode;
 			v3f toTransform(currentPos);
-			transformPoint(currentnode->GetLocalToGlobal(),toTransform, currentPos);
+			transformPoint3(currentnode->GetLocalToGlobal(),toTransform, currentPos);
 		}
 		SP<Camera>	currentCamera = checkcurrentCamera;
 

@@ -231,7 +231,7 @@ void MultiMesh::RecomputeBoundingBox()
 							n.x = *(signed char*)(normal+0) / 127.5f;
 							n.y = *(signed char*)(normal+1) / 127.5f;
 							n.z = *(signed char*)(normal+2) / 127.5f;
-							transformVector(mat,n);
+							n=transformVector3(mat,n);
 							n=normalize(n);
 							*(signed char*)(normal + 0) = n.x * 127.5f;
 							*(signed char*)(normal + 1) = n.y * 127.5f;
@@ -246,7 +246,7 @@ void MultiMesh::RecomputeBoundingBox()
 							n.x = *(signed char*)(tangent + 0) / 127.5f;
 							n.y = *(signed char*)(tangent + 1) / 127.5f;
 							n.z = *(signed char*)(tangent + 2) / 127.5f;
-							transformVector(mat, n);
+							n=transformVector3(mat, n);
 							n = normalize(n);
 							*(signed char*)(tangent + 0) = n.x * 127.5f;
 							*(signed char*)(tangent + 1) = n.y * 127.5f;

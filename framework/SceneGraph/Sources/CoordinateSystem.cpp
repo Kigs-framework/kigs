@@ -86,8 +86,6 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, CoordinateSystemNotifyUpdate)
 DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 {
 
-	// TODO
-	/*
 	if (!params.empty())
 	{
 		float angle;
@@ -95,8 +93,7 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		v3f axis;
 		params[1]->getValue(axis, this);
 
-		quat q;
-		q.SetAngAxis(axis, angle);
+		quat q = glm::angleAxis(angle,axis);
 
 		mat4	angAxis(q);
 
@@ -108,19 +105,24 @@ DEFINE_UPGRADOR_METHOD(CoordinateSystemUp, AngAxisRotate)
 		getValue("Position", pos);
 		getValue("Scale", scale);
 
-		mat4 matrix;
-		matrix.SetRotationXYZ(rot.x, rot.y, rot.z);
-		matrix.PreScale(scale, scale, scale);
-		matrix.SetTranslation(pos);
+		mat4 matrix = glm::eulerAngleXYX(rot.x, rot.y, rot.z);
+		matrix = glm::scale(matrix, v3f(scale, scale, scale));
+		
+		matrix = column(matrix,3,v4f(pos,1.0));
 
-		matrix.PostMultiply(angAxis);
+		matrix = angAxis * matrix;
 
-		matrix.GetPRS(pos, rot, scale);
+		v3f getscale,skew;
+		v4f persp;
+
+		glm::decompose(matrix, getscale, q, pos, skew, persp);
+
+		rot = glm::eulerAngles(q);
 
 		setValue("Rotation", rot);
 		setValue("Position", pos);
-		setValue("Scale", scale);
-	}*/
+		setValue("Scale", getscale[0]);
+	}
 	return false;
 }
 
@@ -253,8 +255,6 @@ void	PivotUp::Destroy(CoreModifiable* toDowngrade, bool toDowngradeDeleted)
 
 DEFINE_UPGRADOR_UPDATE(PivotUp)
 {
-	// TODO
-	/*
 	if (GetUpgrador()->mWasChanged)
 	{
 		bool isGlobal;
@@ -272,30 +272,29 @@ DEFINE_UPGRADOR_UPDATE(PivotUp)
 		if (isGlobal)
 		{
 			// move to local 
-			mGlobalToLocal.TransformPoint(&ppos);
-			mGlobalToLocal.TransformVector(&paxis);
+			ppos = transformPoint3(mGlobalToLocal,ppos);
+			paxis = transformVector3(mGlobalToLocal,paxis);
 		}
 
-		quat q;
-		q.SetAngAxis(paxis, pangle);
+		quat q = glm::angleAxis(pangle , paxis);
 
 		mat4 transform(q);
 
-		v3f originPos = matrix.GetTranslation();
-		matrix.SetTranslation({ 0,0,0 });
+		v3f originPos = column(matrix,3);
+		matrix = column(matrix,3,v4f{ 0.0,0.0,0.0,1.0 });
 
 		matrix = transform * matrix;
 
 		originPos -= ppos;
-		transform.TransformVector(&originPos);
+		originPos = transformVector3(transform,originPos);
 		originPos += ppos;
 
-		matrix.SetTranslation(originPos);
+		matrix = column(matrix, 3, v4f(originPos,1.0));
 
 		ChangeMatrix(matrix);
 
 		GetUpgrador()->mWasChanged = false;
-	}*/
+	}
 	return false;
 }
 

@@ -104,8 +104,8 @@ void Billboard3D::UpdateOrientation()
 	mFatherNode->SetupNodeIfNeeded();
 
 	//const mat4 &FatherMat = pFatherNode->GetLocalToGlobal();
-	transformVector(mFatherNode->GetGlobalToLocal() ,mHorizontalVector);
-	transformVector(mFatherNode->GetGlobalToLocal(),mVerticalVector);
+	mHorizontalVector = transformVector3(mFatherNode->GetGlobalToLocal() ,mHorizontalVector);
+	mVerticalVector = transformVector3(mFatherNode->GetGlobalToLocal(),mVerticalVector);
 	PrepareVertexBufferPos();
 }
 

@@ -242,6 +242,6 @@ void dd::local_bbox(const mat4& local_to_global, BBox bbox, ddVec3Param color, i
 {
 	v3f pts[8];
 	bbox.ConvertToPoint(pts);
-	transformPoints(local_to_global,pts, 8);
+	transformPoints3(local_to_global,pts, 8);
 	dd::box(pts, color, duration, depth_enabled);
 }

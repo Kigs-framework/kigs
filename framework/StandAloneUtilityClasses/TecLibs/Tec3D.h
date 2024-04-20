@@ -104,8 +104,8 @@ using v2u = glm::uvec2;
 using v3i = glm::ivec3;
 using v3u = glm::uvec3;
 
-using mat3 = glm::mat3x3;
-using mat4 = glm::mat4x4;
+using mat3 = glm::mat3;
+using mat4 = glm::mat4;
 
 using quat = glm::quat;
 
@@ -122,22 +122,18 @@ namespace glm
 {
 
 	// mat4 v3f
-	inline void transformPoint(const mat4& x, v3f& v)
-	{
-		v = x * v4f(v, 1.0);
-	}
 
-	inline void transformPoint(const mat4& x, const v3f& in, v3f& out)
+	inline void transformPoint3(const mat4& x, const v3f& in, v3f& out)
 	{
 		out = x * v4f(in, 1.0);
 	}
 
-	inline v3f transformedPoint(const mat4& x, const v3f  & v)
+	inline v3f transformPoint3(const mat4& x, const v3f  & v)
 	{
 		return x* v4f(v, 1.0);
 	}
 
-	inline void transformPoints(const mat4& x, v3f* v , size_t count)
+	inline void transformPoints3(const mat4& x, v3f* v , size_t count)
 	{
 		for (size_t i = 0; i < count; i++)
 		{
@@ -145,22 +141,17 @@ namespace glm
 		}
 	}
 
-	inline void transformVector(const mat4& x, v3f& v)
-	{
-		v = x * v4f(v, 0.0);
-	}
-
-	inline void transformVector(const mat4& x, const v3f& in, v3f& out)
+	inline void transformVector3(const mat4& x, const v3f& in, v3f& out)
 	{
 		out = x * v4f(in, 0.0);
 	}
 
-	inline v3f transformedVector(const mat4& x, const v3f  & v)
+	inline v3f transformVector3(const mat4& x, const v3f  & v)
 	{
 		return x * v4f(v, 0.0);
 	}
 
-	inline void transformVectors(const mat4& x, v3f* v, size_t count)
+	inline void transformVectors3(const mat4& x, v3f* v, size_t count)
 	{
 		for (size_t i = 0; i < count; i++)
 		{
@@ -189,22 +180,18 @@ namespace glm
 	}
 
 	// mat3 v2f
-	inline void transformPoint(const mat3& x, v2f& v)
-	{
-		v = x * v3f(v, 1.0);
-	}
 
-	inline void transformPoint(const mat3& x, const v2f& in, v2f& out)
+	inline void transformPoint2(const mat3& x, const v2f& in, v2f& out)
 	{
 		out = x * v3f(in, 1.0);
 	}
 
-	inline v3f transformPoint(const mat3& x, v2f const& v)
+	inline v3f transformPoint2(const mat3& x, v2f const& v)
 	{
 		return x * v3f(v, 1.0);
 	}
 
-	inline void transformPoints(const mat3& x, v2f* v, size_t count)
+	inline void transformPoints2(const mat3& x, v2f* v, size_t count)
 	{
 		for (size_t i = 0; i < count; i++)
 		{
@@ -212,17 +199,12 @@ namespace glm
 		}
 	}
 
-	inline void transformVector(const mat3& x, v2f& v)
-	{
-		v = x * v3f(v, 0.0);
-	}
-
-	inline v3f transformVector(const mat3& x, v2f const& v)
+	inline v3f transformVector2(const mat3& x, v2f const& v)
 	{
 		return x * v3f(v, 0.0);
 	}
 
-	inline void transformVectors(const mat3& x, v2f* v, size_t count)
+	inline void transformVectors2(const mat3& x, v2f* v, size_t count)
 	{
 		for (size_t i = 0; i < count; i++)
 		{

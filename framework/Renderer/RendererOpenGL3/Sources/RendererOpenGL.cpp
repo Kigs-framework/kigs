@@ -936,7 +936,7 @@ void RendererOpenGL::SendLightsInfo(TravState* travstate)
 	{
 		const mat4& lMatCam = cam->GetLocalToGlobal();
 		v3f outCam(0.0f, 0.0f, 0.0f);
-		transformPoint(lMatCam,outCam, lCamPos);
+		transformPoint3(lMatCam,outCam, lCamPos);
 	}
 
 	auto itr = travstate->mLights->begin();

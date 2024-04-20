@@ -109,8 +109,8 @@ void Octree::RecomputeBoundingBox()
 	mBBox.m_Max = mLocalBBox.m_Max;
 	mBBox.m_Max -= translation;
 
-	transformVector(BBoxTransformMatrix,mBBox.m_Max);
-	transformVector(mTransform ,translation);
+	mBBox.m_Max = transformVector3(BBoxTransformMatrix,mBBox.m_Max);
+	translation = transformVector3(mTransform ,translation);
 
 	translation += v3f(column(mTransform,3));
 
@@ -188,8 +188,8 @@ CullingObject::CULLING_RESULT  Octree::CullSubNodes(CullingObject* cullobj, Trav
 		current.mNormal = it->mNormal;
 
 		auto g2l = GetGlobalToLocal();
-		transformVector(g2l ,current.mNormal);
-		transformPoint(g2l, current.mOrigin);
+		current.mNormal=transformVector3(g2l ,current.mNormal);
+		current.mOrigin=transformPoint3(g2l, current.mOrigin);
 
 		if (current.mNormal.x < 0.0f)
 		{

@@ -23,7 +23,7 @@ void Light::InitModifiable()
 	{
 		v3f offset = getValue<v3f>("Offset");
 		auto m = GetLocal();
-		column(m,3,glm::vec4(offset,1.0f));
+		m=column(m,3,glm::vec4(offset,1.0f));
 		ChangeMatrix(m);
 		RemoveDynamicAttribute("Offset");
 	}

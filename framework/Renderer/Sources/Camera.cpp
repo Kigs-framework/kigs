@@ -207,7 +207,7 @@ bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::tou
 		pout.dir.x = 1.0f;
 		pout.dir.z = -pos2D.y*tt;
 		pout.dir.y = -pos2D.x*tt*aspect;
-		transformVector(GetLocalToGlobal() ,pout.dir);
+		pout.dir = transformVector3(GetLocalToGlobal() ,pout.dir);
 		pout.dir = normalize(pout.dir);
 
 		pout.origin.x = GetLocalToGlobal()[3][0];
@@ -272,15 +272,15 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	
 	n = { 1.0f,0.0f,0.0f };
 	o = { mNearPlane,0.0f,0.0f };
-	transformVector(l2g,n);
-	transformPoint(l2g,o);
+	n=transformVector3(l2g,n);
+	o = transformPoint3(l2g,o);
 	obj->InitPlane(0,n,o);
 	
 	// far plane
 	n = { -1.0f, 0.0f, 0.0f };
 	o = { mFarPlane,0.0f,0.0f };
-	transformVector(l2g ,n);
-	transformPoint(l2g ,o);
+	n = transformVector3(l2g ,n);
+	o = transformPoint3(l2g ,o);
 	obj->InitPlane(1,n,o);
 	
 	// down plane
@@ -289,13 +289,13 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	
 	n = { s,0.0f,c };
 	o = { 0.0f,0.0f,0.0f };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	obj->InitPlane(2,n,o);
 	
 	// up plane
 	n = { s,0.0f,-c };
-	transformVector(l2g, n);
+	n = transformVector3(l2g, n);
 	obj->InitPlane(3,n,o);
 	
 	// left plane
@@ -305,12 +305,12 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	c = cosf(hfov*0.5f);
 	
 	n = { s,-c,0.0f };
-	transformVector(l2g, n);
+	n = transformVector3(l2g, n);
 	obj->InitPlane(4,n,o);
 	
 	// right plane
 	n = { s,c,0.0f };
-	transformVector(l2g, n);
+	n = transformVector3(l2g, n);
 	obj->InitPlane(5,n,o);
 }
 
@@ -341,8 +341,8 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	// near plane
 	n = { 1.0f, 0.0f, 0.0f };
 	o = { mNearPlane, 0.0f, 0.0f };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 
 	result.Near.n = n;
 	result.Near.o = o;
@@ -350,8 +350,8 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	// far plane
 	n = { -1.0f, 0.0f, 0.0f };
 	o = { mFarPlane, 0.0f, 0.0f };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	result.Far.n = n;
 	result.Far.o = o;
 
@@ -361,14 +361,14 @@ Camera::FrustumPlanes Camera::GetFrustum()
 
 	n = { s, 0.0f, c };
 	o = { 0.0f, 0.0f, 0.0f };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	result.Down.n = n;
 	result.Down.o = o;
 
 	// up plane
 	n = { s, 0.0f, -c };
-	transformVector(l2g, n);
+	n = transformVector3(l2g, n);
 	result.Up.n = n;
 	result.Up.o = o;
 
@@ -379,13 +379,13 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	c = cosf(hfov*0.5f);
 
 	n = { s, -c, 0.0f };
-	transformVector(l2g, n);
+	n = transformVector3(l2g, n);
 	result.Left.n = n;
 	result.Left.o = o;
 
 	// right plane
 	n = { s, c, 0.0f };
-	transformVector(l2g, n);
+	n = transformVector3(l2g, n);
 	result.Right.n = n;
 	result.Right.o = o;
 	
@@ -411,7 +411,7 @@ void Camera::getRay(const float &ScreenX, const float &ScreenY, v3f &RayOrigin, 
 	RayOrigin.x = GetLocalToGlobal()[3][0];
 	RayOrigin.y = GetLocalToGlobal()[3][1];
 	RayOrigin.z = GetLocalToGlobal()[3][2];
-	transformVector(GetLocalToGlobal(), RayDirection);
+	RayDirection = transformVector3(GetLocalToGlobal(), RayDirection);
 
 	RayDirection=normalize(RayDirection);
 }
@@ -485,7 +485,7 @@ bool Camera::Project(float &ScreenX, float &ScreenY, v3f Pt)
 	// so if Pt is just in front of the camera, localPt.x > 0
 	// if Pt is above the camera, localPt.z > 0	
 	v3f localPt = Pt;
-	transformPoint(GetGlobalToLocal(), localPt);
+	localPt = transformPoint3(GetGlobalToLocal(), localPt);
 
 	v4f result;
 
@@ -824,16 +824,15 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 				v3f	normalV;
 				normalV=normalize(cross(currentDataStruct->mStartV, currentV));
 	
-				transformVector(currentDataStruct->mStartMatrix,normalV);
+				normalV = transformVector3(currentDataStruct->mStartMatrix,normalV);
 
 				// quaternion transforming mStartV to currentV
 				v3f startV = currentDataStruct->mStartV;
 
-				transformVector(currentDataStruct->mStartMatrix,startV);
-				transformVector(currentDataStruct->mStartMatrix,currentV);
+				startV = transformVector3(currentDataStruct->mStartMatrix,startV);
+				currentV = transformVector3(currentDataStruct->mStartMatrix,currentV);
 
 				
-
 				v3f a = cross(currentV, startV);
 				float w = sqrtf(length2(currentV) * length2(startV)) + dot(currentV, startV);
 				quat	q(a.x,a.y,a.z, w);

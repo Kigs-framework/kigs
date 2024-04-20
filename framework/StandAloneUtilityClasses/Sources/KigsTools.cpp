@@ -1707,8 +1707,8 @@ void CustomAttributeEditor(CoreModifiable* item)
 				auto bbox = n->as<Node3D>()->GetLocalBoundingBox();
 				auto g2l = n->as<Node3D>()->GetGlobalToLocal();
 
-				auto origin_local = transformedPoint(g2l, origin_global);
-				auto direction_local = transformedVector(g2l,direction_global);
+				auto origin_local = transformPoint3(g2l, origin_global);
+				auto direction_local = transformVector3(g2l,direction_global);
 				double dist = FLT_MAX;
 				v3f intersection;
 				v3f normal;

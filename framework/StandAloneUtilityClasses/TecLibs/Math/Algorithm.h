@@ -145,24 +145,24 @@ namespace Kigs
 		inline mat4 orthonormalize_matrix(mat4 m, orthonormalize_keep_axis keep_axis = orthonormalize_keep_axis::y)
 		{
 
-			column(m, 0, v4f(normalize(v3f(column(m ,0))), 0.0f));
-			column(m, 1, v4f(normalize(v3f(column(m, 1))), 0.0f));
-			column(m, 2, v4f(normalize(v3f(column(m, 2))), 0.0f));
+			m = column(m, 0, v4f(normalize(v3f(column(m ,0))), 0.0f));
+			m = column(m, 1, v4f(normalize(v3f(column(m, 1))), 0.0f));
+			m = column(m, 2, v4f(normalize(v3f(column(m, 2))), 0.0f));
 
 			if (keep_axis == orthonormalize_keep_axis::x)
 			{
-				column(m, 1, v4f(normalize(cross(v3f(column(m, 2)) , v3f(column(m, 0)))), 0.0f));
-				column(m, 2, v4f(normalize(cross(v3f(column(m, 0)) , v3f(column(m, 1)))), 0.0f));
+				m = column(m, 1, v4f(normalize(cross(v3f(column(m, 2)) , v3f(column(m, 0)))), 0.0f));
+				m = column(m, 2, v4f(normalize(cross(v3f(column(m, 0)) , v3f(column(m, 1)))), 0.0f));
 			}
 			else if (keep_axis == orthonormalize_keep_axis::y)
 			{
-				column(m, 2, v4f(normalize(cross(v3f(column(m, 0)) , v3f(column(m, 1)))), 0.0f));
-				column(m, 0, v4f(normalize(cross(v3f(column(m, 1)) , v3f(column(m, 2)))), 0.0f));
+				m = column(m, 2, v4f(normalize(cross(v3f(column(m, 0)) , v3f(column(m, 1)))), 0.0f));
+				m = column(m, 0, v4f(normalize(cross(v3f(column(m, 1)) , v3f(column(m, 2)))), 0.0f));
 			}
 			else
 			{
-				column(m, 0, v4f(normalize(cross(v3f(column(m, 1)) , v3f(column(m, 2)))), 0.0f));
-				column(m, 1, v4f(normalize(cross(v3f(column(m, 2)) , v3f(column(m, 0)))), 0.0f));
+				m = column(m, 0, v4f(normalize(cross(v3f(column(m, 1)) , v3f(column(m, 2)))), 0.0f));
+				m = column(m, 1, v4f(normalize(cross(v3f(column(m, 2)) , v3f(column(m, 0)))), 0.0f));
 			}
 			return m;
 		}

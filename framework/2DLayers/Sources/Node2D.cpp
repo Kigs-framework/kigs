@@ -294,7 +294,7 @@ void Node2D::ComputeMatrices()
 
 	v2f	Translate(mAnchor[0] * mRealSize.x, mAnchor[1] * mRealSize.y);
 
-	transformPoint(mLocalTransformMatrix, Translate);
+	Translate=transformPoint2(mLocalTransformMatrix, Translate);
 
 	if (mParent) // Dock on parent UI
 	{

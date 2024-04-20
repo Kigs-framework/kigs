@@ -51,43 +51,43 @@ void  OpenGLCameraOrtho::InitCullingObject(CullingObject* obj)
 	// near plane
 	n = { 1,0,0 };
 	o= {mNearPlane,0,0 };
-	transformVector(l2g ,n);
-	transformPoint(l2g ,o);
+	n=transformVector3(l2g ,n);
+	o=transformPoint3(l2g ,o);
 	obj->InitPlane(0,n,o);
 
 	// far plane
 	n= {-1,0,0 };
 	o= {mFarPlane,0,0 };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	obj->InitPlane(1,n,o);
   
 	// down plane
 	n= {0,0,1 };
 	o= {0,0,-size2 };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	obj->InitPlane(2,n,o);
 
 	// up plane
 	n= {0,0,-1 };
 	o= {0,0,size2 };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	obj->InitPlane(3,n,o);
 
 	// left plane
 	n= {0,1,0 };
 	o= {0,-size2*aspect,0 };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	obj->InitPlane(4,n,o);
 
 	// right plane
 	n= {0,-1,0 };
 	o= {0,size2*aspect,0 };
-	transformVector(l2g, n);
-	transformPoint(l2g, o);
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	obj->InitPlane(5,n,o);
 }
 
@@ -107,7 +107,7 @@ void OpenGLCameraOrtho::getRay(const float &ScreenX, const float &ScreenY, v3f &
 	RayOrigin.x = 0.0f;
 	RayOrigin.y = (ScreenX-0.5f)* mSize*aspect;
 	RayOrigin.z = (ScreenY-0.5f)* mSize;
-	transformPoint(GetLocalToGlobal() ,RayOrigin);
+	RayOrigin=transformPoint3(GetLocalToGlobal() ,RayOrigin);
 
 	RayDirection = GetGlobalViewVector();
 }

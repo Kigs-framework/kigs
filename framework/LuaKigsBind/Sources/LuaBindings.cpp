@@ -1050,10 +1050,10 @@ void Kigs::Lua::setup_bindings(lua_State* lua)
    .addStaticFunction("length2", LUA_FN(float, length2, const mat4&))
    .addStaticFunction("Trace", LUA_FN(float, Trace, const mat4&))
    */
-	.addFunction("transformPoint", [](const mat4* m, v3f* v) { transformPoint(*m,*v); })
-		.addFunction("transformPoints", [](const mat4* m, const std::vector<v3f*> l) { for (auto v : l) transformPoint(*m,*v); })
-		.addFunction("transformVector", [](const mat4* m, v3f* v) { transformVector(*m,*v); })
-		.addFunction("transformVectors", [](const mat4* m, const std::vector<v3f*> l) { for (auto v : l) transformVector(*m,*v); })
+	.addFunction("transformPoint", [](const mat4* m, v3f* v) { *v = transformPoint3(*m,*v); })
+		.addFunction("transformPoints", [](const mat4* m, const std::vector<v3f*> l) { for (auto v : l)  *v=transformPoint3(*m,*v); })
+		.addFunction("transformVector", [](const mat4* m, v3f* v) { *v=transformVector3(*m,*v); })
+		.addFunction("transformVectors", [](const mat4* m, const std::vector<v3f*> l) { for (auto v : l) *v=transformVector3(*m,*v); })
 	
 		.addFunction("copy", [](const mat4* m) -> mat4 { return *m; })
 	

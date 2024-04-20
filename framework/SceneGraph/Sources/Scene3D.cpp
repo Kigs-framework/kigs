@@ -384,8 +384,8 @@ void Scene3D::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 				
 				auto g2l = param.toSort[i]->as<Node3D>()->GetGlobalToLocal();
 
-				transformPoint(g2l,origin_local);
-				transformVector(g2l,direction_local);
+				origin_local=transformPoint3(g2l,origin_local);
+				direction_local=transformVector3(g2l,direction_local);
 
 				double distance = DBL_MAX;
 				v3f intersection= bbox_local.Center();
@@ -394,11 +394,9 @@ void Scene3D::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 
 				Maths::IntersectionRayBBox(origin_local, direction_local, bbox_local.m_Min, bbox_local.m_Max, intersection, normal, distance);
 
-				transformPoint(param.toSort[i]->as<Node3D>()->GetLocalToGlobal(), intersection);
-
+				intersection = transformPoint3(param.toSort[i]->as<Node3D>()->GetLocalToGlobal(), intersection);
 				
 				dir = intersection - cam_pos;
-				
 
 				auto d = length2(dir);
 				if (dot(dir, cam_view) < 0)

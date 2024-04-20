@@ -127,13 +127,13 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	targetAxis1 =targetpos;
 	targetAxis1 -= v3f(column(GetLocalToGlobal(),3));
 	// now in father local coordinates
-	transformVector(getFather()->GetGlobalToLocal(),targetAxis1);
+	targetAxis1 = transformVector3(getFather()->GetGlobalToLocal(),targetAxis1);
 	targetAxis1 = normalize(targetAxis1);
 
 	// get global targetAxis2
 	GetUpgrador()->mPseudoConstantAxisDir->getValue(targetAxis2, this);
 	// and transform it to father local coordinates
-	transformVector(getFather()->GetGlobalToLocal(),targetAxis2);
+	targetAxis2 = transformVector3(getFather()->GetGlobalToLocal(),targetAxis2);
 	targetAxis2 = normalize(targetAxis2);
 
 	// if constant axis and target vector are too near, use mLastValidUpAxis
@@ -142,7 +142,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	if (length2(tstCross) < 0.1f)
 	{
 		targetAxis2 = GetUpgrador()->mLastValidUpAxis;
-		transformVector(getFather()->GetGlobalToLocal(),targetAxis2);
+		targetAxis2 = transformVector3(getFather()->GetGlobalToLocal(),targetAxis2);
 		targetAxis2 = normalize(targetAxis2);
 	}
 
@@ -153,21 +153,21 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	targetAxis2=cross(targetAxis3, targetAxis1);
 
 	mat3	tm1;
-	column(tm1, 0, targetAxis1);
-	column(tm1, 1, targetAxis2);
-	column(tm1, 2, targetAxis3);
+	tm1 = column(tm1, 0, targetAxis1);
+	tm1 = column(tm1, 1, targetAxis2);
+	tm1 = column(tm1, 2, targetAxis3);
 
 	mat3	tm2;
-	column(tm2, 0, axis1);
-	column(tm2, 1, axis2);
-	column(tm2, 2, axis3);
+	tm2 = column(tm2, 0, axis1);
+	tm2 = column(tm2, 1, axis2);
+	tm2 = column(tm2, 2, axis3);
 
 	tm2 = transpose(tm2);
 
 	mat3 result(tm1 * tm2);
 	
 	mat4	targetm(result);
-	column(targetm, 3, column(mTransform,3));
+	targetm = column(targetm, 3, column(mTransform,3));
 
 	ChangeMatrix(targetm);
 

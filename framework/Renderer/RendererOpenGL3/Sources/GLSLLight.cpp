@@ -176,7 +176,7 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, v3f & cam
 	SetupNodeIfNeeded();
 	const mat4& lMat = GetLocalToGlobal();
 
-	transformPoint(lMat,outP);
+	outP=transformPoint3(lMat,outP);
 
 	if (GetTypeOfLight() == DIRECTIONAL_LIGHT) // for directional light, position gives direction as a normal vector
 	{
@@ -188,7 +188,7 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, v3f & cam
 	{
 		// spot direction is minus z axis
 		v3f outV(0.0f, 0.0f, -1.0f);
-		transformVector(lMat,outV);
+		outV = transformVector3(lMat,outV);
 		static_cast<API3DUniformFloat3*>(mSpotDirUniform.get())->SetValue(&outV.x);
 	}
 
