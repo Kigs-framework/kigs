@@ -324,7 +324,7 @@ void Node2D::ComputeMatrices()
 
 	if (mParent)
 	{
-		mGlobalTransformMatrix *= mParent->mGlobalTransformMatrix;
+		mGlobalTransformMatrix = mParent->mGlobalTransformMatrix * mGlobalTransformMatrix;
 		if (mParent && GetNodeFlag(Node2D_SizeChanged) && mParent->isSubType(UILayout::mClassID))
 			static_cast<UILayout*>(mParent)->NeedRecomputeLayout();
 	}
