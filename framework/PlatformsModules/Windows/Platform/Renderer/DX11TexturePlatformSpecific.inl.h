@@ -12,7 +12,7 @@ namespace Kigs
 			return true;
 		}
 
-		bool	DX11Texture::UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const Point2DI& bitmapSize)
+		bool	DX11Texture::UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const v2i& bitmapSize)
 		{
 			RendererDX11* renderer = static_cast<RendererDX11*>(ModuleRenderer::mTheGlobalRenderer);
 			auto pd3dDevice = renderer->getDXInstance()->mDevice.Get(); // Don't forget to initialize this

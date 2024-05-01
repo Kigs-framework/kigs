@@ -149,7 +149,7 @@ namespace Kigs
 
 				if (!mTexture)
 				{
-					mSize.Set(0.0f, 0.0f);
+					mSize = { 0.0f, 0.0f };
 				}
 			}
 
@@ -158,7 +158,7 @@ namespace Kigs
 				return mTexture;
 			}
 
-			const Matrix4x4& getUVTexture() const
+			const mat4& getUVTexture() const
 			{
 				return mUVTexture;
 			}
@@ -192,7 +192,7 @@ namespace Kigs
 
 			v2f mSize = { 0.0f,0.0f };
 
-			Matrix4x4	mUVTexture;
+			mat4	mUVTexture;
 
 			// return true if something changed
 			bool	initFromSpriteSheet(const std::string& jsonfilename);

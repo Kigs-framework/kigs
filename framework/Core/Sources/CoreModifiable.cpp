@@ -19,6 +19,7 @@
 #include "XMLNode.h"
 #include "XMLAttribute.h"
 #include "CoreModifiableTemplateImport.h"
+#include "CoreItemOperator.h"
 
 #include "AttributePacking.h"
 #include "JSonFileParser.h"
@@ -37,6 +38,7 @@
 
 #include "CorePackage.h"
 
+using namespace Kigs;
 using namespace Kigs::Core;
 using namespace Kigs::File;
 
@@ -769,13 +771,13 @@ bool CoreModifiable::SimpleCallWithCoreItemParams(KigsID methodNameID, const Cor
 			switch (p->size())
 			{
 			case 2:
-				attr << (Point2D)*p;
+				attr << (v2f)*p;
 				break;
 			case 3:
-				attr << (Point3D)*p;
+				attr << (v3f)*p;
 				break;
 			case 4:
-				attr << (Vector4D)*p;
+				attr << (v4f)*p;
 				break;
 			default:
 				KIGS_WARNING("bad params for calls from xml", 2);
@@ -3005,25 +3007,25 @@ void	CoreModifiable::EvalAttribute(std::string& attr,CoreModifiable* owner, Core
 			size_t arraySize = destattr->getNbArrayElements();
 			if (arraySize == 2)
 			{
-				ItemToEval = CoreItemOperator<Point2D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				ItemToEval = CoreItemOperator<v2f>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
 
-				Point2D result((Point2D)*ItemToEval);
+				v2f result((v2f)*ItemToEval);
 				char resultBuffer[128];
 				sprintf(resultBuffer, "[%f,%f]", result.x, result.y);
 				attr = resultBuffer;
 			}
 			else if (arraySize == 3)
 			{
-				ItemToEval = CoreItemOperator<Point3D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-				Point3D result((Point3D)*ItemToEval);
+				ItemToEval = CoreItemOperator<v3f>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				v3f result((v3f)*ItemToEval);
 				char resultBuffer[128];
 				sprintf(resultBuffer, "[%f,%f,%f]", result.x, result.y,result.z);
 				attr = resultBuffer;
 			}
 			else if (arraySize == 4)
 			{
-				ItemToEval = CoreItemOperator<Vector4D>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
-				Vector4D result(ItemToEval->operator Vector4D());
+				ItemToEval = CoreItemOperator<v4f>::Construct(toeval, owner, KigsCore::Instance()->GetDefaultCoreItemOperatorConstructMap());
+				v4f result(ItemToEval->operator v4f());
 				char resultBuffer[200];
 				sprintf(resultBuffer, "[%f,%f,%f,%f]", result.x, result.y, result.z,result.w);
 				attr = resultBuffer;

@@ -39,6 +39,6 @@ void SkyBox::InitModifiable()
 	mTexture->setValue("TextureType",Texture::TEXTURE_CUBE_MAP);
 	mTexture->Init();
 
-	mBBoxMin.Set((-FLT_MAX), (-FLT_MAX), (-FLT_MAX)); 
-	mBBoxMax.Set(FLT_MAX, FLT_MAX, FLT_MAX);
+	mBBoxMin = v3f((-FLT_MAX), (-FLT_MAX), (-FLT_MAX));
+	mBBoxMax = v3f(FLT_MAX, FLT_MAX, FLT_MAX);
 }

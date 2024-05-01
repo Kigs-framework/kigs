@@ -256,7 +256,7 @@ void API3DUniformFloat3::NotifyUpdate(const unsigned int labelid)
 
 void API3DUniformFloat3::Normalize()
 {
-	mValue.Normalize();
+	mValue = normalize(mValue);
 }
 
 void	API3DUniformFloat3::Activate(UniformList* ul)
@@ -608,18 +608,18 @@ void	API3DUniformMatrixArray::NotifyUpdate(const unsigned int  labelid)
 
 	if(labelid == KigsID("ArraySize")._id)
 	{
-		mCBBufferNeededSize = mArraySize * sizeof(Matrix4x4);
+		mCBBufferNeededSize = mArraySize * sizeof(mat4);
 
 		if (mMatrixArrayPointer)
 		{
 			delete[] mMatrixArrayPointer;
 		}
-		mMatrixArrayPointer = new Matrix4x4[mArraySize];
+		mMatrixArrayPointer = new mat4[mArraySize];
 		for (int i = 0; i < mArraySize; i++)
 		{
-			mMatrixArrayPointer[i].SetIdentity();
+			mMatrixArrayPointer[i] = mat4(1.0f);
 		}
-		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(Matrix4x4), false);
+		mMatrixArray.SetBuffer(mMatrixArrayPointer, mArraySize * sizeof(mat4), false);
 	}
 	
 }
@@ -632,7 +632,7 @@ void	API3DUniformMatrixArray::Activate(UniformList* ul)
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	device->mDeviceContext->Map(mCBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, &((mMatrixArrayPointer[0]).e[0][0]), mArraySize * sizeof(Matrix4x4));
+	memcpy(mappedResource.pData, &((mMatrixArrayPointer[0])[0][0]), mArraySize * sizeof(mat4));
 	device->mDeviceContext->Unmap(mCBuffer, 0);
 
 	if (ul->mLocation != 0xffffffff) device->mDeviceContext->VSSetConstantBuffers(ul->mLocation, 1, &mCBuffer);

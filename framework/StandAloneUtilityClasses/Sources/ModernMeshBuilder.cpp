@@ -249,7 +249,7 @@ void	ModernMeshBuilder::OptimiseForCache()
 		// for each triangle, score is the minimum value for each vertice index
 		SortTriangle toAdd;
 		toAdd.Index = i;
-		toAdd.Score = MIN(MIN(triangleArray[i].indices[0], triangleArray[i].indices[1]), triangleArray[i].indices[2]);
+		toAdd.Score = std::min(std::min(triangleArray[i].indices[0], triangleArray[i].indices[1]), triangleArray[i].indices[2]);
 
 		sortedTriangleList.push_back(toAdd);
 
@@ -461,7 +461,7 @@ SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* verti
 			v3f* vertexReader = (v3f*)vertices;
 				
 			memset(nArray, 0, sizeof(v3f)*vertex_count);
-			Vector3D N;
+			v3f N;
 
 			auto calcNormal = [&](u32 a, u32 b, u32 c)
 			{
@@ -469,8 +469,7 @@ SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* verti
 				v3f v2 = vertexReader[b];
 				v3f v3 = vertexReader[c];
 
-				N.CrossProduct(v2 - v1, v3 - v1);
-				N.Normalize();
+				N=normalize(cross(v2 - v1, v3 - v1));
 
 				nArray[a] += N;
 				nArray[b] += N;
@@ -512,7 +511,7 @@ SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* verti
 		}
 		if (mVertexArrayMask & ModuleRenderer::NORMAL_ARRAY_MASK)
 		{
-			auto n = (normals + index)->Normalized();
+			auto n = normalize(*(normals + index));
 			n.x = clamp(n.x, -1.0f, 1.0f);
 			n.y = clamp(n.y, -1.0f, 1.0f);
 			n.z = clamp(n.z, -1.0f, 1.0f);
@@ -569,7 +568,7 @@ SP<ModernMeshItemGroup> ModernMeshBuilder::EndGroup(int vertex_count, v3f* verti
 SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCount, void * index, int indexCount)
 {
 	KIGS_WARNING("Deprecated EngGroup function", 3);
-	Vector3D*	nArray = nullptr;
+	v3f*	nArray = nullptr;
 
 	char tmp[32];
 	sprintf(tmp, "group%d", mGroupCount++);
@@ -582,20 +581,19 @@ SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCou
 		//compute normal if needed
 		if (mVertexArrayMask & ModuleRenderer::NORMAL_ARRAY_MASK)
 		{
-			Vector3D* vertexReader = (Vector3D*)vertex;
+			v3f* vertexReader = (v3f*)vertex;
 
-			nArray = new Vector3D[vertexCount];
-			memset(nArray, 0, sizeof(Vector3D)*vertexCount);
-			Vector3D N;
+			nArray = new v3f[vertexCount];
+			memset(nArray, 0, sizeof(v3f)*vertexCount);
+			v3f N;
 
 			auto calcNormal = [&](int a, int b, int c)
 			{
-				Vector3D v1 = vertexReader[a];
-				Vector3D v2 = vertexReader[b];
-				Vector3D v3 = vertexReader[c];
+				v3f v1 = vertexReader[a];
+				v3f v2 = vertexReader[b];
+				v3f v3 = vertexReader[c];
 
-				N.CrossProduct(v2 - v1, v3 - v1);
-				N.Normalize();
+				N=normalize(cross(v2 - v1, v3 - v1));
 
 				nArray[a] += N;
 				nArray[b] += N;
@@ -664,7 +662,7 @@ SP<ModernMeshItemGroup>	ModernMeshBuilder::EndGroup(void * vertex, int vertexCou
 			// write normal (3 unsigned char + 1 char unused)
 			if (mVertexArrayMask & ModuleRenderer::NORMAL_ARRAY_MASK)
 			{
-				nArray[index].Normalize();
+				nArray[index]=normalize(nArray[index]);
 				writer[NormalPos] = (signed char)(nArray[index].x*127.5f);
 				writer[NormalPos+1] = (signed char)(nArray[index].y*127.5f);
 				writer[NormalPos+2] = (signed char)(nArray[index].z*127.5f);
@@ -913,12 +911,12 @@ void ModernMeshBuilder::SnapToGridAndMerge()
 
 
 	GridSize old_gs;
-	old_gs.pos = pow(10, (int)(log10(Norm(mCurrentBBox.m_Min - mCurrentBBox.m_Max) / 10000) - 0.5f));
+	old_gs.pos = pow(10, (int)(log10(length(mCurrentBBox.m_Min - mCurrentBBox.m_Max) / 10000) - 0.5f));
 
 	for (auto bbox : mSectionsBBox)
 	{
 		GridSize gs;
-		gs.pos = pow(10, (int)(log10(Norm(bbox.m_Min - bbox.m_Max) / 10000) - 0.5f));
+		gs.pos = pow(10, (int)(log10(length(bbox.m_Min - bbox.m_Max) / 10000) - 0.5f));
 		gs.uv = 0.001f;
 		sections_grid_sizes.push_back(gs);
 	}
@@ -967,8 +965,8 @@ void ModernMeshBuilder::SnapToGridAndMerge()
 				if ((flags[j] & 1) == 0)
 				{
 					v3f pj = *GetVertexComp<v3f>(mVertexArray[j], startvertexpos);
-					//if (NormSquare(pi - pj) <= current_grid_size.pos)
-					if (NormSquare(pi - pj) <= FLT_EPSILON)
+					//if (length2(pi - pj) <= current_grid_size.pos)
+					if (length2(pi - pj) <= FLT_EPSILON)
 					{
 						auto cnj = GetVertexComp<signed char>(mVertexArray[j], startnormalpos);
 						v3f nj{ *cnj / 127.5f, *(cnj + 1) / 127.5f, *(cnj + 2) / 127.5f };
@@ -979,13 +977,13 @@ void ModernMeshBuilder::SnapToGridAndMerge()
 				}
 			}
 
-			average_n.Normalize();
+			average_n=normalize(average_n);
 
 			for (int s1 = 0; s1 < shared.size(); ++s1)
 			{
 				for (int s2 = s1+1; s2 < shared.size(); ++s2)
 				{
-					if (Dot(shared[s1].normal, shared[s2].normal) > threshold)
+					if (dot(shared[s1].normal, shared[s2].normal) > threshold)
 					{
 						shared[s1].merge_mask |= (1 << s2);
 						shared[s2].merge_mask |= (1 << s1);
@@ -1010,7 +1008,7 @@ void ModernMeshBuilder::SnapToGridAndMerge()
 					}
 					if (count >= 2)
 					{
-						true_average.Normalize();
+						true_average=normalize(true_average);
 						for (int s2 = s1; s2 < shared.size(); ++s2)
 						{
 							if (mask == shared[s2].merge_mask)
@@ -1172,8 +1170,7 @@ void ModernMeshBuilder::GenerateNormals()
 		v3f* v2 = (v3f*)(startvertex2 + startvertexpos);
 
 		v3f N;
-		N.CrossProduct(*v1 - *v0, *v2 - *v0);
-		N.Normalize();
+		N=normalize(cross(*v1 - *v0, *v2 - *v0));
 
 		normals[tri->indices[0]] += N;
 		normals[tri->indices[1]] += N;
@@ -1182,7 +1179,7 @@ void ModernMeshBuilder::GenerateNormals()
 
 	for (auto i = 0; i < normals.size(); ++i)
 	{
-		auto n = normals[i].Normalized();
+		auto n = normalize(normals[i]);
 
 		*((signed char*)mVertexArray[i] + startnormalpos + 0) = (signed char)(n.x * 127.5f);
 		*((signed char*)mVertexArray[i] + startnormalpos + 1) = (signed char)(n.y * 127.5f);
@@ -1261,14 +1258,14 @@ void ModernMeshBuilder::GenerateTangents()
 	{
 		auto v = mVertexArray[i];
 		auto cn = GetVertexComp<unsigned char>(v, startnormalpos);
-		Vector3D n(((float)(*cn))*(2.0f / 255.0f), ((float)(*(cn + 1)))*(2.0f / 255.0f), ((float)(*(cn + 2)))*(2.0f / 255.0f));
+		v3f n(((float)(*cn))*(2.0f / 255.0f), ((float)(*(cn + 1)))*(2.0f / 255.0f), ((float)(*(cn + 2)))*(2.0f / 255.0f));
 
 		auto ct = GetVertexComp<unsigned char>(v, starttangentpos);
 
-		auto t = tangents[i].Normalized();
+		auto t = normalize(tangents[i]);
 
-		v3f t1 = (n ^ t).Normalized();
-		t = (t1 ^ n).Normalized();
+		v3f t1 = normalize(cross(n , t));
+		t = normalize(cross(t1 , n));
 		
 		*(signed char*)(ct + 0) = (signed char)(t.x * 127.5f);
 		*(signed char*)(ct + 1) = (signed char)(t.y * 127.5f);

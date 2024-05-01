@@ -26,7 +26,7 @@ namespace Kigs
 			~DX11CameraOrtho() override;
 
 			void	InitCullingObject(CullingObject* obj) override;
-			void	getRay(const float& ScreenX, const float& ScreenY, Point3D& RayOrigin, Vector3D& RayDirection) override;
+			void	getRay(const float& ScreenX, const float& ScreenY, v3f& RayOrigin, v3f& RayDirection) override;
 
 		protected:
 			bool ProtectedSetActive(TravState* state)override;

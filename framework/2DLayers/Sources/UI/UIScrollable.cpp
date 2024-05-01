@@ -120,7 +120,7 @@ bool UIScrollable::ManageScrollEvent(Input::ScrollEvent& scroll_event)
 {
 	if (scroll_event.state == Input::StatePossible)
 	{
-		if (CanInteract(scroll_event.position.xy))
+		if (CanInteract(v2f(scroll_event.position)))
 		{
 			//*scroll_event.swallow_mask = 0xFFFFFFFF;
 			return true;
@@ -139,7 +139,7 @@ bool UIScrollable::ManageScrollEvent(Input::ScrollEvent& scroll_event)
 	if (scroll_event.state == Input::StateChanged)
 	{
 		//v2f currentOffset = maindir.xy*offset;
-		v2f currentOffset = scroll_event.delta.xy / (scroll_event.interaction ? 8.0f : 1.0f);
+		v2f currentOffset = v2f(scroll_event.delta) / (scroll_event.interaction ? 8.0f : 1.0f);
 
 		if (!mVerticalScroll)
 			currentOffset.y = 0;
@@ -156,7 +156,7 @@ bool UIScrollable::ManageScrollEvent(Input::ScrollEvent& scroll_event)
 
 	if (scroll_event.state == Input::StateEnded)
 	{
-		mThrowSpeed = mThrowSpeedMult*scroll_event.speed.xy;
+		mThrowSpeed = v2f(mThrowSpeedMult*scroll_event.speed);
 		if (!mVerticalScroll)
 			mThrowSpeed.y = 0;
 		if (!mHorizontalScroll)

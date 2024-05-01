@@ -567,7 +567,7 @@ void DataDrivenBaseApplication::ProtectedInit()
 				if (!L_isWindowed)
 				{
 					// if not windowed, just set pos at 0,0
-					L_ScreenPos.Set(0,0);
+					L_ScreenPos=v2f(0,0);
 
 					L_ScreenSize.x = current.mWidth;
 					L_ScreenSize.y = current.mHeight;

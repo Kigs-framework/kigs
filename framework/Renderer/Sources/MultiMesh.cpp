@@ -181,7 +181,7 @@ void MultiMesh::RecomputeBoundingBox()
 			mesh->GetItemGroup(group);
 
 			Node3D* parent = (Node3D*)m.node;
-			Matrix3x4 mat; mat.SetIdentity();
+			mat4 mat(1.0f);
 			
 			while (parent && parent != this)
 			{
@@ -189,7 +189,7 @@ void MultiMesh::RecomputeBoundingBox()
 				parent = (Node3D*)parent->getFirstParent("Node3D");
 			}
 
-			const bool need_vertex_update = !mat.IsIdentity();
+			const bool need_vertex_update = !glm::isIdentity(mat);
 
 			for (auto item : group)
 			{
@@ -221,18 +221,18 @@ void MultiMesh::RecomputeBoundingBox()
 					for (int i = 0; i < item->getVertexCount(); ++i)
 					{
 						auto vertex = vertex_buffer_write + i*vsize + offset_pos;
-						*(v3f*)vertex = mat * *(v3f*)vertex;
+						*(v3f*)vertex = mat * glm::vec4(*(v3f*)vertex,0.0);
 
 						if (offset_normals != -1)
 						{
 							auto normal = vertex_buffer_write + i*vsize + offset_normals;
 
-							Vector3D n;
+							v3f n;
 							n.x = *(signed char*)(normal+0) / 127.5f;
 							n.y = *(signed char*)(normal+1) / 127.5f;
 							n.z = *(signed char*)(normal+2) / 127.5f;
-							mat.TransformVector(&n);
-							n.Normalize();
+							n=transformVector3(mat,n);
+							n=normalize(n);
 							*(signed char*)(normal + 0) = n.x * 127.5f;
 							*(signed char*)(normal + 1) = n.y * 127.5f;
 							*(signed char*)(normal + 2) = n.z * 127.5f;
@@ -242,12 +242,12 @@ void MultiMesh::RecomputeBoundingBox()
 						{
 							auto tangent = vertex_buffer_write + i*vsize + offset_tangents;
 
-							Vector3D n;
+							v3f n;
 							n.x = *(signed char*)(tangent + 0) / 127.5f;
 							n.y = *(signed char*)(tangent + 1) / 127.5f;
 							n.z = *(signed char*)(tangent + 2) / 127.5f;
-							mat.TransformVector(&n);
-							n.Normalize();
+							n=transformVector3(mat, n);
+							n = normalize(n);
 							*(signed char*)(tangent + 0) = n.x * 127.5f;
 							*(signed char*)(tangent + 1) = n.y * 127.5f;
 							*(signed char*)(tangent + 2) = n.z * 127.5f;

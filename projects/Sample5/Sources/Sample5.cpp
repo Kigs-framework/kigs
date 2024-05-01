@@ -92,8 +92,8 @@ void	Sample5::ProtectedInit()
 	}
 	std::cout << "]" << std::endl;
 
-	// push back another vector on obj3, created from a Point3D
-	Point3D	toPush(5.0f, 4.0f, 3.0f);
+	// push back another vector on obj3, created from a v3f
+	v3f	toPush(5.0f, 4.0f, 3.0f);
 	obj1["obj3"]->set("", CoreItemSP(toPush));
 
 	// Export JSON item as attribute of an empty object
@@ -115,9 +115,10 @@ void	Sample5::ProtectedInit()
 
 	// for maCoreItem, or using absolute path, you can use CoreModifiable attributes in more complex expressions
 	mFunction.setValue("eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#))",this);
-	std::cout << "Expression : eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#)) = " << (float)(CoreItem&)mFunction << std::endl;
+
+	std::cout << "Expression : eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#)) = " << (float)*mFunction << std::endl;
 	// expression is evaluated again at each cast to float
-	std::cout << "Expression : eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#)) = " << (float)(CoreItem&)mFunction << std::endl;
+	std::cout << "Expression : eval(12.0*sin(#TestFloat#+#/Timer:ApplicationTimer->Time#)) = " << (float)*mFunction << std::endl;
 
 	// it's also possible to call CoreModifiable methods, set CoreModifiable attributes and make some tests
 	tsteval = std::string("eval(if(({/Sample5->randomNumber(0.0,2.0)}>1.0),#/Sample5->EvalResult.x#=(#/Sample5->EvalResult.x#+1);1,#/Sample5->EvalResult.y#=(#/Sample5->EvalResult.y#+1);2))");
@@ -135,7 +136,7 @@ void	Sample5::ProtectedInit()
 
 	// It's also possible to compute 2D or 3D expressions
 	tsteval = std::string("eval2D(#/Sample5->EvalResult#+[1.0,#/Sample5->EvalResult.x#])");
-	Point2D checkresult = *tsteval;
+	v2f checkresult = *tsteval;
 	std::cout << "checkresult = [ " << checkresult[0] << "," << checkresult[1] << " ]" << std::endl;
 
 	// Load AppInit, GlobalConfig then launch first sequence

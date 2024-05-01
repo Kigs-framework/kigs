@@ -75,7 +75,7 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 			
 			if (locations->modelMatrix != -1)
 			{
-				glUniformMatrix4fv(locations->modelMatrix, 1, false, &(mMatrixStack[0].back().e[0][0])); CHECK_GLERROR;
+				glUniformMatrix4fv(locations->modelMatrix, 1, false, &(mMatrixStack[0].back()[0][0])); CHECK_GLERROR;
 			}
 		}
 
@@ -110,8 +110,8 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 					return;
 
 				auto viewproj = mMatrixStack[MATRIX_MODE_PROJECTION].back()*mMatrixStack[MATRIX_MODE_VIEW].back();
-				glUniformMatrix4fv(uniLoc0, 1, false, &(viewproj.e[0][0])); CHECK_GLERROR;
-				glUniformMatrix4fv(uniLoc1, 1, false, &(viewproj.e[0][0])); CHECK_GLERROR;
+				glUniformMatrix4fv(uniLoc0, 1, false, &(viewproj[0][0])); CHECK_GLERROR;
+				glUniformMatrix4fv(uniLoc1, 1, false, &(viewproj[0][0])); CHECK_GLERROR;
 			}
 			else
 			{
@@ -129,7 +129,7 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 			{
 				if (locations->projMatrix != -1)
 				{
-					glUniformMatrix4fv(locations->projMatrix, 1, false, &(mMatrixStack[1].back().e[0][0])); CHECK_GLERROR;
+					glUniformMatrix4fv(locations->projMatrix, 1, false, &(mMatrixStack[1].back()[0][0])); CHECK_GLERROR;
 				}
 			}
 
@@ -137,7 +137,7 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 			{
 				if (locations->viewMatrix != -1)
 				{
-					glUniformMatrix4fv(locations->viewMatrix, 1, false, &(mMatrixStack[2].back().e[0][0])); CHECK_GLERROR;
+					glUniformMatrix4fv(locations->viewMatrix, 1, false, &(mMatrixStack[2].back()[0][0])); CHECK_GLERROR;
 				}
 			}
 		}
@@ -147,17 +147,17 @@ void	RendererOpenGL::ProtectedFlushMatrix(TravState* state)
 			{
 				// get only needed elements from 4x4 matrix
 
-				Matrix3x3	uvm;
-				Matrix4x4& uvm4x4 = mMatrixStack[3].back();
-				uvm.e[0][0]= uvm4x4.e[0][0];
-				uvm.e[0][1] = uvm4x4.e[1][0];
-				uvm.e[1][0] = uvm4x4.e[0][1];
-				uvm.e[1][1] = uvm4x4.e[1][1];
-				uvm.e[2][0] = uvm4x4.e[0][2];
-				uvm.e[2][1] = uvm4x4.e[1][2];
-				uvm.e[0][2] = uvm.e[1][2] = uvm.e[2][2]=0.0f;
+				mat3	uvm;
+				mat4& uvm4x4 = mMatrixStack[3].back();
+				uvm[0][0]= uvm4x4[0][0];
+				uvm[0][1] = uvm4x4[1][0];
+				uvm[1][0] = uvm4x4[0][1];
+				uvm[1][1] = uvm4x4[1][1];
+				uvm[2][0] = uvm4x4[0][2];
+				uvm[2][1] = uvm4x4[1][2];
+				uvm[0][2] = uvm[1][2] = uvm[2][2]=0.0f;
 
-				glUniformMatrix3fv(locations->uvMatrix, 1, false, &(uvm.e[0][0])); CHECK_GLERROR;
+				glUniformMatrix3fv(locations->uvMatrix, 1, false, &(uvm[0][0])); CHECK_GLERROR;
 			}
 		}
 		mDirtyShaderMatrix = 0;
@@ -930,13 +930,13 @@ void RendererOpenGL::SendLightsInfo(TravState* travstate)
 		return;
 
 	Camera*	cam = travstate->GetCurrentCamera();
-	Point3D lCamPos;
+	v3f lCamPos;
 
 	if (cam)
 	{
-		const Matrix3x4& lMatCam = cam->GetLocalToGlobal();
-		Point3D outCam(0.0f, 0.0f, 0.0f);
-		lMatCam.TransformPoint(&outCam, &lCamPos);
+		const mat4& lMatCam = cam->GetLocalToGlobal();
+		v3f outCam(0.0f, 0.0f, 0.0f);
+		transformPoint3(lMatCam,outCam, lCamPos);
 	}
 
 	auto itr = travstate->mLights->begin();

@@ -13,6 +13,8 @@
 #else
 #define TestPrintf(...)
 #endif
+
+using namespace Kigs;
 using namespace Kigs::Lua;
 IMPLEMENT_CLASS_INFO(LuaImporter)
 

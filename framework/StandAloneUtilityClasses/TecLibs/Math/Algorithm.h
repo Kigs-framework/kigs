@@ -8,11 +8,11 @@ namespace Kigs
 	{
 
 		// Scalar to go from a (origin) to p' using b-a as unit vector
-		// Requires Dot(point_type, point_type) and operator-
+		// Requires dot(point_type, point_type) and operator-
 		template<typename point_type>
 		float ProjectOnLineScalar(point_type p, point_type a, point_type b)
 		{
-			return Dot(p - a, b - a) / Dot(b - a, b - a);
+			return dot(p - a, b - a) / dot(b - a, b - a);
 		}
 
 		// Projection of p on line ab
@@ -25,8 +25,8 @@ namespace Kigs
 		// Keep main vector the same, return orthogonalized side_vector
 		inline v3f Orthogonalize(v3f main_vector, v3f side_vector)
 		{
-			auto other_side_vector = (main_vector ^ side_vector).Normalized();
-			side_vector = (other_side_vector ^ main_vector).Normalized();
+			auto other_side_vector = normalize(cross(main_vector,side_vector));
+			side_vector = normalize(cross(other_side_vector,main_vector));
 			return side_vector;
 		}
 
@@ -93,15 +93,15 @@ namespace Kigs
 			return{ itbest, best_distance };
 		}
 
-		inline bool angle_match(float a, float b, float epsilon = fPI / 12.0f)
+		inline bool angle_match(float a, float b, float epsilon = glm::pi<float>() / 12.0f)
 		{
 			float diff = abs(a - b);
-			return std::min(diff, 2 * fPI - diff) < epsilon;
+			return std::min(diff, 2.0f * glm::pi<float>() - diff) < epsilon;
 		}
 
-		inline bool angle_match_mod_pi(float a, float b, float epsilon = fPI / 12.0f)
+		inline bool angle_match_mod_pi(float a, float b, float epsilon = glm::pi<float>() / 12.0f)
 		{
-			return (angle_match(a, b, epsilon) || angle_match(a > fPI ? a - fPI : a + fPI, b, epsilon));
+			return (angle_match(a, b, epsilon) || angle_match(a > glm::pi<float>() ? a - glm::pi<float>() : a + glm::pi<float>(), b, epsilon));
 		}
 
 		inline auto distBetweenLines(v3f p0, v3f v0, v3f p1, v3f v1, v3f& out0, v3f& out1)
@@ -109,16 +109,16 @@ namespace Kigs
 			//Vector   u = L1.P1 - L1.P0;
 			//Vector   v = L2.P1 - L2.P0;
 			v3f		 w = p0 - p1;
-			float    a = Dot(v0, v0);         // always >= 0
-			float    b = Dot(v0, v1);
-			float    c = Dot(v1, v1);         // always >= 0
-			float    d = Dot(v0, w);
-			float    e = Dot(v1, w);
+			float    a = dot(v0, v0);         // always >= 0
+			float    b = dot(v0, v1);
+			float    c = dot(v1, v1);         // always >= 0
+			float    d = dot(v0, w);
+			float    e = dot(v1, w);
 			float    D = a * c - b * b;        // always >= 0
 			float    sc, tc;
 
 			// compute the line parameters of the two closest points
-			if (D < SMALL_NUM) {          // the lines are almost parallel
+			if (D < 0.000001) {          // the lines are almost parallel
 				sc = 0.0;
 				tc = (b > c ? d / b : e / c);    // use the largest denominator
 			}
@@ -132,41 +132,37 @@ namespace Kigs
 			out1 = -w + out1;
 
 			// get the difference of the two closest points
-			//Vector3D   dP = w + out0 - out1;  // =  L1(sc) - L2(tc)
+			//v3f   dP = w + out0 - out1;  // =  L1(sc) - L2(tc)
 			v3f   dP = out0 - out1;  // =  L1(sc) - L2(tc)
 
-			return Norm(dP);   // return the closest distance
+			return length(dP);   // return the closest distance
 		};
 
 		enum class orthonormalize_keep_axis
 		{
 			x, y, z
 		};
-		inline mat3x4 orthonormalize_matrix(mat3x4 m, orthonormalize_keep_axis keep_axis = orthonormalize_keep_axis::y)
+		inline mat4 orthonormalize_matrix(mat4 m, orthonormalize_keep_axis keep_axis = orthonormalize_keep_axis::y)
 		{
-			m.XAxis.Normalize();
-			m.YAxis.Normalize();
-			m.ZAxis.Normalize();
+
+			m = column(m, 0, v4f(normalize(v3f(column(m ,0))), 0.0f));
+			m = column(m, 1, v4f(normalize(v3f(column(m, 1))), 0.0f));
+			m = column(m, 2, v4f(normalize(v3f(column(m, 2))), 0.0f));
+
 			if (keep_axis == orthonormalize_keep_axis::x)
 			{
-				m.YAxis = m.ZAxis ^ m.XAxis;
-				m.YAxis.Normalize();
-				m.ZAxis = m.XAxis ^ m.YAxis;
-				m.ZAxis.Normalize();
+				m = column(m, 1, v4f(normalize(cross(v3f(column(m, 2)) , v3f(column(m, 0)))), 0.0f));
+				m = column(m, 2, v4f(normalize(cross(v3f(column(m, 0)) , v3f(column(m, 1)))), 0.0f));
 			}
 			else if (keep_axis == orthonormalize_keep_axis::y)
 			{
-				m.ZAxis = m.XAxis ^ m.YAxis;
-				m.ZAxis.Normalize();
-				m.XAxis = m.YAxis ^ m.ZAxis;
-				m.XAxis.Normalize();
+				m = column(m, 2, v4f(normalize(cross(v3f(column(m, 0)) , v3f(column(m, 1)))), 0.0f));
+				m = column(m, 0, v4f(normalize(cross(v3f(column(m, 1)) , v3f(column(m, 2)))), 0.0f));
 			}
 			else
 			{
-				m.XAxis = m.YAxis ^ m.ZAxis;
-				m.XAxis.Normalize();
-				m.YAxis = m.ZAxis ^ m.XAxis;
-				m.YAxis.Normalize();
+				m = column(m, 0, v4f(normalize(cross(v3f(column(m, 1)) , v3f(column(m, 2)))), 0.0f));
+				m = column(m, 1, v4f(normalize(cross(v3f(column(m, 2)) , v3f(column(m, 0)))), 0.0f));
 			}
 			return m;
 		}

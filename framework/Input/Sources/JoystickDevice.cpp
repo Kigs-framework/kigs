@@ -18,15 +18,15 @@ JoystickDevice::~JoystickDevice()
 }    
 float JoystickDevice::getXAxisState(int index)
 {
-	return mDeviceItems[mButtonsCount + index]->getState()->GetTypedValue(Point3D).x;
+	return mDeviceItems[mButtonsCount + index]->getState()->GetTypedValue(v3f).x;
 }
 
 float JoystickDevice::getYAxisState(int index)
 {
-	return mDeviceItems[mButtonsCount + index]->getState()->GetTypedValue(Point3D).y;
+	return mDeviceItems[mButtonsCount + index]->getState()->GetTypedValue(v3f).y;
 }
 
 float JoystickDevice::getZAxisState(int index)
 {
-	return mDeviceItems[mButtonsCount + index]->getState()->GetTypedValue(Point3D).z;
+	return mDeviceItems[mButtonsCount + index]->getState()->GetTypedValue(v3f).z;
 }

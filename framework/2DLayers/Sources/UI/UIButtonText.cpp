@@ -60,7 +60,7 @@ void UIButtonText::NotifyUpdate(const unsigned int labelid)
 			ChangeTextTexture(mDownText, 2);
 	}
 }
-void UIButtonText::ChangeTextureColor(Vector4D& UpColor, Vector4D& OverColor, Vector4D& DownColor)
+void UIButtonText::ChangeTextureColor(v4f& UpColor, v4f& OverColor, v4f& DownColor)
 {
 	mUpColor = UpColor;
 	mOverColor = OverColor;

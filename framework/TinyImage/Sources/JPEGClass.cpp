@@ -4,6 +4,7 @@
 #include "TinyImageLoaderContext.h"
 #include "ModuleFileManager.h"
 
+using namespace Kigs;
 using namespace Kigs::Pict;
 
 JPEGClass::JPEGClass(File::FileHandle* fileName) :TinyImage()

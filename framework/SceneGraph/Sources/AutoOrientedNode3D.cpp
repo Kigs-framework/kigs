@@ -17,7 +17,7 @@ void	AutoOrientedNode3DUp::Init(CoreModifiable* toUpgrade)
 	mCurrentTarget = nullptr;
 	v3f axis(0.0f, 0.0f, 1.0f);
 	mOrientedAxis = toUpgrade->AddDynamicVectorAttribute("OrientedAxis", (float*)&axis.x, 3);
-	axis.Set(0.0f, 1.0f, 0.0f);
+	axis = { 0.0f, 1.0f, 0.0f };
 	mPseudoConstantAxis = toUpgrade->AddDynamicVectorAttribute("PseudoConstantAxis", (float*)&axis.x, 3);
 	mPseudoConstantAxisDir = toUpgrade->AddDynamicVectorAttribute("PseudoConstantAxisDir", (float*)&axis.x, 3);
 
@@ -62,7 +62,7 @@ DEFINE_UPGRADOR_METHOD(AutoOrientedNode3DUp, AutoOrientedNotifyUpdate)
 bool isValidAxis(const v3f& v)
 {
 	float na;
-	na = NormSquare(v);
+	na = length2(v);
 	if ((na < 0.98f) || (na > 1.02f))
 	{
 		return false;
@@ -103,7 +103,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	BBox	tstAxis(axis1);
 	tstAxis.Update(axis2);
 	
-	float bboxdiagsqr = NormSquare(tstAxis.Size());
+	float bboxdiagsqr = length2(tstAxis.Size());
 	if ((bboxdiagsqr < 1.98f) || (bboxdiagsqr > 2.02f))
 	{
 		KIGS_WARNING("AutoOrientedNode bad axis", 1);
@@ -111,7 +111,7 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	}
 
 	// compute third vector (axis3) from axis1 and axis2
-	axis3.CrossProduct(axis1, axis2);
+	axis3=cross(axis1, axis2);
 
 	// Axis are OK, let's orient the node
 	Node3D::SetupNodeIfNeeded();
@@ -120,54 +120,54 @@ DEFINE_UPGRADOR_UPDATE(AutoOrientedNode3DUp)
 	GetUpgrador()->mCurrentTarget->SetupNodeIfNeeded();
 
 	// target pos in global coordinates
-	Point3D targetpos(*(Point3D*)GetUpgrador()->mCurrentTarget->GetLocalToGlobal().e[3]);
+	v3f targetpos(column(GetUpgrador()->mCurrentTarget->GetLocalToGlobal(),3));
 
-	Vector3D	targetAxis1, targetAxis2, targetAxis3;
+	v3f	targetAxis1, targetAxis2, targetAxis3;
 	// target vector in global coordinates
 	targetAxis1 =targetpos;
-	targetAxis1 -= *(Point3D*)GetLocalToGlobal().e[3];
+	targetAxis1 -= v3f(column(GetLocalToGlobal(),3));
 	// now in father local coordinates
-	getFather()->GetGlobalToLocal().TransformVector(&targetAxis1);
-	targetAxis1.Normalize();
+	targetAxis1 = transformVector3(getFather()->GetGlobalToLocal(),targetAxis1);
+	targetAxis1 = normalize(targetAxis1);
 
 	// get global targetAxis2
 	GetUpgrador()->mPseudoConstantAxisDir->getValue(targetAxis2, this);
 	// and transform it to father local coordinates
-	getFather()->GetGlobalToLocal().TransformVector(&targetAxis2);
-	targetAxis2.Normalize();
+	targetAxis2 = transformVector3(getFather()->GetGlobalToLocal(),targetAxis2);
+	targetAxis2 = normalize(targetAxis2);
 
 	// if constant axis and target vector are too near, use mLastValidUpAxis
-	Vector3D tstCross;
-	tstCross.CrossProduct(targetAxis1, targetAxis2);
-	if (NormSquare(tstCross) < 0.1f)
+	v3f tstCross;
+	tstCross=cross(targetAxis1, targetAxis2);
+	if (length2(tstCross) < 0.1f)
 	{
 		targetAxis2 = GetUpgrador()->mLastValidUpAxis;
-		getFather()->GetGlobalToLocal().TransformVector(&targetAxis2);
-		targetAxis2.Normalize();
+		targetAxis2 = transformVector3(getFather()->GetGlobalToLocal(),targetAxis2);
+		targetAxis2 = normalize(targetAxis2);
 	}
 
 	// construct thirdVector (cross product of previous ones)
-	targetAxis3.CrossProduct(targetAxis1, targetAxis2);
-	targetAxis3.Normalize();
+	targetAxis3=cross(targetAxis1, targetAxis2);
+	targetAxis3 = normalize(targetAxis3);
 	// then compute constantAxis again to orthonormalize matrix
-	targetAxis2.CrossProduct(targetAxis3, targetAxis1);
+	targetAxis2=cross(targetAxis3, targetAxis1);
 
-	Matrix3x3	tm1;
-	tm1.Axis[0] = targetAxis1;
-	tm1.Axis[1] = targetAxis2;
-	tm1.Axis[2] = targetAxis3;
+	mat3	tm1;
+	tm1 = column(tm1, 0, targetAxis1);
+	tm1 = column(tm1, 1, targetAxis2);
+	tm1 = column(tm1, 2, targetAxis3);
 
-	Matrix3x3	tm2;
-	tm2.Axis[0] = axis1;
-	tm2.Axis[1] = axis2;
-	tm2.Axis[2] = axis3;
+	mat3	tm2;
+	tm2 = column(tm2, 0, axis1);
+	tm2 = column(tm2, 1, axis2);
+	tm2 = column(tm2, 2, axis3);
 
-	tm2 = Transpose(tm2);
+	tm2 = transpose(tm2);
 
-	Matrix3x3 result(tm1 * tm2);
+	mat3 result(tm1 * tm2);
 	
-	Matrix3x4	targetm(result);
-	targetm.SetTranslation(mTransform.GetTranslation());
+	mat4	targetm(result);
+	targetm = column(targetm, 3, column(mTransform,3));
 
 	ChangeMatrix(targetm);
 

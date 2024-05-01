@@ -75,24 +75,24 @@ namespace Kigs
 		inline double gps_distance(double* a, double* b)
 		{
 			double R = 6378.137; // Radius of earth in KM
-			double dLat = (b[0] - a[0]) * PI / 180.0;
-			double dLon = (b[1] - a[1]) * PI / 180.0;
-			double aa = sin(dLat / 2) * sin(dLat / 2) + cos(a[0] * PI / 180) * cos(b[0] * PI / 180.0) * sin(dLon / 2) * sin(dLon / 2);
+			double dLat = (b[0] - a[0]) * glm::pi<double>() / 180.0;
+			double dLon = (b[1] - a[1]) * glm::pi<double>() / 180.0;
+			double aa = sin(dLat / 2) * sin(dLat / 2) + cos(a[0] * glm::pi<double>() / 180) * cos(b[0] * glm::pi<double>() / 180.0) * sin(dLon / 2) * sin(dLon / 2);
 			return 2.0 * atan2(sqrt(aa), sqrt(1 - aa)) * R * 1000.0; // meters
 		}
 
 		inline double gps_angle(double* a, double* b)
 		{
 			double dy = a[0] - b[0];
-			double dx = cos(PI / 180.0 * b[0]) * (a[1] - b[1]);
+			double dx = cos(glm::pi<double>() / 180.0 * b[0]) * (a[1] - b[1]);
 			return atan2(dy, dx);
 		}
 
-		inline Vector3D gps_position(double* origin, double* coords)
+		inline v3f gps_position(double* origin, double* coords)
 		{
 			double angle = gps_angle(coords, origin);
 			double dist = gps_distance(origin, coords);
-			return Vector3D((float)(dist * cos(angle)), (float)(dist * sin(angle)), 0.0f);
+			return v3f((float)(dist * cos(angle)), (float)(dist * sin(angle)), 0.0f);
 		}
 
 

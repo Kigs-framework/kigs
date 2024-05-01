@@ -150,7 +150,7 @@ void API3DLight::NotifyUpdate(const unsigned int  labelid)
 	}
 }
 
-bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D & camPos)
+bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, v3f & camPos)
 {
 	if (!mIsOn)
 		return false;
@@ -170,26 +170,25 @@ bool API3DLight::PreRendering(RendererOpenGL * renderer, Camera * cam, Point3D &
 	
 	static_cast<API3DUniformFloat3*>(mCamPosUniform.get())->SetValue(&camPos.x);
 
-	Point3D outP;
-	Vector3D outV;
+	v3f outP(0, 0, 0);
+	
 
 	SetupNodeIfNeeded();
-	const Matrix3x4& lMat = GetLocalToGlobal();
+	const mat4& lMat = GetLocalToGlobal();
 
-	Point3D PosOffset(0,0,0);
-	lMat.TransformPoint(&PosOffset, &outP);
+	outP=transformPoint3(lMat,outP);
 
 	if (GetTypeOfLight() == DIRECTIONAL_LIGHT) // for directional light, position gives direction as a normal vector
 	{
-		outP.Normalize();
+		outP=normalize(outP);
 	}
 	static_cast<API3DUniformFloat3*>(mPositionUniform.get())->SetValue(&outP.x);
 
 	if (mSpotDirUniform)
 	{
 		// spot direction is minus z axis
-		Vector3D dir(0.0f, 0.0f, -1.0f);
-		lMat.TransformVector((Vector3D*)&dir.x, &outV);
+		v3f outV(0.0f, 0.0f, -1.0f);
+		outV = transformVector3(lMat,outV);
 		static_cast<API3DUniformFloat3*>(mSpotDirUniform.get())->SetValue(&outV.x);
 	}
 
@@ -213,26 +212,26 @@ bool	API3DLight::Draw(TravState* state)
 	case 0:
 	case 1:
 	{
-		Point3D outP;
-		const Matrix3x4& lMat = GetLocalToGlobal();
-		Point3D PosOffset(0,0,0);
+		v3f outP;
+		const mat4& lMat = GetLocalToGlobal();
+		v3f PosOffset(0,0,0);
 		lMat.TransformPoint(&PosOffset, &outP);
-		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
+		dd::sphere(outP, v3f(1, 0, 0), 0.05);
 	}
 	break;
 	case 2:
 	{
-		Point3D outP;
-		Vector3D outDir;
-		const Matrix3x4& lMat = GetLocalToGlobal();
-		Point3D PosOffset(0, 0, 0);
+		v3f outP;
+		v3f outDir;
+		const mat4& lMat = GetLocalToGlobal();
+		v3f PosOffset(0, 0, 0);
 		lMat.TransformPoint(&PosOffset, &outP);
 
-		Vector3D dir(0.0f,0.0f,-1.0f);
+		v3f dir(0.0f,0.0f,-1.0f);
 		lMat.TransformVector(&dir, &outDir);
-		//dd::cone(outP, outDir*10, Vector3D(1, 0, 0),((1-mSpotCutOff)/PI)*100, 0);
-		dd::sphere(outP, Vector3D(1, 0, 0), 0.05);
-		dd::line(outP, outP + outDir, Vector3D(1, 0, 0));
+		//dd::cone(outP, outDir*10, v3f(1, 0, 0),((1-mSpotCutOff)/PI)*100, 0);
+		dd::sphere(outP, v3f(1, 0, 0), 0.05);
+		dd::line(outP, outP + outDir, v3f(1, 0, 0));
 	}
 	break;
 	}

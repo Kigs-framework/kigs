@@ -643,12 +643,12 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 
 				if (interaction.index_tip.has_value())
 				{
-					auto orientation = (interaction.index_tip->orientation * v3f(0, -1, 1)).Normalized();
-					if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
+					auto orientation = normalize(interaction.index_tip->orientation * v3f(0, -1, 1));
+					if (dot(orientation, camera->GetGlobalViewVector()) > 0)
 					{
 						interaction_infos.ID = interaction.handedness == Handedness::Left ? TouchSourceID::SpatialInteractionLeft : TouchSourceID::SpatialInteractionRight;
 						interaction_infos.posInfos.pos = interaction.index_tip->position + interaction.index_tip->orientation * v3f(0, 0, 1) * 0.015f;
-						interaction_infos.posInfos.dir = (interaction_infos.posInfos.pos - camera->GetGlobalPosition()).Normalized();
+						interaction_infos.posInfos.dir = normalize(interaction_infos.posInfos.pos - camera->GetGlobalPosition());
 						interaction_infos.posInfos.origin = interaction_infos.posInfos.pos - interaction_infos.posInfos.dir * GetSpatialInteractionOffset();
 						interaction_infos.touch_state = (force_click || interaction.pressed) ? 1 : 0;
 						interaction_infos.posInfos.min_distance = 0.0;
@@ -668,13 +668,13 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 				{
 					if (TimePoint::clock::now() - mLastTimeNearInteraction > std::chrono::milliseconds(500))
 					{
-						auto orientation = (interaction.palm->orientation * v3f(0, -1, 1)).Normalized();
-						if (Dot(orientation, camera->GetGlobalViewVector()) > 0)
+						auto orientation = normalize(interaction.palm->orientation * v3f(0, -1, 1));
+						if (dot(orientation, camera->GetGlobalViewVector()) > 0)
 						{
 							if (interaction.palm.has_value())
 							{
 								auto npos = interaction.palm->position;
-								auto ndir = ((interaction.palm->position - camera->GetGlobalPosition()).Normalized() + interaction.palm->orientation * v3f(interaction.handedness == Handedness::Left ? -0.15f : 0.15f, 0, 0.33f)).Normalized();
+								auto ndir = normalize(normalize(interaction.palm->position - camera->GetGlobalPosition()) + interaction.palm->orientation * v3f(interaction.handedness == Handedness::Left ? -0.15f : 0.15f, 0, 0.33f));
 
 								if (interaction.SmoothPosition.x == -FLT_MAX)
 								{
@@ -683,7 +683,7 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 								}
 
 								const double max_time_still = 2.0;
-								if (Norm(interaction.SmoothPosition - npos) < 0.01)
+								if (length(interaction.SmoothPosition - npos) < 0.01)
 								{
 									interaction.TimeStill = std::min(interaction.TimeStill + interaction.DT, max_time_still);
 								}
@@ -693,8 +693,8 @@ void TouchInputEventManager::Update(const Timer& timer, void* addParam)
 								}
 
 								auto t = std::clamp((max_time_still - interaction.TimeStill) / max_time_still, 0.1, 1.0);
-								interaction.SmoothPosition = Lerp(interaction.SmoothPosition, npos, t);
-								interaction.SmoothDirection = Lerp(interaction.SmoothDirection, ndir, t).Normalized();
+								interaction.SmoothPosition = lerp(interaction.SmoothPosition, npos, t);
+								interaction.SmoothDirection = normalize(lerp(interaction.SmoothDirection, ndir, t));
 
 								interaction_infos.posInfos.pos = interaction.SmoothPosition;
 								interaction_infos.posInfos.dir = interaction.SmoothDirection;
@@ -1188,7 +1188,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 	auto min_click_duration = mClickMinDuration >= 0.0 ? mClickMinDuration : manager->GetDefaultMinClickDuration();
 	auto max_click_duration = mClickMaxDuration >= 0.0 ? mClickMaxDuration : manager->GetDefaultMaxClickDuration();
 	
-	auto dist_from_finger_tip = ev.hit.HitNode ? Dot(ev.hit.HitPosition - (touch.posInfos.origin + touch.posInfos.dir * manager->GetSpatialInteractionOffset()), touch.posInfos.dir) : -FLT_MAX;
+	auto dist_from_finger_tip = ev.hit.HitNode ? dot(ev.hit.HitPosition - (touch.posInfos.origin + touch.posInfos.dir * manager->GetSpatialInteractionOffset()), touch.posInfos.dir) : -FLT_MAX;
 	bool auto_touch_enabled = IsNearInteraction(touch.ID) && manager->GetNearInteractionActiveItems(touch.interaction->handedness).size() > 0 && mSpatialInteractionAutoClickDistance > 0.0;
 	bool is_behind = auto_touch_enabled && dist_from_finger_tip < -2.0f * mSpatialInteractionAutoClickDistance && dist_from_finger_tip != -FLT_MAX;
 
@@ -1278,7 +1278,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 					{
 						startc.isValid = false;
 					}
-					else if (DistSquare(startc.startPos, touch.posInfos.pos) > manager->getTriggerSquaredDist())
+					else if (length2(startc.startPos - touch.posInfos.pos) > manager->getTriggerSquaredDist())
 					{
 						startc.isValid = false;
 					}
@@ -1350,7 +1350,7 @@ void TouchEventStateClick::Update(TouchInputEventManager* manager, const Timer& 
 						auto itendclick = mCurrentClickEnd.find(touch.ID);
 						if (itendclick != mCurrentClickEnd.end())
 						{
-							if (DistSquare(itendclick->second.startPos, endc.startPos) < manager->getTriggerSquaredDist())
+							if (length2(itendclick->second.startPos - endc.startPos) < manager->getTriggerSquaredDist())
 							{
 								if (itendclick->second.buttonState == endc.buttonState)
 								{
@@ -1432,7 +1432,7 @@ void TouchEventStateDirectTouch::Update(TouchInputEventManager* manager, const T
 	ev.hit = *touch.object_hit;
 	ev.item = target;
 
-	auto dist_from_finger_tip = ev.hit.HitNode ? Dot(ev.hit.HitPosition - (touch.posInfos.origin + touch.posInfos.dir*manager->GetSpatialInteractionOffset()), touch.posInfos.dir) : -FLT_MAX;
+	auto dist_from_finger_tip = ev.hit.HitNode ? dot(ev.hit.HitPosition - (touch.posInfos.origin + touch.posInfos.dir*manager->GetSpatialInteractionOffset()), touch.posInfos.dir) : -FLT_MAX;
 	auto touch_state = touch.touch_state;
 	bool auto_touch_enabled = IsNearInteraction(touch.ID) && mSpatialInteractionAutoTouchDownDistance > 0.0;
 	bool is_behind = auto_touch_enabled && dist_from_finger_tip < -2.0f * mSpatialInteractionAutoTouchDownDistance && dist_from_finger_tip != -FLT_MAX;
@@ -1709,7 +1709,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 						{
 							cswipe.isValid = false;
 						}
-						else if (DistSquare(addt.pos, cswipe.touchList[0].pos) < manager->getTriggerSquaredDist())
+						else if (length2(addt.pos - cswipe.touchList[0].pos) < manager->getTriggerSquaredDist())
 						{
 							cswipe.isValid = false;
 						}
@@ -1718,7 +1718,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 							// ask for possible start
 							if (cswipe.touchList.size() == 3)
 							{
-								Vector3D swipemaindir(cswipe.touchList[0].pos, addt.pos,asVector());
+								v3f swipemaindir(cswipe.touchList[0].pos- addt.pos);
 								ev.direction = swipemaindir;
 								ev.state = StateBegan;
 								cswipe.isValid = target->SimpleCall<bool>(mMethodNameID, ev);
@@ -1750,7 +1750,7 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 				if ((duration > mSwipeMinDuration) && (duration < mSwipeMaxDuration))
 				{
 					// call target to check if swipe end is "accepted"
-					Vector3D swipemaindir(cswipe.touchList[0].pos, cswipe.touchList.back().pos, asVector());
+					v3f swipemaindir(cswipe.touchList[0].pos - cswipe.touchList.back().pos);
 
 					ev.position = cswipe.touchList.back().pos;					
 					ev.direction = swipemaindir;
@@ -1758,15 +1758,14 @@ void TouchEventStateSwipe::Update(TouchInputEventManager* manager, const Timer& 
 					if (target->SimpleCall<bool>(mMethodNameID, ev))
 					{
 						// check swipe "trajectory"
-						Vector3D nswipeDir(swipemaindir);
-						nswipeDir.Normalize();
+						v3f nswipeDir(normalize(swipemaindir));
+						
 						for (u32 i = 3; i < cswipe.touchList.size(); i++)
 						{
-							Vector3D checkdir(cswipe.touchList[0].pos, cswipe.touchList[i].pos, asVector());
-							checkdir.Normalize();
-
-							float dot = Dot(nswipeDir, checkdir);
-							if (dot < 0.6f)
+							v3f checkdir(normalize(cswipe.touchList[0].pos- cswipe.touchList[i].pos));
+							
+							float dotr = dot(nswipeDir, checkdir);
+							if (dotr < 0.6f)
 							{
 								cswipe.isValid = false;
 								break;
@@ -1808,8 +1807,8 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 	ev.position = touch.posInfos.pos;
 	ev.delta = v3f(0, 0, 0);
 
-	auto right = (ev.direction ^ v3f(0, 1, 0)).Normalized();
-	auto up = (right ^ ev.direction).Normalized();
+	auto right = normalize(cross(ev.direction , v3f(0, 1, 0)));
+	auto up = normalize(cross(right , ev.direction));
 	auto project_on_view = [&](v3f position)
 	{
 		auto x = ProjectOnLineScalar(position, ev.origin, ev.origin + right);
@@ -1833,7 +1832,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 				toStart.currentpos = position;
 				toStart.starttime = timer.GetTime();
 				toStart.currenttime = toStart.starttime;
-				toStart.maindir.Set(0, 0, 0);
+				toStart.maindir = { 0, 0, 0 };
 				toStart.currentSpeed = toStart.maindir;
 				// call target to check if scroll could start here 
 
@@ -1853,23 +1852,23 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 				CurrentInfos& cscroll = (*foundTouch).second;
 				if (cscroll.isValid)
 				{
-					if (NormSquare(cscroll.maindir) < 0.01f) // scroll has not began yet ?
+					if (length2(cscroll.maindir) < 0.01f) // scroll has not began yet ?
 					{
 						cscroll.currentpos = position;
 						cscroll.currenttime = timer.GetTime();
-						if (DistSquare(cscroll.startpos, position) > manager->getTriggerSquaredDist())
+						if (length2(cscroll.startpos- position) > manager->getTriggerSquaredDist())
 						{
 							//float duration = timer.GetTime() - cscroll.starttime;
 							//if (duration > 0.25f)
 							{
-								cscroll.maindir.Set(cscroll.startpos, position);
-								cscroll.maindir.Normalize();
+								cscroll.maindir = normalize(cscroll.startpos - position);
+							
 
 								// if mScrollForceMainDir is set, check if it's OK
-								if (NormSquare(mScrollForceMainDir) > 0.01f)
+								if (length2(mScrollForceMainDir) > 0.01f)
 								{
-									float dot = Dot(mScrollForceMainDir, cscroll.maindir);
-									if (fabsf(dot) < 0.6)
+									float dotr = dot(mScrollForceMainDir, cscroll.maindir);
+									if (fabsf(dotr) < 0.6)
 									{
 										cscroll.isValid = false;
 									}
@@ -1884,7 +1883,7 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 									// reset cscroll
 									cscroll.startpos = cscroll.currentpos;
 									cscroll.starttime = timer.GetTime();
-									cscroll.currentSpeed.Set(0.0f, 0.0f, 0.0f);
+									cscroll.currentSpeed = v3f(0.0f, 0.0f, 0.0f);
 									// send direction, start position, current speed vector, offset
 
 									ev.state = StateBegan;
@@ -1901,20 +1900,20 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 					}
 					else // scroll has began, update offset / speed  
 					{
-						Vector3D move(cscroll.currentpos, position, asVector());
+						v3f move(cscroll.currentpos - position);
 						float dt = float(timer.GetTime() - cscroll.currenttime);
 
 						cscroll.currentpos = position;
 						cscroll.currenttime = timer.GetTime();
 
-						Vector3D speed(move / dt);
+						v3f speed(move / dt);
 
 						float coefInterp = 0.5f + (( dt > 0.5f) ? 0.5f : dt);
 
 						cscroll.currentSpeed = cscroll.currentSpeed*(1.0f - coefInterp) + speed*coefInterp;
 
-						Vector3D	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
-						float offset = Dot(cscroll.maindir, offsetV);
+						v3f	offsetV(cscroll.startpos- cscroll.currentpos);
+						float offset = dot(cscroll.maindir, offsetV);
 
 						ev.state = StateChanged;
 						ev.main_direction = cscroll.maindir;
@@ -1942,10 +1941,10 @@ void TouchEventStateScroll::Update(TouchInputEventManager* manager, const Timer&
 		{
 			CurrentInfos& cscroll = it->second;
 
-			if ((cscroll.isValid) && (NormSquare(cscroll.maindir) > 0.01f))
+			if ((cscroll.isValid) && (length2(cscroll.maindir) > 0.01f))
 			{
-				Vector3D	offsetV(cscroll.startpos, cscroll.currentpos, asVector());
-				float offset = Dot(cscroll.maindir, offsetV);
+				v3f	offsetV(cscroll.startpos- cscroll.currentpos);
+				float offset = dot(cscroll.maindir, offsetV);
 				// send direction, start position, current speed vector, offset
 
 				ev.state = StateEnded;
@@ -2026,7 +2025,7 @@ void TouchEventStatePinch::Update(TouchInputEventManager* manager, const Timer& 
 		for (auto& t : mCurrentTouches)
 		{
 			if (t.second.in_use_by_pinch || t.first == touch.ID) continue;
-			float dist = NormSquare(t.second.position - touch.posInfos.pos);
+			float dist = length2(t.second.position - touch.posInfos.pos);
 			if (dist <= mPinchMaxStartDistSquared)
 			{
 				possibles_pinches.push_back({ t.first, dist});

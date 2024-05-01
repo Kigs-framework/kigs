@@ -325,7 +325,7 @@ namespace Kigs
 
 			maInt			mArraySize;
 			maBuffer		mMatrixArray;
-			Matrix4x4* mMatrixArrayPointer;
+			mat4* mMatrixArrayPointer;
 		};
 	}
 }

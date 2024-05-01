@@ -227,19 +227,19 @@ namespace Kigs
 
 		struct MatrixBufferType
 		{
-			Matrix4x4 model;
+			mat4 model;
 
-			Matrix4x4 uvMatrix;
+			mat4 uvMatrix;
 
 			union
 			{
 				struct
 				{
-					Matrix4x4 viewproj;
+					mat4 viewproj;
 				};
 				struct
 				{
-					Matrix4x4 stereo_viewproj[2];
+					mat4 stereo_viewproj[2];
 				};
 			};
 		};

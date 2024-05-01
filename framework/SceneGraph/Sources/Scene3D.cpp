@@ -133,7 +133,7 @@ void ManageFrontToBackStruct::Init(Camera* cam)
 {
 	cam->GetPosition(camPos.x, camPos.y, camPos.z);
 	cam->GetViewVector(camViewVector.x, camViewVector.y, camViewVector.z);
-	camViewVector.Normalize();
+	normalize(camViewVector);
 
 	if (camViewVector.x > 0)
 	{
@@ -220,8 +220,8 @@ void Scene3D::TravDraw(TravState* state)
 			rs->setValue("ActiveDepthBuffer", pass.depth_buffer_index);
 			rs->as<RenderingScreen>()->SetActive(state);
 
-			state->SetCurrentLocalToGlobalMatrix(Matrix3x4::IdentityMatrix());
-			state->SetCurrentGlobalToLocalMatrix(Matrix3x4::IdentityMatrix());
+			state->SetCurrentLocalToGlobalMatrix(mat4(1.0f));
+			state->SetCurrentGlobalToLocalMatrix(mat4(1.0f));
 			state->mCurrentMaterial = 0;
 			
 			state->mPath = 0;
@@ -380,29 +380,26 @@ void Scene3D::SortItemsFrontToBack(Input::SortItemsFrontToBackParam& param)
 				auto bbox_local = param.toSort[i]->as<Node3D>()->GetLocalBoundingBox();
 
 				auto origin_local = param.origin;
-				Vector3D direction_local = param.direction;
+				v3f direction_local = param.direction;
 				
 				auto g2l = param.toSort[i]->as<Node3D>()->GetGlobalToLocal();
 
-				g2l.TransformPoint(&origin_local);
-				g2l.TransformVector(&direction_local);
+				origin_local=transformPoint3(g2l,origin_local);
+				direction_local=transformVector3(g2l,direction_local);
 
 				double distance = DBL_MAX;
-				v3f intersection;
+				v3f intersection= bbox_local.Center();
 				v3f normal;
 				v3f dir;
 
-				if (Maths::IntersectionRayBBox(origin_local, direction_local, bbox_local.m_Min, bbox_local.m_Max, intersection, normal,distance))
-				{
-					dir = param.toSort[i]->as<Node3D>()->GetLocalToGlobal()*intersection - cam_pos;
-				}
-				else
-				{
-					dir = param.toSort[i]->as<Node3D>()->GetLocalToGlobal()*bbox_local.Center() - cam_pos;
-				}
+				Maths::IntersectionRayBBox(origin_local, direction_local, bbox_local.m_Min, bbox_local.m_Max, intersection, normal, distance);
 
-				auto d = NormSquare(dir);
-				if (Dot(dir, cam_view) < 0)
+				intersection = transformPoint3(param.toSort[i]->as<Node3D>()->GetLocalToGlobal(), intersection);
+				
+				dir = intersection - cam_pos;
+
+				auto d = length2(dir);
+				if (dot(dir, cam_view) < 0)
 					d = -d;
 
 				sorter[i].dist = d;

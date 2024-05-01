@@ -21,7 +21,7 @@ bool TangentSpaceLOD::PreDraw(TravState* state)
 		state->mCurrentNode->GetGlobalBoundingBox(gbb.m_Min, gbb.m_Max);
 
 		auto d = gbb.Distance(state->GetCurrentCamera()->GetPosition());
-		auto bbsize = Norm(gbb.m_Max - gbb.m_Min);
+		auto bbsize = length(gbb.m_Max - gbb.m_Min);
 		bool disable_tangent_space = false;
 
 

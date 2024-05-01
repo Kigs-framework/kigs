@@ -150,7 +150,7 @@ namespace Kigs
 			*/
 			bool GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::touchPosInfos& pout);
 
-			bool IsValidTouchSupport(Vector3D posin);
+			bool IsValidTouchSupport(v3f posin);
 
 			DECLARE_METHOD(ResetContext);
 

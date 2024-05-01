@@ -171,25 +171,25 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 	}
 	double dist = DBL_MAX;
 	
-	Point3D		planePos = v3f(0,0,0);
-	Vector3D	planeNorm = v3f(0,0,1);
+	v3f		planePos = v3f(0,0,0);
+	v3f	planeNorm = v3f(0,0,1);
 
-	Vector3D pos = posin.origin;
-	Vector3D dir = posin.dir;
+	v3f pos = posin.origin;
+	v3f dir = posin.dir;
 
 	//! transform Ray in local mesh coordinate system if needed				
-	const Matrix3x4& inverseMatrix = GetGlobalToLocal();
-	inverseMatrix.TransformPoint(&pos);
-	inverseMatrix.TransformVector(&dir);
+	const mat4& inverseMatrix = GetGlobalToLocal();
+	pos = transformPoint3(inverseMatrix ,pos);
+	dir = transformVector3(inverseMatrix ,dir);
 
 	if (Maths::IntersectRayPlane(pos, dir, planePos, planeNorm, dist))
 	{
 		auto hit_pos = pos + ((float)dist * dir);
 
-		Vector3D up(0,1,0);
-		Vector3D left = up ^ Vector3D(0,0,1);
+		v3f up(0,1,0);
+		v3f left = cross(up , v3f(0,0,1));
 
-		pout.pos.xy = v2f((Dot(left, hit_pos) / mSize[0]) + 0.5f, (Dot(up, hit_pos) / mSize[1]) + 0.5f);
+		pout.pos = v3f((dot(left, hit_pos) / mSize[0]) + 0.5f, (dot(up, hit_pos) / mSize[1]) + 0.5f, pout.pos.z);
 		
 		bool is_in = true;
 
@@ -205,8 +205,8 @@ bool UINode3DLayer::GetDataInTouchSupport(const Input::touchPosInfos& posin, Inp
 		auto& l2g = GetLocalToGlobal();
 		pout.hit.HitPosition = pos + dir * dist;
 		pout.hit.HitNormal = planeNorm;
-		l2g.TransformPoint(&pout.hit.HitPosition);
-		l2g.TransformVector(&pout.hit.HitNormal);
+		pout.hit.HitPosition=transformPoint3(l2g ,pout.hit.HitPosition);
+		pout.hit.HitNormal=transformVector3(l2g ,pout.hit.HitNormal);
 		pout.hit.HitNode = this;
 		pout.hit.HitActor = mCollider.get();
 		//pout.hit.HitCollisionObject = (CollisionBaseObject*)mCollider.get();
@@ -231,8 +231,8 @@ void UINode3DLayer::RecomputeBoundingBox()
 	float maxSize = std::max(mSize[0], mSize[1])*0.5f;
 
 	BBox	uiBBox;
-	uiBBox.m_Min.Set(-maxSize, -maxSize, -maxSize);
-	uiBBox.m_Max.Set(maxSize, maxSize, maxSize);
+	uiBBox.m_Min = v3f(-maxSize, -maxSize, -maxSize);
+	uiBBox.m_Max = v3f(maxSize, maxSize, maxSize);
 
 	mLocalBBox.Update(uiBBox);
 }
@@ -281,13 +281,13 @@ void UINode3DLayer::TravDraw(TravState* state)
 	renderer->SetBlendFuncMode(RENDERER_BLEND_SRC_ALPHA, RENDERER_BLEND_ONE_MINUS_SRC_ALPHA);
 	renderer->SetDepthTestMode(false);
 
-	mat4 m; m.SetIdentity();
-	m.e[0][0] = mSize[0] / mDesignSize[0];
-	m.e[1][1] = mSize[1] / mDesignSize[1];
-	m.e[2][2] = 0.0f;
-	m.e[3][0] = -mDesignSize[0] * 0.5f * m.e[0][0];
-	m.e[3][1] = -mDesignSize[1] * 0.5f * m.e[1][1];
-	renderer->PushAndMultMatrix(MATRIX_MODE_MODEL, &m.e[0][0]);
+	mat4 m(1.0f);
+	m[0][0] = mSize[0] / mDesignSize[0];
+	m[1][1] = mSize[1] / mDesignSize[1];
+	m[2][2] = 0.0f;
+	m[3][0] = -mDesignSize[0] * 0.5f * m[0][0];
+	m[3][1] = -mDesignSize[1] * 0.5f * m[1][1];
+	renderer->PushAndMultMatrix(MATRIX_MODE_MODEL, &m[0][0]);
 
 	if (IsRenderable())
 	{

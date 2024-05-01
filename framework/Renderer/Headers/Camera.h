@@ -72,7 +72,7 @@ namespace Kigs
 			}
 
 
-			void ChangeMatrix(const Matrix3x4&) override;
+			void ChangeMatrix(const mat4&) override;
 
 			/**
 				* \brief	set the position of the camera
@@ -89,7 +89,7 @@ namespace Kigs
 				RecomputeMatrix();
 			}
 
-			void	SetPosition(const Point3D& pt)
+			void	SetPosition(const v3f& pt)
 			{
 				SetPosition(pt.x, pt.y, pt.z);
 			}
@@ -107,9 +107,9 @@ namespace Kigs
 				y = mPosition[1];
 				z = mPosition[2];
 			}
-			Point3D GetPosition() const { return Point3D(mPosition[0], mPosition[1], mPosition[2]); }
+			v3f GetPosition() const { return v3f(mPosition[0], mPosition[1], mPosition[2]); }
 
-			Point3D GetGlobalPosition() { return GetLocalToGlobal().Pos; }
+			v3f GetGlobalPosition() { return column(GetLocalToGlobal(),3); }
 			/**
 				* \brief	set the view factor
 				* \fn 		void	SetViewVector(float x,float y,float z)
@@ -124,7 +124,7 @@ namespace Kigs
 				mViewVector[2] = z;
 				RecomputeMatrix();
 			}
-			void SetViewVector(const Point3D& v)
+			void SetViewVector(const v3f& v)
 			{
 				SetViewVector(v.x, v.y, v.z);
 			}
@@ -142,12 +142,12 @@ namespace Kigs
 				y = mViewVector[1];
 				z = mViewVector[2];
 			}
-			Point3D GetViewVector() const { return Point3D(mViewVector[0], mViewVector[1], mViewVector[2]); }
-			Point3D GetGlobalViewVector() { return GetLocalToGlobal().XAxis.Normalized(); }
+			v3f GetViewVector() const { return v3f(mViewVector[0], mViewVector[1], mViewVector[2]); }
+			v3f GetGlobalViewVector() { return normalize(column(GetLocalToGlobal(),0)); }
 
 
-			std::pair<v3f, Vector3D> GetGlobalRay() { return { GetGlobalPosition(), GetGlobalViewVector() }; }
-			std::pair<v3f, Vector3D> GetRay() { return { GetPosition(), GetViewVector() }; }
+			std::pair<v3f, v3f> GetGlobalRay() { return { GetGlobalPosition(), GetGlobalViewVector() }; }
+			std::pair<v3f, v3f> GetRay() { return { GetPosition(), GetViewVector() }; }
 
 
 			/**
@@ -165,7 +165,7 @@ namespace Kigs
 				RecomputeMatrix();
 			}
 
-			void SetUpVector(const Point3D& v)
+			void SetUpVector(const v3f& v)
 			{
 				SetUpVector(v.x, v.y, v.z);
 			}
@@ -183,15 +183,15 @@ namespace Kigs
 				y = mUpVector[1];
 				z = mUpVector[2];
 			}
-			Point3D GetUpVector() const { return Point3D(mUpVector[0], mUpVector[1], mUpVector[2]); }
-			Point3D GetGlobalUpVector() { return GetLocalToGlobal().ZAxis.Normalized(); }
+			v3f GetUpVector() const { return v3f(mUpVector[0], mUpVector[1], mUpVector[2]); }
+			v3f GetGlobalUpVector() { return normalize(column(GetLocalToGlobal(),2)); }
 
-			Point3D GetGlobalRightVector() { return GetLocalToGlobal().YAxis.Normalized(); }
+			v3f GetGlobalRightVector() { return normalize(column(GetLocalToGlobal(),1)); }
 
 			/**
 			* \brief	special case for camera has we want it to be init even if have no bounding box
 			*/
-			void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override { pmin.Set(-0.5f, -0.5f, -0.5f); pmax.Set(0.5f, 0.5f, 0.5f); }
+			void	GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override { pmin = { -0.5f, -0.5f, -0.5f }; pmax = { 0.5f, 0.5f, 0.5f }; }
 
 			/**
 				* \brief	set the zNear and zFar values
@@ -243,7 +243,7 @@ namespace Kigs
 
 			struct FrustumPlanes
 			{
-				struct Plane { v3f o; Vector3D n; };
+				struct Plane { v3f o; v3f n; };
 				Plane Near;
 				Plane Far;
 				Plane Down;
@@ -255,17 +255,17 @@ namespace Kigs
 
 			/**
 				* \brief	get the ray from a pixel
-				* \fn 		virtual void getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection);
+				* \fn 		virtual void getRay(const float &ScreenX, const float &ScreenY, v3f &RayOrigin, v3f &RayDirection);
 				* \param	ScreenX : position in x axis of the pixel
 				* \param	ScreenY : position in y axis of the pixel
 				* \param	RayOrigin : origin of the ray (in/out param)
 				* \param	RayDirection : direction of the ray (in/out param)
 				*/
-			virtual void getRay(const float& ScreenX, const float& ScreenY, Point3D& RayOrigin, Vector3D& RayDirection);
+			virtual void getRay(const float& ScreenX, const float& ScreenY, v3f& RayOrigin, v3f& RayDirection);
 
 			//! project given point 3D using camera projection
 			// return true if point is in front of camera, false if behind it
-			virtual bool Project(float&/* ScreenX */, float& /* ScreenY */, Point3D /* Pt */);
+			virtual bool Project(float&/* ScreenX */, float& /* ScreenY */, v3f /* Pt */);
 
 			/**
 				* \brief	do a Node3D cull but always return true
@@ -426,15 +426,15 @@ namespace Kigs
 			struct touchControlledDataStruct
 			{
 				// data
-				Point2D		mStartPt; // used for rotation
-				float		mOneOnCoef; // used for rotation and zoom
-				float		mTargetPointDist; // used for rotation and zoom
-				Vector3D	mStartV; // used for rotation and zoom
+				v2f			mStartPt; // used for rotation
+				f32			mOneOnCoef; // used for rotation and zoom
+				f32			mTargetPointDist; // used for rotation and zoom
+				v3f			mStartV; // used for rotation and zoom
 
 				// store starting camera data
-				Matrix3x4	mStartMatrix;
+				mat4		mStartMatrix;
 
-				unsigned int mState;
+				u32			mState;
 			};
 
 			// remove touchControlledDataStruct if needed

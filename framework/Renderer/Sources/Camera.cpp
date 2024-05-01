@@ -88,32 +88,18 @@ void Camera::NotifyUpdate(const unsigned int  labelid)
 void Camera::RecomputeMatrix()
 {
 	// compute local matrix
-	Vector3D  view,up,right,pos;
+	v3f  view,up,right,pos;
 	
-	view.x=mViewVector[0];
-	view.y=mViewVector[1];
-	view.z=mViewVector[2];
+	view = normalize(mViewVector);
+	pos = mPosition;
 	
-	view.Normalize();
+	up = normalize(mUpVector);
 	
-	pos.x=mPosition[0];
-	pos.y=mPosition[1];
-	pos.z=mPosition[2];
+	right=normalize(cross(up,view));
 	
-	
-	up.x=mUpVector[0];
-	up.y=mUpVector[1];
-	up.z=mUpVector[2];
-	
-	up.Normalize();
-	
-	right=up^view;
-	
-	right.Normalize();
-	
-	up=view^right;
+	up=cross(view,right);
 
-	Matrix3x4 matrix(view, right, up, pos);
+	mat4 matrix(glm::vec4(view,0.0f), glm::vec4(right,0.0f), glm::vec4(up,0.0f), glm::vec4(pos,1.0f));
 	ParentClassType::ChangeMatrix(matrix);
 }
 
@@ -207,7 +193,7 @@ bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::tou
 		getRenderingScreen()->GetDesignSize(dwidth, dheight);
 		// size or design size here ?
 
-		Point2D pos2D;
+		v2f pos2D;
 
 		pos2D.x = posin.pos.x / dwidth;
 		pos2D.y = posin.pos.y / dheight;
@@ -221,12 +207,12 @@ bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::tou
 		pout.dir.x = 1.0f;
 		pout.dir.z = -pos2D.y*tt;
 		pout.dir.y = -pos2D.x*tt*aspect;
-		GetLocalToGlobal().TransformVector(&pout.dir);
-		pout.dir.Normalize();
+		pout.dir = transformVector3(GetLocalToGlobal() ,pout.dir);
+		pout.dir = normalize(pout.dir);
 
-		pout.origin.x = GetLocalToGlobal().e[3][0];
-		pout.origin.y = GetLocalToGlobal().e[3][1];
-		pout.origin.z = GetLocalToGlobal().e[3][2];
+		pout.origin.x = GetLocalToGlobal()[3][0];
+		pout.origin.y = GetLocalToGlobal()[3][1];
+		pout.origin.z = GetLocalToGlobal()[3][2];
 
 		pout.setHas3DInfos(true);
 
@@ -248,8 +234,8 @@ bool Camera::GetDataInTouchSupport(const Input::touchPosInfos& posin, Input::tou
 
 void  Camera::InitCullingObject(CullingObject* obj)
 {
-	Vector3D  n;
-	Point3D   o;
+	v3f  n;
+	v3f   o;
 	
 	int i;
 	
@@ -283,32 +269,33 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	auto l2g = GetLocalToGlobal();
 
 	// near plane
-	n.Set(1.0f,0.0f,0.0f);
-	o.Set(mNearPlane,0.0f,0.0f);
-	l2g.TransformVector(&n);
-	l2g.TransformPoints(&o,1);
+	
+	n = { 1.0f,0.0f,0.0f };
+	o = { mNearPlane,0.0f,0.0f };
+	n=transformVector3(l2g,n);
+	o = transformPoint3(l2g,o);
 	obj->InitPlane(0,n,o);
 	
 	// far plane
-	n.Set(-1.0f,0.0f,0.0f);
-	o.Set(mFarPlane,0.0f,0.0f);
-	l2g.TransformVector(&n);
-	l2g.TransformPoints(&o,1);
+	n = { -1.0f, 0.0f, 0.0f };
+	o = { mFarPlane,0.0f,0.0f };
+	n = transformVector3(l2g ,n);
+	o = transformPoint3(l2g ,o);
 	obj->InitPlane(1,n,o);
 	
 	// down plane
 	float s=sinf((float)mVerticalFOV*0.5f*DEG_TO_RAD);
 	float c=cosf((float)mVerticalFOV*0.5f*DEG_TO_RAD);
 	
-	n.Set(s,0.0f,c);
-	o.Set(0.0f,0.0f,0.0f);
-	l2g.TransformVector(&n);
-	l2g.TransformPoints(&o,1);
+	n = { s,0.0f,c };
+	o = { 0.0f,0.0f,0.0f };
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	obj->InitPlane(2,n,o);
 	
 	// up plane
-	n.Set(s,0.0f,-c);
-	l2g.TransformVector(&n);
+	n = { s,0.0f,-c };
+	n = transformVector3(l2g, n);
 	obj->InitPlane(3,n,o);
 	
 	// left plane
@@ -317,13 +304,13 @@ void  Camera::InitCullingObject(CullingObject* obj)
 	//c = cosf((float)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	c = cosf(hfov*0.5f);
 	
-	n.Set(s,-c,0.0f);
-	l2g.TransformVector(&n);
+	n = { s,-c,0.0f };
+	n = transformVector3(l2g, n);
 	obj->InitPlane(4,n,o);
 	
 	// right plane
-	n.Set(s,c,0.0f);
-	l2g.TransformVector(&n);
+	n = { s,c,0.0f };
+	n = transformVector3(l2g, n);
 	obj->InitPlane(5,n,o);
 }
 
@@ -332,7 +319,7 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	FrustumPlanes result;
 
 	v3f o;
-	Vector3D n;
+	v3f n;
 
 	float width, height;
 	getRenderingScreen()->GetSize(width, height);
@@ -352,19 +339,19 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	auto l2g = GetLocalToGlobal();
 
 	// near plane
-	n.Set(1.0f, 0.0f, 0.0f);
-	o.Set(mNearPlane, 0.0f, 0.0f);
-	l2g.TransformVector(&n);
-	l2g.TransformPoints(&o, 1);
+	n = { 1.0f, 0.0f, 0.0f };
+	o = { mNearPlane, 0.0f, 0.0f };
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 
 	result.Near.n = n;
 	result.Near.o = o;
 
 	// far plane
-	n.Set(-1.0f, 0.0f, 0.0f);
-	o.Set(mFarPlane, 0.0f, 0.0f);
-	l2g.TransformVector(&n);
-	l2g.TransformPoints(&o, 1);
+	n = { -1.0f, 0.0f, 0.0f };
+	o = { mFarPlane, 0.0f, 0.0f };
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	result.Far.n = n;
 	result.Far.o = o;
 
@@ -372,16 +359,16 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	float s = sinf((float)mVerticalFOV*0.5f*DEG_TO_RAD);
 	float c = cosf((float)mVerticalFOV*0.5f*DEG_TO_RAD);
 
-	n.Set(s, 0.0f, c);
-	o.Set(0.0f, 0.0f, 0.0f);
-	l2g.TransformVector(&n);
-	l2g.TransformPoints(&o, 1);
+	n = { s, 0.0f, c };
+	o = { 0.0f, 0.0f, 0.0f };
+	n = transformVector3(l2g, n);
+	o = transformPoint3(l2g, o);
 	result.Down.n = n;
 	result.Down.o = o;
 
 	// up plane
-	n.Set(s, 0.0f, -c);
-	l2g.TransformVector(&n);
+	n = { s, 0.0f, -c };
+	n = transformVector3(l2g, n);
 	result.Up.n = n;
 	result.Up.o = o;
 
@@ -391,21 +378,21 @@ Camera::FrustumPlanes Camera::GetFrustum()
 	//c = cosf((float)mVerticalFOV*aspect*0.5f*DEG_TO_RAD);
 	c = cosf(hfov*0.5f);
 
-	n.Set(s, -c, 0.0f);
-	l2g.TransformVector(&n);
+	n = { s, -c, 0.0f };
+	n = transformVector3(l2g, n);
 	result.Left.n = n;
 	result.Left.o = o;
 
 	// right plane
-	n.Set(s, c, 0.0f);
-	l2g.TransformVector(&n);
+	n = { s, c, 0.0f };
+	n = transformVector3(l2g, n);
 	result.Right.n = n;
 	result.Right.o = o;
 	
 	return result;
 }
 
-void Camera::getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrigin, Vector3D &RayDirection)
+void Camera::getRay(const float &ScreenX, const float &ScreenY, v3f &RayOrigin, v3f &RayDirection)
 {
 	SetupNodeIfNeeded();
 	
@@ -421,16 +408,17 @@ void Camera::getRay(const float &ScreenX, const float &ScreenY, Point3D &RayOrig
 	RayDirection.z = -screenPosInCameraY*tt;
 	RayDirection.y = -screenPosInCameraX*tt*aspect;
 	
-	RayOrigin.x = GetLocalToGlobal().e[3][0];
-	RayOrigin.y = GetLocalToGlobal().e[3][1];
-	RayOrigin.z = GetLocalToGlobal().e[3][2];
-	GetLocalToGlobal().TransformVector(&RayDirection);
-	RayDirection.Normalize();
+	RayOrigin.x = GetLocalToGlobal()[3][0];
+	RayOrigin.y = GetLocalToGlobal()[3][1];
+	RayOrigin.z = GetLocalToGlobal()[3][2];
+	RayDirection = transformVector3(GetLocalToGlobal(), RayDirection);
+
+	RayDirection=normalize(RayDirection);
 }
 
 
 // Pt parameter is in global coordinates
-bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
+bool Camera::Project(float &ScreenX, float &ScreenY, v3f Pt)
 {
 	
 	SetupNodeIfNeeded();
@@ -447,13 +435,13 @@ bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
 	
 	
 	// projection (default is perspective)
-	float frustumHeight = (float)tanf(mVerticalFOV * fPI / 360.0f) * mNearPlane;
+	float frustumHeight = (float)tanf(mVerticalFOV * DEG_TO_RAD_2) * mNearPlane;
 	float frustumWidth = frustumHeight * aspect;
 	
 	float deltaX = frustumWidth + frustumWidth;
 	float deltaY = frustumHeight + frustumHeight;
 	float deltaZ = mFarPlane - mNearPlane;
-	Matrix4x4 frust;
+	mat4 frust;
 	
 	if ((mNearPlane <= 0.0f) || (mFarPlane <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
 	{
@@ -496,10 +484,10 @@ bool Camera::Project(float &ScreenX, float &ScreenY, Point3D Pt)
 	// view vector is on x axis in local camera coordinates
 	// so if Pt is just in front of the camera, localPt.x > 0
 	// if Pt is above the camera, localPt.z > 0	
-	Point3D localPt;
-	GetGlobalToLocal().TransformPoint(&Pt, &localPt);
+	v3f localPt = Pt;
+	localPt = transformPoint3(GetGlobalToLocal(), localPt);
 
-	Vector4D result;
+	v4f result;
 
 	/*
 	result.x = frust[0] * localPt.y + frust[1] * localPt.z + frust[2] * localPt.x + frust[3];
@@ -552,15 +540,15 @@ bool	Camera::Draw(TravState* state)
 	int activate = -1;
 	if (getValue("DebugVisibleIndex", activate) && activate==1)
 	{
-		Point3D outP;
-		Vector3D outV;
-		const Matrix3x4& lMat = mFatherNode->GetLocalToGlobal();
-		Point3D* PosOffset = (Point3D*)mPosition.getVector();
+		v3f outP;
+		v3f outV;
+		const mat4& lMat = mFatherNode->GetLocalToGlobal();
+		v3f* PosOffset = (v3f*)mPosition.getVector();
 		lMat.TransformPoint(PosOffset, &outP);
 		lMat.TransformVector(&GetViewVector(), &outV);
 		
-		dd::sphere(outP, Vector3D(0, 1, 0), 0.08);
-		dd::line(outP, outP + outV, Vector3D(0, 1, 0));
+		dd::sphere(outP, v3f(0, 1, 0), 0.08);
+		dd::line(outP, outP + outV, v3f(0, 1, 0));
 	}
 #endif
 	return Node3D::Draw(state);
@@ -642,8 +630,8 @@ bool Camera::ManagePinchTouchEvent(Input::PinchEvent& pinch_event)
 
 		if (pinch_event.state == Input::StatePossible)
 		{
-			Point2D currentPos = pinch_event.p1_start.xy;
-			currentPos += pinch_event.p2_start.xy;
+			v2f currentPos = pinch_event.p1_start;
+			currentPos += v2f(pinch_event.p2_start);
 			currentPos *= 0.5f;
 			currentPos.x /= dwidth;
 			currentPos.y /= dheight;
@@ -662,20 +650,20 @@ bool Camera::ManagePinchTouchEvent(Input::PinchEvent& pinch_event)
 			currentDataStruct->mState = 2;
 			currentDataStruct->mTargetPointDist = getValue<float>("TargetPointDist");
 
-			currentDataStruct->mStartV = ((Point3D)mViewVector);
+			currentDataStruct->mStartV = ((v3f)mViewVector);
 			currentDataStruct->mStartV *= currentDataStruct->mTargetPointDist;
-			currentDataStruct->mStartV += (Point3D)mPosition;
+			currentDataStruct->mStartV += (v3f)mPosition;
 		}
 
 		if (pinch_event.state == Input::StateChanged)
 		{
-			float currentDist = Norm(pinch_event.p1 - pinch_event.p2);
+			float currentDist = length(pinch_event.p1 - pinch_event.p2);
 
 			if (currentDist > 1.0f)
 			{
-				currentDataStruct->mOneOnCoef = Norm(pinch_event.p1_start - pinch_event.p2_start)/ currentDist;
+				currentDataStruct->mOneOnCoef = length(pinch_event.p1_start - pinch_event.p2_start)/ currentDist;
 			}
-			Point3D newPosition((Point3D)mViewVector);
+			v3f newPosition((v3f)mViewVector);
 
 			newPosition *= -currentDataStruct->mTargetPointDist*currentDataStruct->mOneOnCoef;
 			newPosition += currentDataStruct->mStartV;
@@ -722,7 +710,7 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 		float dwidth, dheight;
 		getRenderingScreen()->GetDesignSize(dwidth, dheight);
 
-		Point2D currentPos = scroll_event.position.xy;
+		v2f currentPos = scroll_event.position;
 		currentPos.x /= dwidth;
 		currentPos.y /= dheight;
 
@@ -750,17 +738,17 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 			{
 				currentDataStruct->mOneOnCoef = 2.0f / dwidth;
 			}
-			Point2D		screenCenter;
+			v2f		screenCenter;
 			screenCenter.x = dwidth*0.5f;
 			screenCenter.y = dheight*0.5f;
 
-			currentDataStruct->mStartPt = scroll_event.start_position.xy;
+			currentDataStruct->mStartPt = scroll_event.start_position;
 			currentDataStruct->mStartPt -= screenCenter;
 
 			currentDataStruct->mStartPt *= currentDataStruct->mOneOnCoef;
 
 			currentDataStruct->mState = 0;
-			if (NormSquare(currentDataStruct->mStartPt) < 1.0f)
+			if (length2(currentDataStruct->mStartPt) < 1.0f)
 			{
 				currentDataStruct->mState = 1; // rotation
 
@@ -778,13 +766,18 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 
 				// store start V in "eye" coordinates (depth is on X axis)
 				// 
-				currentDataStruct->mStartV.Set(-thc, currentDataStruct->mStartPt.x, currentDataStruct->mStartPt.y);
+				currentDataStruct->mStartV = { -thc, currentDataStruct->mStartPt.x, currentDataStruct->mStartPt.y };
 
 				// store starting camera data
 
-				Vector3D	right;
-				right.CrossProduct( (Point3D)mUpVector, (Point3D)mViewVector);
-				currentDataStruct->mStartMatrix.Set((Point3D)mViewVector, right, (Point3D)mUpVector, (Point3D)mPosition);
+				v3f	right;
+				right=cross( (v3f)mUpVector, (v3f)mViewVector);
+				currentDataStruct->mStartMatrix = mat4(0.0f);
+				currentDataStruct->mStartMatrix[0] = v4f(mViewVector,0.0f);
+				currentDataStruct->mStartMatrix[1] = v4f(right, 0.0f);
+				currentDataStruct->mStartMatrix[2] = v4f(mUpVector, 0.0f);
+				currentDataStruct->mStartMatrix[3] = v4f(mPosition, 1.0f);
+
 				currentDataStruct->mTargetPointDist = getValue<float>("TargetPointDist");
 			}
 
@@ -795,18 +788,18 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 			if (currentDataStruct->mState == 1) // rotation
 			{
 				// sphere ray intersection at current position
-				Point2D		screenCenter;
+				v2f		screenCenter;
 				screenCenter.x = dwidth*0.5f;
 				screenCenter.y = dheight*0.5f;
 
-				Point2D currentPos;
-				currentPos = scroll_event.position.xy;
+				v2f currentPos;
+				currentPos = scroll_event.position;
 				currentPos -= screenCenter;
 				currentPos *= currentDataStruct->mOneOnCoef;
 
-				if (NormSquare(currentPos) > 1.0f)
+				if (length2(currentPos) > 1.0f)
 				{
-					currentPos.Normalize();
+					currentPos = normalize(currentPos);
 				}
 				float d2 = (currentPos.x*currentPos.x + currentPos.y*currentPos.y);
 				float thc = 1.0f - d2;
@@ -820,43 +813,46 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 				}
 				
 
-				Vector3D currentV;
+				v3f currentV;
 
 				// store currentV in "eye" coordinates (depth is on X axis)
-				currentV.Set(-thc, currentPos.x, currentPos.y );
+				currentV = { -thc, currentPos.x, currentPos.y };
 
 
 				// find normal vector to both currentV & currentDataStruct->mStartV
 
-				Vector3D	normalV;
-				normalV.CrossProduct(currentDataStruct->mStartV, currentV);
-				
-				normalV.Normalize();
-
-				currentDataStruct->mStartMatrix.TransformVector(&normalV);
+				v3f	normalV;
+				normalV=normalize(cross(currentDataStruct->mStartV, currentV));
+	
+				normalV = transformVector3(currentDataStruct->mStartMatrix,normalV);
 
 				// quaternion transforming mStartV to currentV
-				Vector3D startV = currentDataStruct->mStartV;
+				v3f startV = currentDataStruct->mStartV;
 
-				currentDataStruct->mStartMatrix.TransformVector(&startV);
-				currentDataStruct->mStartMatrix.TransformVector(&currentV);
+				startV = transformVector3(currentDataStruct->mStartMatrix,startV);
+				currentV = transformVector3(currentDataStruct->mStartMatrix,currentV);
 
-				Quaternion	q = RotationArc(currentV, startV);
+				
+				v3f a = cross(currentV, startV);
+				float w = sqrtf(length2(currentV) * length2(startV)) + dot(currentV, startV);
+				quat	q(a.x,a.y,a.z, w);
+				
+				q=normalize(q);
 
-				Matrix3x3	rotate(q);
+				mat3	rotate(q);
 
-				Vector3D	rview = rotate*currentDataStruct->mStartMatrix.XAxis;
+				v3f	rview = rotate * currentDataStruct->mStartMatrix[0];
 
 				mViewVector = rview;
 
-				Vector3D	rup = rotate*currentDataStruct->mStartMatrix.ZAxis;
+				v3f	rup = rotate*currentDataStruct->mStartMatrix[2];
 
 				mUpVector = rup;
 
-				Point3D	rotationCenterPos(currentDataStruct->mStartMatrix.Pos);
-				rotationCenterPos += currentDataStruct->mStartMatrix.XAxis*currentDataStruct->mTargetPointDist;
+				v3f	rotationCenterPos(currentDataStruct->mStartMatrix[3]);
+				rotationCenterPos += currentDataStruct->mStartMatrix[0] *currentDataStruct->mTargetPointDist;
 
-				Vector3D	posRotation(rotationCenterPos, currentDataStruct->mStartMatrix.Pos,  asVector());
+				v3f	posRotation(v3f(currentDataStruct->mStartMatrix[3]) - rotationCenterPos);
 
 				posRotation = rotate*posRotation;
 
@@ -884,10 +880,10 @@ bool Camera::ManageScrollTouchEvent(Input::ScrollEvent& scroll_event)
 }
 
 
-void Camera::ChangeMatrix(const Matrix3x4& m)
+void Camera::ChangeMatrix(const mat4& m)
 {
-	mViewVector = m.XAxis;
-	mUpVector = m.ZAxis;
-	mPosition = m.Pos;
+	mViewVector = m[0];
+	mUpVector = m[2];
+	mPosition = m[3];
 	RecomputeMatrix();
 }

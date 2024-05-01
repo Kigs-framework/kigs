@@ -1,5 +1,5 @@
 # ################################################################
-# Copyright (c) Yann Collet, Facebook, Inc.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 # All rights reserved.
 #
 # This source code is licensed under both the BSD-style license (found in the
@@ -249,7 +249,7 @@ clean:
 #-----------------------------------------------------------------------------
 # make install is validated only for below listed environments
 #-----------------------------------------------------------------------------
-ifneq (,$(filter $(UNAME),Linux Darwin GNU/kFreeBSD GNU OpenBSD FreeBSD NetBSD DragonFly SunOS Haiku AIX))
+ifneq (,$(filter $(UNAME),Linux Darwin GNU/kFreeBSD GNU OpenBSD FreeBSD NetBSD DragonFly SunOS Haiku AIX MSYS_NT CYGWIN_NT))
 
 lib: libzstd.pc
 
@@ -298,7 +298,7 @@ INSTALL_DATA    ?= $(INSTALL) -m 644
 
 libzstd.pc: libzstd.pc.in
 	@echo creating pkgconfig
-	@sed $(SED_ERE_OPT) \
+	@sed \
 	        -e 's|@PREFIX@|$(PREFIX)|' \
 	        -e 's|@EXEC_PREFIX@|$(PCEXEC_PREFIX)|' \
 	        -e 's|@INCLUDEDIR@|$(PCINCPREFIX)$(PCINCDIR)|' \

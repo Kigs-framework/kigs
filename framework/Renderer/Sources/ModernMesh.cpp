@@ -217,7 +217,7 @@ void ModernMesh::InitBoundingBox()
 				{
 					unsigned char* vertexStart = (unsigned char*)current->mVertexBufferArray.buffer();
 					
-					Point3D*	currentVertex = (Point3D*)vertexStart;
+					v3f*	currentVertex = (v3f*)vertexStart;
 					int i;
 
 					if (first)
@@ -232,7 +232,7 @@ void ModernMesh::InitBoundingBox()
 						mBoundingBox.Update(*currentVertex);
 					
 						vertexStart += current->mVertexSize;
-						currentVertex = (Point3D*)vertexStart;
+						currentVertex = (v3f*)vertexStart;
 					}
 				}
 			}
@@ -1000,15 +1000,15 @@ void ModernMesh::GetVertex(int & VCount, float *& VArray)
 	}
 }
 
-void ModernMeshItemGroup::GetTangent(unsigned char* v1, unsigned char* v2, unsigned char* v3, unsigned int tcpos, Vector3D& sdir)
+void ModernMeshItemGroup::GetTangent(unsigned char* v1, unsigned char* v2, unsigned char* v3, unsigned int tcpos, v3f& sdir)
 {
-	const Point2D&		w1 = *(Point2D*)(v1 + tcpos);
-	const Point2D&		w2 = *(Point2D*)(v2 + tcpos);
-	const Point2D&		w3 = *(Point2D*)(v3 + tcpos);
+	const v2f&		w1 = *(v2f*)(v1 + tcpos);
+	const v2f&		w2 = *(v2f*)(v2 + tcpos);
+	const v2f&		w3 = *(v2f*)(v3 + tcpos);
 
-	const Point3D&		vt1 = *(Point3D*)v1;
-	const Point3D&		vt2 = *(Point3D*)v2;
-	const Point3D&		vt3 = *(Point3D*)v3;
+	const v3f&		vt1 = *(v3f*)v1;
+	const v3f&		vt2 = *(v3f*)v2;
+	const v3f&		vt3 = *(v3f*)v3;
 
 	float x1 = vt2.x - vt1.x;
 	float x2 = vt3.x - vt1.x;
@@ -1023,7 +1023,7 @@ void ModernMeshItemGroup::GetTangent(unsigned char* v1, unsigned char* v2, unsig
 	float t2 = w3.y - w1.y;
 
 	float r = 1.0F / (s1 * t2 - s2 * t1);
-	sdir.Set((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+	sdir = v3f((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
 		(t2 * z1 - t1 * z2) * r);
 
 
@@ -1087,10 +1087,10 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 	unsigned char* vertexStart = (unsigned char*)mVertexBufferArray.buffer();
 	unsigned int   vsize = mVertexSize - toAdd.inSize;
 
-	Vector3D*	tangentArray = new Vector3D[mVertexCount];
-	memset(tangentArray, 0, sizeof(Vector3D)*mVertexCount);
+	v3f*	tangentArray = new v3f[mVertexCount];
+	memset(tangentArray, 0, sizeof(v3f)*mVertexCount);
 
-	Vector3D sdir;
+	v3f sdir;
 	int i;
 	if (useTextureCoords)
 	{
@@ -1105,7 +1105,7 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 				unsigned char* v2 = vertexStart + vsize*triangles[i].indices[1];
 				unsigned char* v3 = vertexStart + vsize*triangles[i].indices[2];
 
-				sdir.Set(0.0f, 0.0f, 0.0f);
+				sdir = { 0.0f, 0.0f, 0.0f };
 				GetTangent(v1, v2, v3, textcoordpos, sdir);
 
 				tangentArray[triangles[i].indices[0]] += sdir;
@@ -1125,7 +1125,7 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 				unsigned char* v2 = vertexStart + vsize*triangles[i].indices[1];
 				unsigned char* v3 = vertexStart + vsize*triangles[i].indices[2];
 
-				sdir.Set(0.0f, 0.0f, 0.0f);
+				sdir = { 0.0f, 0.0f, 0.0f };
 				GetTangent(v1, v2, v3, textcoordpos, sdir);
 
 				tangentArray[triangles[i].indices[0]] += sdir;
@@ -1152,36 +1152,34 @@ void ModernMeshItemGroup::ComputeTangents(bool useTextureCoords)
 		memcpy(writeVertex, readVertex, vsize);
 
 		char*				cn = (char*)(readVertex + normalpos);
-		Vector3D			n(((float)(*cn))*(2.0f / 255.0f), ((float)(*(cn + 1)))*(2.0f / 255.0f), ((float)(*(cn + 2)))*(2.0f / 255.0f));
+		v3f			n(((float)(*cn))*(2.0f / 255.0f), ((float)(*(cn + 1)))*(2.0f / 255.0f), ((float)(*(cn + 2)))*(2.0f / 255.0f));
 		
-		Vector3D&			t = tangentArray[i];
+		v3f&			t = tangentArray[i];
 
-		Vector3D	t1;
+		v3f	t1;
 		if (!useTextureCoords)
 		{
-			n.Normalize();
+			n=normalize(n);
 
 			if (fabsf(n.z) > 0.8)
 			{
-				t.Set(1, 0, 0);
+				t = { 1, 0, 0 };
 			}
 			else
 			{
-				t.Set(0, 0, 1);
+				t = { 0, 0, 1 };
 			}
 	
 		}
 		else
 		{
-			t.Normalize();
+			t=normalize(t);
 		}
 		
-		t1.CrossProduct(n, t);
+		t1=normalize(cross(n, t));
 
-		t1.Normalize();
 		// and t again
-		t.CrossProduct(t1, n);
-		t.Normalize();
+		t=normalize(cross(t1, n));
 
 
 		unsigned int*		writeTangent = (unsigned int*)(writeVertex + vsize);
@@ -1229,9 +1227,9 @@ void ModernMeshItemGroup::ComputeNormals()
 	unsigned char* vertexStart = (unsigned char*)mVertexBufferArray.buffer();
 	unsigned int   vsize = mVertexSize - toAdd.inSize;
 
-	Vector3D*	nArray = new Vector3D[mVertexCount];
-	memset(nArray, 0, sizeof(Vector3D)*mVertexCount);
-	Vector3D N;
+	v3f*	nArray = new v3f[mVertexCount];
+	memset(nArray, 0, sizeof(v3f)*mVertexCount);
+	v3f N;
 	
 	if (mVertexCount < 65536)
 	{
@@ -1239,12 +1237,11 @@ void ModernMeshItemGroup::ComputeNormals()
 		// we have to use triangles to compute normals, each vertice apart is not useful
 		for (int i = 0; i < mTriangleCount; i++)
 		{
-			Vector3D* v1 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[0]);
-			Vector3D* v2 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[1]);
-			Vector3D* v3 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[2]);
+			v3f* v1 = (v3f*)(vertexStart + vsize*triangles[i].indices[0]);
+			v3f* v2 = (v3f*)(vertexStart + vsize*triangles[i].indices[1]);
+			v3f* v3 = (v3f*)(vertexStart + vsize*triangles[i].indices[2]);
 
-			N.CrossProduct(*v2 - *v1, *v3 - *v1);
-			N.Normalize();
+			N = normalize(cross(*v2 - *v1, *v3 - *v1));
 
 			nArray[triangles[i].indices[0]] += N;
 			nArray[triangles[i].indices[1]] += N;
@@ -1257,12 +1254,11 @@ void ModernMeshItemGroup::ComputeNormals()
 		// we have to use triangles to compute tangents, each vertice apart is not useful
 		for (int i = 0; i < mTriangleCount; i++)
 		{
-			Vector3D* v1 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[0]);
-			Vector3D* v2 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[1]);
-			Vector3D* v3 = (Vector3D*)(vertexStart + vsize*triangles[i].indices[2]);
+			v3f* v1 = (v3f*)(vertexStart + vsize*triangles[i].indices[0]);
+			v3f* v2 = (v3f*)(vertexStart + vsize*triangles[i].indices[1]);
+			v3f* v3 = (v3f*)(vertexStart + vsize*triangles[i].indices[2]);
 
-			N.CrossProduct(*v2 - *v1, *v3 - *v1);
-			N.Normalize();
+			N=normalize(cross(*v2 - *v1, *v3 - *v1));
 
 			nArray[triangles[i].indices[0]] += N;
 			nArray[triangles[i].indices[1]] += N;
@@ -1285,7 +1281,7 @@ void ModernMeshItemGroup::ComputeNormals()
 	{
 		memcpy(write, read, vsize);
 
-		nArray[i].Normalize();
+		nArray[i]=normalize(nArray[i]);
 
 		unsigned int*		writeNormal = (unsigned int*)(write + vsize);
 		signed char*		component = (signed char*)writeNormal;
@@ -1312,7 +1308,7 @@ void ModernMeshItemGroup::ApplyScaleFactor(float scaleFactor)
 
 	for (int i = 0; i < mVertexCount; i++)
 	{
-		Vector3D& v1 = (Vector3D&)*((Vector3D*)(vertexStart + vsize*i));
+		v3f& v1 = (v3f&)*((v3f*)(vertexStart + vsize*i));
 		v1 *= scaleFactor;
 	}
 		
@@ -1326,19 +1322,18 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 	unsigned int   vsize = mVertexSize;
 
 
-	Matrix3x3 flipped;
-	flipped.Clear();
+	mat4 flipped(1.0f);
 
-	flipped.XAxis[abs(axisX) - 1] = (axisX < 0) ? -1 : 1;
-	flipped.YAxis[abs(axisY) - 1] = (axisY < 0) ? -1 : 1;
-	flipped.ZAxis[abs(axisZ) - 1] = (axisZ < 0) ? -1 : 1;
+	column(flipped,0)[abs(axisX) - 1] = (axisX < 0) ? -1 : 1;
+	column(flipped,1)[abs(axisY) - 1] = (axisY < 0) ? -1 : 1;
+	column(flipped,2)[abs(axisZ) - 1] = (axisZ < 0) ? -1 : 1;
 
 	// flip vertex
 	for (int i = 0; i < mVertexCount; i++)
 	{
-		Vector3D& v1 = (Vector3D&)*((Vector3D*)(vertexStart + vsize*i));
+		v3f& v1 = (v3f&)*((v3f*)(vertexStart + vsize*i));
 		
-		flipped.TransformVector(&v1);
+		v1 = transformVector3(flipped,v1);
 	}
 
 	// flip normals
@@ -1349,9 +1344,9 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 		unsigned char* normalStart = vertexStart + normaldesc->inStartPos;
 		for (int i = 0; i < mVertexCount; i++)
 		{
-			Vector3D& n1 = (Vector3D&)*((Vector3D*)(normalStart + vsize*i));
+			v3f& n1 = (v3f&)*((v3f*)(normalStart + vsize*i));
 
-			flipped.TransformVector(&n1);
+			n1 = transformVector3(flipped ,n1);
 		}
 	}
 
@@ -1363,9 +1358,9 @@ void ModernMeshItemGroup::FlipAxis(int axisX, int axisY, int axisZ)
 		unsigned char* tangentStart = vertexStart + tangentdesc->inStartPos;
 		for (int i = 0; i < mVertexCount; i++)
 		{
-			Vector3D& t1 = (Vector3D&)*((Vector3D*)(tangentStart + vsize*i));
+			v3f& t1 = (v3f&)*((v3f*)(tangentStart + vsize*i));
 
-			flipped.TransformVector(&t1);
+			t1 = transformVector3(flipped,t1);
 		}
 	}
 

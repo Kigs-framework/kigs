@@ -33,9 +33,9 @@ namespace Kigs
 			{
 				type = t;
 				time = ti;
-				memcpy(name, evt_name, MAX(strlen(evt_name), THREAD_PROFILER_STRING_SIZE));
+				memcpy(name, evt_name, std::max(strlen(evt_name), (size_t)THREAD_PROFILER_STRING_SIZE));
 				name[THREAD_PROFILER_STRING_SIZE - 1] = 0;
-				memcpy(function_name, func_name, MAX(strlen(evt_name), THREAD_PROFILER_STRING_SIZE));
+				memcpy(function_name, func_name, std::max(strlen(evt_name), (size_t)THREAD_PROFILER_STRING_SIZE));
 				function_name[THREAD_PROFILER_STRING_SIZE - 1] = 0;
 			}
 			TimeEventType type;

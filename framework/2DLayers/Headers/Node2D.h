@@ -144,9 +144,13 @@ namespace Kigs
 			inline const std::set<Node2D*, Node2D::PriorityCompare>& GetSons() { ResortSons(); return mSons; }
 
 			// transform local points to global
-			inline void	TransformPoints(Point2D* totransform, int count) const
+			inline void	TransformPoints(v2f* totransform, int count) const
 			{
-				mGlobalTransformMatrix.TransformPoints(totransform, count);
+				for(auto i=0;i<count;i++)
+				{
+					*totransform = mGlobalTransformMatrix * v3f(totransform->x, totransform->y,1.0f);
+					++totransform;
+				}
 			}
 
 			v2f GetPosition() const { return mPosition; }
@@ -158,12 +162,12 @@ namespace Kigs
 
 			void	GetGlobalPosition(float& X, float& Y);
 
-			inline const Matrix3x3& GetGlobalTransform() const
+			inline const mat3& GetGlobalTransform() const
 			{
 				return mGlobalTransformMatrix;
 			}
 
-			void GetTransformedPoints(Point2D* pt);
+			void GetTransformedPoints(v2f* pt);
 
 
 			virtual void SetUpNodeIfNeeded();
@@ -227,8 +231,8 @@ namespace Kigs
 
 			v2f													mRealSize{ 0,0 };
 
-			Matrix3x3											mLocalTransformMatrix;
-			Matrix3x3											mGlobalTransformMatrix;
+			mat3											mLocalTransformMatrix;
+			mat3											mGlobalTransformMatrix;
 			maEnum<7>											mSizeModeX = BASE_ATTRIBUTE(SizeModeX, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 			maEnum<7>											mSizeModeY = BASE_ATTRIBUTE(SizeModeY, "Default", "Multiply", "Add", "Content", "ContentMult", "ContentAdd", "KeepRatio");
 

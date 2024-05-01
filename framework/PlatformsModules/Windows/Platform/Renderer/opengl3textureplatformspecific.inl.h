@@ -218,7 +218,7 @@ namespace Kigs
 			return result;
 		}
 
-		bool	OpenGLTexture::UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const Point2DI& bitmapSize)
+		bool	OpenGLTexture::UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const v2i& bitmapSize)
 		{
 			RendererOpenGL* renderer = reinterpret_cast<RendererOpenGL*>(ModuleRenderer::mTheGlobalRenderer); // (RendererOpenGL*)((ModuleRenderer*)Core::Instance()->GetMainModuleInList(RendererModuleCoreIndex))->GetSpecificRenderer();
 			renderer->BindTexture(RENDERER_TEXTURE_2D, mTextureGLIndex);
@@ -226,7 +226,7 @@ namespace Kigs
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			glPixelStorei(GL_UNPACK_ROW_LENGTH, bitmapSize.x);
 
-			Point2DI	zonesize = zone.Size();
+			v2i	zonesize = zone.Size();
 
 			glTexSubImage2D(GL_TEXTURE_2D, 0, zone.m_Min.x, zone.m_Min.y, zonesize.x, zonesize.y, GL_RGBA, GL_UNSIGNED_BYTE, bitmapbuffer);
 

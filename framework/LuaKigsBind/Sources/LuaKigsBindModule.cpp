@@ -20,6 +20,7 @@
 #include <algorithm>
 
 using namespace LuaIntf;
+using namespace Kigs;
 using namespace Kigs::Lua;
 
 bool gLuaImGuiProtected = false;

@@ -81,11 +81,11 @@ namespace Kigs
 				}
 			}
 
-			void Update(const Point2DI& P)
+			void Update(const v2i& P)
 			{
 				if (IsEmpty())
 				{
-					//KIGS_ERROR("BBoxIBase can not be init with Point2DI",2);
+					//KIGS_ERROR("BBoxIBase can not be init with v2i",2);
 				}
 				else
 				{
@@ -181,8 +181,8 @@ namespace Kigs
 			Point3DType m_Min, m_Max;
 		};
 
-		typedef BBoxIBase<Point3DI, int> BBoxI;
-		typedef BBoxIBase<Point3DSI, short> BBoxSI;
+		typedef BBoxIBase<v3i, int> BBoxI;
+		
 
 	}
 }

@@ -95,7 +95,7 @@ namespace Kigs
 			* \brief	update zone in texture (only RGBA8888)
 			* \fn		virtual bool	UpdateBufferZone(...)=0;
 			*/
-			virtual bool	UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const Point2DI& bitmapSize)
+			virtual bool	UpdateBufferZone(unsigned char* bitmapbuffer, const BBox2DI& zone, const v2i& bitmapSize)
 			{
 				assert(0);
 				return false;

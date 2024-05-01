@@ -28,8 +28,8 @@ namespace Kigs
 		public:
 			void Init(Camera* cam);
 
-			Vector3D	camViewVector;
-			Point3D		camPos;
+			v3f		camViewVector;
+			v3f		camPos;
 			// test only one bbox point
 			unsigned char	BBoxPointToTestIndexes[4];
 			bool flag_set_in_parents = false;

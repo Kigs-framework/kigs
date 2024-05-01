@@ -456,7 +456,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	fread(&(pMesh->mVertexCount),sizeof(unsigned int),1,mFile);
 	if(pMesh->mVertexCount)
 	{
-		pMesh->mVertexArray=new Point3D[pMesh->mVertexCount];
+		pMesh->mVertexArray=new v3f[pMesh->mVertexCount];
 
 		ReadFloatArray((float*)pMesh->mVertexArray,pMesh->mVertexCount*3,mFile);
 	}
@@ -464,7 +464,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	fread(&(pMesh->mNormalCount),sizeof(unsigned int),1,mFile);
 	if(pMesh->mNormalCount)
 	{
-		pMesh->mNormalArray=new Vector3D[pMesh->mNormalCount];
+		pMesh->mNormalArray=new v3f[pMesh->mNormalCount];
 
 		ReadFloatArray((float*)pMesh->mNormalArray,pMesh->mNormalCount*3,mFile);
 	}
@@ -480,7 +480,7 @@ int BinMeshLoader::ReadFile(Mesh *pMesh)
 	fread(&(pMesh->mColorCount),sizeof(unsigned int),1,mFile);
 	if(pMesh->mColorCount)
 	{
-		pMesh->mColorArray=new Vector4D[pMesh->mColorCount];
+		pMesh->mColorArray=new v4f[pMesh->mColorCount];
 
 		ReadFloatArray((float*)pMesh->mColorArray,pMesh->mColorCount*4,mFile);
 	}
@@ -836,23 +836,23 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	BinFileStruct::ReadStruct(&datasize,mFile);
 
 	unsigned int	VertexCount=0;
-	Point3D*		VertexArray=0;
+	v3f*		VertexArray=0;
 
 	fread(&(VertexCount),sizeof(unsigned int),1,mFile);
 	if(VertexCount)
 	{
-		VertexArray=new Point3D[VertexCount];
+		VertexArray=new v3f[VertexCount];
 
 		ReadFloatArray((float*)VertexArray,VertexCount*3,mFile);
 	}
 
 	unsigned int	NormalCount=0;
-	Vector3D*		NormalArray=0;
+	v3f*		NormalArray=0;
 
 	fread(&(NormalCount),sizeof(unsigned int),1,mFile);
 	if(NormalCount)
 	{
-		NormalArray=new Vector3D[NormalCount];
+		NormalArray=new v3f[NormalCount];
 		ReadFloatArray((float*)NormalArray,NormalCount*3,mFile);
 	}
 
@@ -867,12 +867,12 @@ int BinMeshLoader::ReadFile(ModernMesh *pMesh)
 	}
 
 	unsigned int		ColorCount=0;
-	Vector4D*			ColorArray=0;
+	v4f*			ColorArray=0;
 
 	fread(&(ColorCount),sizeof(unsigned int),1,mFile);
 	if(ColorCount)
 	{
-		ColorArray=new Vector4D[ColorCount];
+		ColorArray=new v4f[ColorCount];
 		ReadFloatArray((float*)ColorArray,ColorCount*4,mFile);
 	}
 

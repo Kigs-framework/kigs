@@ -1,6 +1,6 @@
 add_library(Core STATIC "")
 
-target_link_libraries(Core PUBLIC BaseFramework XML FileManager Timer)
+target_link_libraries(Core PUBLIC BaseFramework XML FileManager Timer glm)
 target_include_directories(Core PUBLIC "Headers")
 
 

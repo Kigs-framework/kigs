@@ -28,13 +28,10 @@ namespace Kigs
 
 
 
-			void setQuaternion(Quaternion q)
+			void setQuaternion(quat q)
 			{
-				q.Normalize();
-				mRotationQuaternion[0] = q.V.x;
-				mRotationQuaternion[1] = q.V.y;
-				mRotationQuaternion[2] = q.V.z;
-				mRotationQuaternion[3] = q.w;
+				normalize(q);
+				mRotationQuaternion=q;
 			}
 
 		protected:
@@ -62,7 +59,7 @@ namespace Kigs
 
 			void DoInputDeviceDescription() override {}
 
-			void setAcceleration(const Vector3D& a)
+			void setAcceleration(const v3f& a)
 			{
 				mAcceleration = a;
 			}

@@ -1079,7 +1079,7 @@ namespace Kigs
 				mDirtyMatrix |= (1 << mode);
 			}
 
-			inline void			PushAndLoadMatrix(int mode, const Matrix4x4& m)
+			inline void			PushAndLoadMatrix(int mode, const mat4& m)
 			{
 				mMatrixStack[mode].push_back(m);
 				mDirtyMatrix |= (1 << mode);
@@ -1100,8 +1100,8 @@ namespace Kigs
 			void			Multiply(int mode, const float* m)
 			{
 				mDirtyMatrix |= (1 << mode);
-				Matrix4x4& m1 = mMatrixStack[mode].back();
-				Matrix4x4& m2 = *((Matrix4x4*)m);
+				mat4& m1 = mMatrixStack[mode].back();
+				mat4& m2 = *((mat4*)m);
 				//myMatrixStack[mode].back().Mult(m1, m2);
 				m1 *= m2;
 			}
@@ -1109,10 +1109,9 @@ namespace Kigs
 			inline void			PushAndMultMatrix(int mode, const float* m)
 			{
 				mDirtyMatrix |= (1 << mode);
-				Matrix4x4& m1 = mMatrixStack[mode].back();
-				Matrix4x4& m2 = *((Matrix4x4*)m);
-				mMatrixStack[mode].push_back();
-				mMatrixStack[mode].back().Mult(m2, m1);
+				mat4& m1 = mMatrixStack[mode].back();
+				mat4& m2 = *((mat4*)m);
+				mMatrixStack[mode].push_back(m2 * m1);
 			}
 
 
@@ -1227,7 +1226,7 @@ namespace Kigs
 
 			// matrix management
 
-			FixedSizeStack<Matrix4x4, 32>						mMatrixStack[4];
+			FixedSizeStack<mat4, 32>						mMatrixStack[4];
 			unsigned int										mDirtyMatrix;			// flag to check if matrix stack was modified
 
 			int													mCurrentTextureUnit = 0;

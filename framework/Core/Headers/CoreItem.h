@@ -4,6 +4,7 @@
 #include "SmartPointer.h"
 #include "usString.h"
 #include "TecLibs/Tec3D.h"
+#include "CoreTypes.h"
 
 namespace Kigs
 {

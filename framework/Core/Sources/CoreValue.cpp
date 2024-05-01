@@ -4,6 +4,7 @@
 #include "CoreModifiableAttribute.h"
 #include "maUSString.h"
 
+using namespace Kigs;
 using namespace Kigs::Core;
 
 template<>
@@ -13,31 +14,31 @@ CoreModifiableAttribute* CoreValue<bool>::createAttribute()
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<float>::createAttribute()
+CoreModifiableAttribute* CoreValue<f32>::createAttribute()
 {
 	return new maFloatOrphan("Val", this->mValue);
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<double>::createAttribute()
+CoreModifiableAttribute* CoreValue<f64>::createAttribute()
 {
 	return new maFloatOrphan("Val", (float)this->mValue);
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Point2D>::createAttribute()
+CoreModifiableAttribute* CoreValue<v2f>::createAttribute()
 {
 	return new maVect2DFOrphan("Val", &(this->mValue.x));
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Point3D>::createAttribute()
+CoreModifiableAttribute* CoreValue<v3f>::createAttribute()
 {
 	return new maVect3DFOrphan("Val", &(this->mValue.x));
 }
 
 template<>
-CoreModifiableAttribute* CoreValue<Vector4D>::createAttribute()
+CoreModifiableAttribute* CoreValue<v4f>::createAttribute()
 {
 	return new maVect4DFOrphan("Val", &(this->mValue.x));
 }

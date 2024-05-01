@@ -43,10 +43,10 @@ DebugDraw::~DebugDraw()
 
 
 
-void DebugDraw::GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const
+void DebugDraw::GetNodeBoundingBox(v3f& pmin, v3f& pmax) const
 {
-	pmin.Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-	pmax.Set(FLT_MAX, FLT_MAX, FLT_MAX);
+	pmin = v3f(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	pmax = v3f(FLT_MAX, FLT_MAX, FLT_MAX);
 }
 
 TravState* DebugDraw::currentState = nullptr;
@@ -146,21 +146,21 @@ void DebugDraw::removeUser(CoreModifiable* parent)
 
 namespace
 {
-	Point2D current_size(1,1);
+	v2f current_size(1,1);
 };
 
-void dd::set_rendering_size(Point2D size)
+void dd::set_rendering_size(v2f size)
 {
 	current_size = size;
 }
 
-void dd::line2D(Point2D p1, Point2D p2, ddVec3Param color, int duration)
+void dd::line2D(v2f p1, v2f p2, ddVec3Param color, int duration)
 {
 	dd::line({ p1.x*current_size.x, p1.y*current_size.y, 0 }, { p2.x*current_size.x, p2.y*current_size.y, 0 }, color, duration, false);
 }
 
 
-void dd::rect2D(Point2D p1, Point2D p2, ddVec3Param color, int duration)
+void dd::rect2D(v2f p1, v2f p2, ddVec3Param color, int duration)
 {
 	dd::line2D(p1, { p2.x, p1.y }, color, duration);
 	dd::line2D(p2, { p2.x, p1.y }, color, duration);
@@ -181,9 +181,9 @@ dd::CameraPoints dd::camera_points(Camera* cam)
 	float aspect = cam->getValue<float>("AspectRatio");
 	if (aspect == 0) aspect = (rs.x*cam->getValue<float>("ViewportSizeX")) / (rs.y*cam->getValue<float>("ViewportSizeY"));
 
-	float frustumHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * fPI / 360.0f) * nearZ;
+	float frustumHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * glm::pi<float>() / 360.0f) * nearZ;
 
-	float farHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * fPI / 360.0f) * farZ;
+	float farHeight = (float)tanf(cam->getValue<float>("VerticalFOV") * glm::pi<float>() / 360.0f) * farZ;
 	float farWidth = farHeight * aspect;
 
 	float frustumWidth = frustumHeight * aspect;
@@ -191,7 +191,7 @@ dd::CameraPoints dd::camera_points(Camera* cam)
 	v3f pos = cam->GetGlobalPosition();
 	v3f view = cam->GetGlobalViewVector();
 	v3f up = cam->GetGlobalUpVector();
-	v3f right = up^view;
+	v3f right = cross(up,view);
 
 	result.ptnear[0] = pos + view*nearZ + right*frustumWidth + up*frustumHeight;
 	result.ptnear[1] = pos + view*nearZ + right*frustumWidth - up*frustumHeight;
@@ -205,13 +205,13 @@ dd::CameraPoints dd::camera_points(Camera* cam)
 	return result;
 }
 
-void dd::camera(Camera* cam, ddVec3Param color, u32 flags, int duration)
+void dd::camera(Camera* cam, ddVec3Param color, Kigs::u32 flags, int duration)
 {
 	auto pts = dd::camera_points(cam);
 	dd::camera(pts, color, flags, duration);
 }
 
-void dd::camera(const dd::CameraPoints& pts, ddVec3Param color, u32 flags, int duration)
+void dd::camera(const dd::CameraPoints& pts, ddVec3Param color, Kigs::u32 flags, int duration)
 {
 	dd::line(pts.ptnear[0], pts.ptnear[1], color, duration);
 	dd::line(pts.ptnear[1], pts.ptnear[2], color, duration);
@@ -238,10 +238,10 @@ void dd::camera(const dd::CameraPoints& pts, ddVec3Param color, u32 flags, int d
 	dd::line((pts.ptnear[0] + pts.ptnear[1] + pts.ptnear[2] + pts.ptnear[3]) / 4, (pts.ptfar[0] + pts.ptfar[1] + pts.ptfar[2] + pts.ptfar[3]) / 4, color, duration);
 }
 
-void dd::local_bbox(const Matrix3x4& local_to_global, BBox bbox, ddVec3Param color, int duration, bool depth_enabled)
+void dd::local_bbox(const mat4& local_to_global, BBox bbox, ddVec3Param color, int duration, bool depth_enabled)
 {
 	v3f pts[8];
 	bbox.ConvertToPoint(pts);
-	local_to_global.TransformPoints(pts, 8);
+	transformPoints3(local_to_global,pts, 8);
 	dd::box(pts, color, duration, depth_enabled);
 }

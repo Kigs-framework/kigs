@@ -152,7 +152,10 @@ namespace Kigs
 
 		void ScrollWhenDragging(const ImVec2& mult, float threshold, ImGuiMouseButton mouse_button)
 		{
-			ImVec2 delta = -ImGui::GetIO().MouseDelta;
+			ImVec2 delta = ImGui::GetIO().MouseDelta;
+			delta.x = -delta.x;
+			delta.y = -delta.y;
+
 
 			ImGuiContext& g = *ImGui::GetCurrentContext();
 			ImGuiWindow* window = g.CurrentWindow;
@@ -238,9 +241,9 @@ namespace Kigs
 				hsv[1] = std::clamp(hsv[1] * mult, 0.0f, 1.0f);
 				return HSVtoRGB(hsv);
 			};
-			ImGui::PushStyleColor(ImGuiCol_Button, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_Button)).xyz)));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive)).xyz)));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered)).xyz)));
+			ImGui::PushStyleColor(ImGuiCol_Button, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_Button))), ImGui::GetStyleColorVec4(ImGuiCol_Button).w));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive))), ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive).w));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, v4f(saturate(v4f(ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered))), ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered).w));
 		}
 
 		void PopSaturatedButton()

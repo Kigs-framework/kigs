@@ -1,0 +1,3 @@
+[submodule "libs/cross_platform/glm"]
+	path = libs/cross_platform/glm
+	url = https://github.com/g-truc/glm.git

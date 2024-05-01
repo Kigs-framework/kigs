@@ -127,13 +127,13 @@ void ModuleSpecificRenderer::Init(KigsCore* core, const std::vector<CoreModifiab
 
 	// init matrix stack
 	mMatrixStack[0].push_back();
-	mMatrixStack[0][0].SetIdentity();
+	mMatrixStack[0][0] = mat4(1.0f);
 	mMatrixStack[1].push_back();
-	mMatrixStack[1][0].SetIdentity();
+	mMatrixStack[1][0] = mat4(1.0f);
 	mMatrixStack[2].push_back();
-	mMatrixStack[2][0].SetIdentity();
+	mMatrixStack[2][0] = mat4(1.0f);
 	mMatrixStack[3].push_back();
-	mMatrixStack[3][0].SetIdentity();
+	mMatrixStack[3][0] = mat4(1.0f);
 	
 	// create the freetype drawer
 	if (!mDrawer)
@@ -269,19 +269,19 @@ void	ModuleSpecificRenderer::LoadIdentity(int mode)
 {
 	mDirtyMatrix |= (1 << mode);
 	if (mode < 3)
-		mMatrixStack[mode].back().SetIdentity();
+		mMatrixStack[mode].back() = mat4(1.0f);
 }
 
 void	ModuleSpecificRenderer::LoadMatrix(int mode, const float *newMat)
 {
 	mDirtyMatrix |= (1 << mode);
-	Matrix4x4 *mat = &mMatrixStack[mode].back();
-	mat->Set(newMat);
+	mat4 &mat = mMatrixStack[mode].back();
+	mat = glm::make_mat4(newMat);
 }
 
 void	ModuleSpecificRenderer::Translate(int mode, float tx, float ty, float tz)
 {
-	Matrix4x4&	result = mMatrixStack[mode].back();
+	mat4&	result = mMatrixStack[mode].back();
 	/*
 	result[12] += (result[0] * tx + result[4] * ty + result[8] * tz);
 	result[13] += (result[1] * tx + result[5] * ty + result[9] * tz);
@@ -299,8 +299,8 @@ void	ModuleSpecificRenderer::Translate(int mode, float tx, float ty, float tz)
 void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, float z)
 {
 
-	float sinAngle = (float)sinf(angle * fPI / 180.0f);
-	float cosAngle = (float)cosf(angle * fPI / 180.0f);
+	float sinAngle = (float)sinf(angle * glm::pi<float>() / 180.0f);
+	float cosAngle = (float)cosf(angle * glm::pi<float>() / 180.0f);
 	float oneMinusCos = 1.0f - cosAngle;
 	float mag = sqrtf(x * x + y * y + z * z);
 
@@ -322,7 +322,7 @@ void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, flo
 	float ys = y * sinAngle;
 	float zs = z * sinAngle;
 
-	Matrix4x4 rotationMatrix;
+	mat4 rotationMatrix;
 
 	/*
 	rotationMatrix[0] = (oneMinusCos * xx) + cosAngle;
@@ -366,13 +366,13 @@ void	ModuleSpecificRenderer::Rotate(int mode, float angle, float x, float y, flo
 	rotationMatrix[3][2] = 0.0f;
 	rotationMatrix[3][3] = 1.0f;
 
-	Multiply(mode, &(rotationMatrix.e[0][0]));
+	Multiply(mode, &(rotationMatrix[0][0]));
 
 }
 
 void	ModuleSpecificRenderer::Scale(int mode, float sx, float sy, float sz)
 {
-	Matrix4x4&	result = mMatrixStack[mode].back();
+	mat4&	result = mMatrixStack[mode].back();
 
 	/*	
 	result[0] *= sx;
@@ -413,7 +413,7 @@ void	ModuleSpecificRenderer::Frustum(int mode, float left, float right, float bo
 	float deltaX = right - left;
 	float deltaY = top - bottom;
 	float deltaZ = farZ - nearZ;
-	Matrix4x4 frust;
+	mat4 frust;
 
 	if ((nearZ <= 0.0f) || (farZ <= 0.0f) || (deltaX <= 0.0f) || (deltaY <= 0.0f) || (deltaZ <= 0.0f))
 	{
@@ -451,7 +451,7 @@ void	ModuleSpecificRenderer::Frustum(int mode, float left, float right, float bo
 	frust[3][2] = -2.0f * nearZ * farZ / deltaZ;
 	frust[3][0] = frust[3][1] = frust[3][3] = 0.0f;
 
-	Multiply(mode, &(frust.e[0][0]));
+	Multiply(mode, &(frust[0][0]));
 }
 
 void	ModuleSpecificRenderer::Ortho(int mode, float left, float right, float bottom, float top, float nearZ, float farZ)
@@ -460,8 +460,7 @@ void	ModuleSpecificRenderer::Ortho(int mode, float left, float right, float bott
 	float deltaY = top - bottom;
 	float deltaZ = farZ - nearZ;
 
-	Matrix4x4 ortho;
-	ortho.SetIdentity();
+	mat4 ortho(1.0f);
 
 	if ((deltaX == 0.0f) || (deltaY == 0.0f) || (deltaZ == 0.0f))
 	{
@@ -493,12 +492,12 @@ void	ModuleSpecificRenderer::Ortho(int mode, float left, float right, float bott
 #endif
 	
 	ModuleSpecificRenderer::LoadIdentity(mode);
-	Multiply(mode, &(ortho.e[0][0]));
+	Multiply(mode, &(ortho[0][0]));
 }
 
 void	ModuleSpecificRenderer::Perspective(int mode, float fovy, float aspect, float nearZ, float farZ)
 {
-	float frustumHeight = tanf(fovy * fPI / 360.0f) * nearZ;
+	float frustumHeight = tanf(fovy * glm::pi<float>() / 360.0f) * nearZ;
 	float frustumWidth = frustumHeight * aspect;
 
 	ModuleSpecificRenderer::LoadIdentity(mode);

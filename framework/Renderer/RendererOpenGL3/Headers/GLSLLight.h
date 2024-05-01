@@ -36,7 +36,7 @@ namespace Kigs
 				API3DLight(const std::string& name, DECLARE_CLASS_NAME_TREE_ARG);
 			virtual ~API3DLight();
 
-			virtual bool PreRendering(RendererOpenGL* renderer, Camera* cam, Point3D& camPos);
+			virtual bool PreRendering(RendererOpenGL* renderer, Camera* cam, v3f& camPos);
 
 			bool	Draw(TravState* state) override;
 

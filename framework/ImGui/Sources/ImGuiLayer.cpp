@@ -494,7 +494,7 @@ namespace Kigs
 			//FIXME(android resize issue)
 			if (mPosSource == TouchSourceID::Invalid)
 			{
-				mCurrentPos = ev.position.xy;
+				mCurrentPos = v2f(ev.position);
 				if (IsNearInteraction(ev.touch_id))
 					mPosSource = ev.touch_id;
 			}
@@ -507,7 +507,7 @@ namespace Kigs
 						mStartTouchPos = mCurrentPos;
 						mStartGazePos = ev.interaction->Position;
 						mStartGazeUp = v3f(0, -1, 0);
-						mStartGazeRight = ev.direction ^ v3f(0, 1, 0);
+						mStartGazeRight = cross(ev.direction , v3f(0, 1, 0));
 					}
 					mClickSource = ev.touch_id;
 					io.MouseDown[0] = (ev.button_state & 1);
@@ -547,7 +547,7 @@ namespace Kigs
 			if (mIsDown && ev.interaction)
 			{
 				auto diff = ev.interaction->Position - mStartGazePos;
-				v2f extra = { Dot(diff, mStartGazeRight), Dot(diff, mStartGazeUp) };
+				v2f extra = { dot(diff, mStartGazeRight), dot(diff, mStartGazeUp) };
 
 				mCurrentPos = mStartTouchPos + extra * 2048.0f;
 			}

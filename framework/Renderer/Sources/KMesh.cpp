@@ -31,8 +31,8 @@ Mesh::Mesh(const std::string& name,CLASS_NAME_TREE_ARG) : HDrawable(name,PASS_CL
 	mColorArray = 0;
 	mTexArray = 0;
 
-  mBoundingBox.m_Min.Set(0.0f,0.0f,0.0f);
-  mBoundingBox.m_Max.Set(-1.0f,-1.0f,-1.0f);
+	mBoundingBox.m_Min = { 0.0f,0.0f,0.0f };
+	mBoundingBox.m_Max = { -1.0f, -1.0f, -1.0f };
 }
 
 /*
@@ -163,21 +163,21 @@ void  Mesh::InitBoundingBox()
 /*
  *	Compute the normal at triangle vertices ponderated by the angle
  */
-void Mesh::Triangle::NormalAngle(const Point3D* VertexArray, Vector3D &Na, Vector3D &Nb,Vector3D &Nc)
+void Mesh::Triangle::NormalAngle(const v3f* VertexArray, v3f &Na, v3f &Nb,v3f &Nc)
 {
-	Vector3D u,v,w,n;
+	v3f u,v,w,n;
 	u = VertexArray[b]-VertexArray[a];
 	v = VertexArray[c]-VertexArray[b];
 	w = VertexArray[a]-VertexArray[c];
-	u.Normalize();
-	v.Normalize();
-	w.Normalize();
+	normalize(u);
+	normalize(v);
+	normalize(w);
 
-	n.CrossProduct(u,v);
-	n.Normalize();
-	Na =  (float)acosf(fabsf(Dot(u,w))) * n;
-	Nb =  (float)acosf(fabsf(Dot(v,u))) * n;
-	Nc =  (float)acosf(fabsf(Dot(w,v))) * n;
+	n=normalize(cross(u,v));
+	
+	Na =  (float)acosf(fabsf(dot(u,w))) * n;
+	Nb =  (float)acosf(fabsf(dot(v,u))) * n;
+	Nc =  (float)acosf(fabsf(dot(w,v))) * n;
 }
 
 
@@ -240,14 +240,14 @@ int Mesh::getTriangleCount()
 	return Count;
 }
 
-bool Mesh::getVertex(unsigned int index, Point3D &Pt)
+bool Mesh::getVertex(unsigned int index, v3f &Pt)
 {
 	if (index>=mVertexCount) return false;
 	Pt = mVertexArray[index];
 	return true;
 }
 
-void Mesh::SetVertex(unsigned int index, const Point3D &v)
+void Mesh::SetVertex(unsigned int index, const v3f &v)
 {
 	KIGS_ASSERT(index<mVertexCount);
 	mVertexArray[index] = v;
@@ -255,14 +255,14 @@ void Mesh::SetVertex(unsigned int index, const Point3D &v)
 }
 
 
-void Mesh::SetColor(unsigned int index, const Vector4D &v)
+void Mesh::SetColor(unsigned int index, const v4f &v)
 {
 	KIGS_ASSERT(index<mColorCount);
 	mColorArray[index]=v;
 	mColorNeedUpdate=true;	
 }
 
-void Mesh::SetNormal(unsigned int index, const Vector3D &v)
+void Mesh::SetNormal(unsigned int index, const v3f &v)
 {
 	KIGS_ASSERT(index<mNormalCount);
 	mNormalArray[index]=v;
@@ -316,7 +316,7 @@ bool Mesh::getTriangle(int index, int &a, int &b, int &c)
 	return true;
 }
 
-bool Mesh::CopyVertexAndTriangle(int &VCount, int &TCount, Point3D *&VArray, int *&IndexArray)
+bool Mesh::CopyVertexAndTriangle(int &VCount, int &TCount, v3f *&VArray, int *&IndexArray)
 {
 	int j,k;
 
@@ -328,8 +328,8 @@ bool Mesh::CopyVertexAndTriangle(int &VCount, int &TCount, Point3D *&VArray, int
 	}
 
 	VCount = (int)mVertexCount;
-	VArray = new Point3D[VCount];
-	memcpy(VArray,mVertexArray,VCount*sizeof(Point3D));
+	VArray = new v3f[VCount];
+	memcpy(VArray,mVertexArray,VCount*sizeof(v3f));
 
 	IndexArray = new int[TCount*3];
 
@@ -485,7 +485,7 @@ bool	Mesh::GetTexCoordPointer(CoreModifiable* sender,std::vector<CoreModifiableA
 // rebuild all normals from triangles 
 void	Mesh::RecomputeNormals()
 {
-	Vector3D na,nb,nc;
+	v3f na,nb,nc;
 	unsigned int i;
 
 	if(mNormalCount == 0)
@@ -493,7 +493,7 @@ void	Mesh::RecomputeNormals()
 		return;
 	}
 	
-	memset(mNormalArray,0,mNormalCount*sizeof(Vector3D));
+	memset(mNormalArray,0,mNormalCount*sizeof(v3f));
 	
 	std::vector<ModifiableItemStruct>::const_iterator it;
 
@@ -537,7 +537,7 @@ void	Mesh::RecomputeNormals()
 	// then normalize all again
 	for(i=0;i<mNormalCount;i++)
 	{
-		mNormalArray[i].Normalize();
+		normalize(mNormalArray[i]);
 	}
 
 }
@@ -545,7 +545,7 @@ void	Mesh::RecomputeNormals()
 // recompute all normals with faster but less precise algorithm
 void	Mesh::RecomputeNormalsFast()
 {
-	Vector3D na;
+	v3f na;
 	int i;
 
 	if(mNormalCount == 0)
@@ -553,7 +553,7 @@ void	Mesh::RecomputeNormalsFast()
 		return;
 	}
 	
-	memset(mNormalArray,0,mNormalCount*sizeof(Vector3D));
+	memset(mNormalArray,0,mNormalCount*sizeof(v3f));
 	
 	std::vector<ModifiableItemStruct>::const_iterator it;
 
@@ -597,6 +597,6 @@ void	Mesh::RecomputeNormalsFast()
 	// then normalize all again
 	for (i = 0; i<(int)mNormalCount; i++)
 	{
-		mNormalArray[i].Normalize();
+		normalize(mNormalArray[i]);
 	}
 }

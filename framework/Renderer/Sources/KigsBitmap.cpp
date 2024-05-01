@@ -26,7 +26,7 @@ bool KigsBitmap::PreDraw(TravState* state)
 	{
 		if (IsInit())
 		{
-			Point2DI	bbsize = mDirtyZone.Size();
+			v2i	bbsize = mDirtyZone.Size();
 			if ((bbsize.x > 0) && (bbsize.y>0))
 			{
 				if ((mDirtyZone.m_Max.x >= 0) && (mDirtyZone.m_Max.y >= 0) && (mDirtyZone.m_Min.x < mSize[0]) && (mDirtyZone.m_Min.y < mSize[1]))
@@ -116,8 +116,8 @@ void	KigsBitmap::InitModifiable()
 			// clear all
 			memset(mRawPixels, 0, mSize[0] * mSize[1] * 4);
 
-			mDirtyZone.m_Min.Set(0, 0);
-			mDirtyZone.m_Max.Set(mSize[0]-1, mSize[1]-1);
+			mDirtyZone.m_Min = { 0, 0 };
+			mDirtyZone.m_Max = { mSize[0] - 1, mSize[1] - 1 };
 
 			if (parentTexture)
 			{
@@ -196,7 +196,7 @@ void	KigsBitmap::Box(int x, int y, int sizex, int sizey, const KigsBitmapPixel& 
 
 void KigsBitmap::Line(int sx, int sy, int ex, int ey, const KigsBitmapPixel& color)
 {
-	Line(Point2DI(sx, sy), Point2DI(ex, ey), color);
+	Line(v2i(sx, sy), v2i(ex, ey), color);
 }
 
 void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int _maxLineNumber, unsigned int maxSize, unsigned int fontSize, const std::string& fontName, unsigned int a_Alignment, const KigsBitmapPixel& color)
@@ -302,9 +302,9 @@ void	KigsBitmap::Print(const std::string& txt, int posx, int posy, unsigned int 
 }
 
 
-void KigsBitmap::Line(Point2DI p1, Point2DI p2, const KigsBitmapPixel& color)
+void KigsBitmap::Line(v2i p1, v2i p2, const KigsBitmapPixel& color)
 {
-	Point2DI dv(p2);
+	v2i dv(p2);
 	dv -= p1;
 
 	KigsBitmapPixel* startPixel = (KigsBitmapPixel*)mRawPixels;
@@ -409,8 +409,8 @@ void	KigsBitmap::ScrollX(int offset, const KigsBitmapPixel& color)
 		memmove(startPixel, startPixel-offset, (mSize[0] * mSize[1] + offset ) * sizeof(KigsBitmapPixel) );
 		Box(mSize[0]+offset, 0, -offset, mSize[1], color);
 	}
-	mDirtyZone.m_Min.Set(0, 0);
-	mDirtyZone.m_Max.Set(mSize[0] - 1, mSize[1] - 1);
+	mDirtyZone.m_Min = { 0, 0 };
+	mDirtyZone.m_Max = { mSize[0] - 1, mSize[1] - 1 };
 
 }
 void	KigsBitmap::ScrollY(int offset, const KigsBitmapPixel& color)
@@ -439,6 +439,6 @@ void	KigsBitmap::ScrollY(int offset, const KigsBitmapPixel& color)
 		memmove(startPixel, startPixel - offset*mSize[0], (mSize[0] * (mSize[1] + offset)) * sizeof(KigsBitmapPixel));
 		Box(0,mSize[1] + offset, mSize[0], -offset, color);
 	}
-	mDirtyZone.m_Min.Set(0, 0);
-	mDirtyZone.m_Max.Set(mSize[0] - 1, mSize[1] - 1);
+	mDirtyZone.m_Min = { 0, 0 };
+	mDirtyZone.m_Max = { mSize[0] - 1, mSize[1] - 1 };
 }

@@ -55,7 +55,7 @@ void DrawVertice::RecalculateBBox() const
 	mNeedRecomputeBBox = false;
 }
 
-void DrawVertice::GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const
+void DrawVertice::GetNodeBoundingBox(v3f& pmin, v3f& pmax) const
 {
 	if (mNeedRecomputeBBox)
 	{
@@ -269,9 +269,9 @@ void DrawVertice::SetDataFromPreset()
 		for (auto face = 0; face < 6; ++face)
 		{
 			if (face < 4)
-				m.SetRotationX(face * fPI/2);
+				m = glm::rotate(mat4(1.0), face * glm::pi<float>() / 2.0f, v3f(1.0f, 0.0f, 0.0f));
 			else
-				m.SetRotationY(face == 4 ? fPI / 2 : -fPI / 2);
+				m = glm::rotate(mat4(1.0), face == 4 ? glm::pi<float>() / 2.0f : -glm::pi<float>() / 2.0f, v3f(0.0f, 1.0f, 0.0f));
 			
 			reinterpret_cast<vertex*>(buffer + (0 + face * 6) * buffer_stride)->v = (m * v3f(-0.5f, -0.5f, 0.5f) * preset_size) + offset;
 			reinterpret_cast<vertex*>(buffer + (1 + face * 6) * buffer_stride)->v = (m * v3f(0.5f, -0.5f, 0.5f) * preset_size) + offset;
@@ -524,8 +524,8 @@ bool DrawVertice::Draw(TravState* travstate)
 			else
 			{
 				int VBO = renderer->getVBO();
-				renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mVertexCount * sizeof(Point3D), mVertices, KIGS_BUFFER_USAGE_DYNAMIC);
-				renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, KIGS_FLOAT, false, sizeof(Point3D), (void*)0, locs);
+				renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mVertexCount * sizeof(v3f), mVertices, KIGS_BUFFER_USAGE_DYNAMIC);
+				renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_VERTEX_ID, 3, KIGS_FLOAT, false, sizeof(v3f), (void*)0, locs);
 
 				if (mNormals)
 				{
@@ -545,8 +545,8 @@ bool DrawVertice::Draw(TravState* travstate)
 				if (mTexCoords && mTexture)
 				{
 					VBO = renderer->getVBO();
-					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mTexCoordCount * sizeof(Point2D), mTexCoords, KIGS_BUFFER_USAGE_DYNAMIC);
-					renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, KIGS_FLOAT, false, sizeof(Point2D), (void*)0, locs);
+					renderer->BufferData(VBO, KIGS_BUFFER_TARGET_ARRAY, mTexCoordCount * sizeof(v2f), mTexCoords, KIGS_BUFFER_USAGE_DYNAMIC);
+					renderer->SetVertexAttrib(VBO, KIGS_VERTEX_ATTRIB_TEXCOORD_ID, 2, KIGS_FLOAT, false, sizeof(v2f), (void*)0, locs);
 				}
 
 #ifdef WIN32

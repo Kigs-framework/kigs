@@ -106,21 +106,21 @@ namespace Kigs
 				return usString("");
 			}
 
-			virtual inline operator Point2D() const override
+			virtual inline operator v2f() const override
 			{
-				Point2D result;
+				v2f result;
 				return result;
 			}
 
-			virtual inline operator Point3D() const override
+			virtual inline operator v3f() const override
 			{
-				Point3D result;
+				v3f result;
 				return result;
 			}
 
-			virtual inline operator Vector4D() const override
+			virtual inline operator v4f() const override
 			{
-				Vector4D result;
+				v4f result;
 				return result;
 			}
 
@@ -249,28 +249,18 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 
 
 		template<>
-		inline CoreValueBase<float, CoreItem>::operator Point2D() const
+		inline CoreValueBase<float, CoreItem>::operator v2f() const
 		{
-			Point2D _value;
+			v2f _value;
 			_value.x = (float)mValue;
 			_value.y = (float)mValue;
 			return _value;
 		}
 
 		template<>
-		inline CoreValueBase<float, CoreItem>::operator Point3D()  const
+		inline CoreValueBase<float, CoreItem>::operator v4f()  const
 		{
-			Point3D _value;
-			_value.x = (float)mValue;
-			_value.y = (float)mValue;
-			_value.z = (float)mValue;
-			return _value;
-		}
-
-		template<>
-		inline CoreValueBase<float, CoreItem>::operator Vector4D()  const
-		{
-			Vector4D _value;
+			v4f _value;
 			_value.x = (float)mValue;
 			_value.y = (float)mValue;
 			_value.z = (float)mValue;
@@ -279,51 +269,22 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		}
 
 		template<>
-		inline CoreValueBase<Point2D, CoreItem>::operator Point2D() const
+		inline CoreValueBase<v2f, CoreItem>::operator v2f() const
 		{
-			Point2D _value;
+			v2f _value;
 			_value.x = mValue.x;
 			_value.y = mValue.y;
 			return _value;
 		}
 
 		template<>
-		inline CoreValueBase<Point2D, CoreItem>::operator Point3D()  const
+		inline CoreValueBase<v2f, CoreItem>::operator v4f()  const
 		{
-			Point3D _value;
-			_value.x = mValue.x;
-			_value.y = mValue.y;
-			_value.z = 0.0f;
-			return _value;
-		}
-
-		template<>
-		inline CoreValueBase<Point2D, CoreItem>::operator Vector4D()  const
-		{
-			Vector4D _value;
+			v4f _value;
 			_value.x = mValue.x;
 			_value.y = mValue.y;
 			_value.z = 0.0f;
 			_value.w = 0.0f;
-			return _value;
-		}
-
-		template<>
-		inline CoreValueBase<Point3D, CoreItem>::operator Point2D() const
-		{
-			Point2D _value;
-			_value.x = mValue.x;
-			_value.y = mValue.y;
-			return _value;
-		}
-
-		template<>
-		inline CoreValueBase<Point3D, CoreItem>::operator Point3D()  const
-		{
-			Point3D _value;
-			_value.x = mValue.x;
-			_value.y = mValue.y;
-			_value.z = mValue.z;
 			return _value;
 		}
 
@@ -646,19 +607,14 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 				KIGS_WARNING("trying to assign usString value to non usString CoreValue", 2);
 				return *this;
 			}
-			virtual CoreItem& operator=(const Point2D& other)
+			virtual CoreItem& operator=(const v2f& other)
 			{
-				KIGS_WARNING("trying to assign Point2D value to non Point2D CoreValue", 2);
+				KIGS_WARNING("trying to assign v2f value to non v2f CoreValue", 2);
 				return *this;
 			}
-			virtual CoreItem& operator=(const Point3D& other)
+			virtual CoreItem& operator=(const v4f& other)
 			{
-				KIGS_WARNING("trying to assign Point3D value to non Point3D CoreValue", 2);
-				return *this;
-			}
-			virtual CoreItem& operator=(const Vector4D& other)
-			{
-				KIGS_WARNING("trying to assign Point3D value to non Point3D CoreValue", 2);
+				KIGS_WARNING("trying to assign v4f value to non v4f CoreValue", 2);
 				return *this;
 			}
 
@@ -787,108 +743,44 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		}
 
 		template<>
-		inline CoreItem& CoreValue<Point3D>::operator= (const bool& _value)
+		inline CoreItem& CoreValue<v2f>::operator= (const bool& _value)
 		{
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Point3D>::operator= (const float& _value)
-		{
-			this->mValue.x = this->mValue.y = this->mValue.z = _value;
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Point3D>::operator= (const int& _value)
-		{
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Point3D>::operator= (const s64& _value)
-		{
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Point3D>::operator= (const unsigned int& _value)
-		{
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Point3D>::operator= (const u64& _value)
-		{
-			return *this;
-		}
-
-
-		template<>
-		inline CoreItem& CoreValue<Point3D>::operator=(const Point2D& other)
-		{
-			this->mValue.x = other.x;
-			this->mValue.y = other.y;
-
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Point3D>::operator=(const Point3D& other)
-		{
-			this->mValue = other;
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Point3D>::operator=(const Vector4D& other)
-		{
-			this->mValue.x = other.x;
-			this->mValue.y = other.y;
-			this->mValue.z = other.z;
-
-			return *this;
-		}
-
-		template<>
-		inline CoreItem& CoreValue<Point2D>::operator= (const bool& _value)
-		{
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Point2D>::operator= (const float& _value)
+		inline CoreItem& CoreValue<v2f>::operator= (const float& _value)
 		{
 			this->mValue.x = this->mValue.y = _value;
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Point2D>::operator= (const int& _value)
+		inline CoreItem& CoreValue<v2f>::operator= (const int& _value)
 		{
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Point2D>::operator= (const s64& _value)
+		inline CoreItem& CoreValue<v2f>::operator= (const s64& _value)
 		{
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Point2D>::operator= (const unsigned int& _value)
+		inline CoreItem& CoreValue<v2f>::operator= (const unsigned int& _value)
 		{
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Point2D>::operator= (const u64& _value)
+		inline CoreItem& CoreValue<v2f>::operator= (const u64& _value)
 		{
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Point2D>::operator=(const Point2D& other)
+		inline CoreItem& CoreValue<v2f>::operator=(const v2f& other)
 		{
 			this->mValue = other;
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Point2D>::operator=(const Point3D& other)
-		{
-			this->mValue.x = other.x;
-			this->mValue.y = other.y;
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Point2D>::operator=(const Vector4D& other)
+		inline CoreItem& CoreValue<v2f>::operator=(const v4f& other)
 		{
 			this->mValue.x = other.x;
 			this->mValue.y = other.y;
@@ -896,58 +788,51 @@ inline CoreValueBase<basetype, itemtype>::operator casttype() const \
 		}
 
 		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator= (const bool& _value)
+		inline CoreItem& CoreValue<v4f>::operator= (const bool& _value)
 		{
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator= (const float& _value)
-		{
-			this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator= (const int& _value)
+		inline CoreItem& CoreValue<v4f>::operator= (const float& _value)
 		{
 			this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator= (const s64& _value)
+		inline CoreItem& CoreValue<v4f>::operator= (const int& _value)
 		{
 			this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator= (const unsigned int& _value)
+		inline CoreItem& CoreValue<v4f>::operator= (const s64& _value)
 		{
 			this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator= (const u64& _value)
+		inline CoreItem& CoreValue<v4f>::operator= (const unsigned int& _value)
 		{
 			this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
 			return *this;
 		}
 		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator=(const Point2D& other)
+		inline CoreItem& CoreValue<v4f>::operator= (const u64& _value)
+		{
+			this->mValue.x = this->mValue.y = this->mValue.z = this->mValue.w = _value;
+			return *this;
+		}
+		template<>
+		inline CoreItem& CoreValue<v4f>::operator=(const v2f& other)
 		{
 			this->mValue.x = other.x;
 			this->mValue.y = other.y;
 
 			return *this;
 		}
+		
 		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator=(const Point3D& other)
-		{
-			this->mValue.x = other.x;
-			this->mValue.y = other.y;
-			this->mValue.z = other.z;
-			return *this;
-		}
-		template<>
-		inline CoreItem& CoreValue<Vector4D>::operator=(const Vector4D& other)
+		inline CoreItem& CoreValue<v4f>::operator=(const v4f& other)
 		{
 			this->mValue = other;
 			return *this;

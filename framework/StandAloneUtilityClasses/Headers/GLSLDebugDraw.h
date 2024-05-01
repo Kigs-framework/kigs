@@ -16,8 +16,8 @@
 #include <array>
 
 #define DEBUG_DRAW_VEC3_TYPE_DEFINED 1
-using ddVec3 = Kigs::Maths::Point3D;
-using ddVec3Param = const Kigs::Maths::Point3D;
+using ddVec3 = v3f;
+using ddVec3Param = const v3f;
 
 
 #define DEBUG_DRAW_CXX11_SUPPORTED 1
@@ -663,9 +663,9 @@ namespace Kigs
 
 namespace dd
 {
-	void set_rendering_size(Kigs::Maths::Point2D size);
-	void line2D(Kigs::Maths::Point2D p1, Kigs::Maths::Point2D p2, ddVec3Param color, int duration = 0);
-	void rect2D(Kigs::Maths::Point2D p1, Kigs::Maths::Point2D p2, ddVec3Param color, int duration = 0);
+	void set_rendering_size(v2f size);
+	void line2D(v2f p1, v2f p2, ddVec3Param color, int duration = 0);
+	void rect2D(v2f p1, v2f p2, ddVec3Param color, int duration = 0);
 
 	struct CameraPoints
 	{
@@ -678,10 +678,10 @@ namespace dd
 		CameraFlag_NoFarCross = 1 << 0,
 	};
 
-	void camera(Kigs::Draw::Camera* cam, ddVec3Param color, u32 flags = 0, int duration = 0);
-	void camera(const CameraPoints& pts, ddVec3Param color, u32 flags = 0, int duration = 0);
+	void camera(Kigs::Draw::Camera* cam, ddVec3Param color, Kigs::u32 flags = 0, int duration = 0);
+	void camera(const CameraPoints& pts, ddVec3Param color, Kigs::u32 flags = 0, int duration = 0);
 
-	void local_bbox(const Kigs::Maths::Matrix3x4& local_to_global, Kigs::Maths::BBox bbox, ddVec3Param color, int duration = 0, bool depth_enabled = true);
+	void local_bbox(const mat4& local_to_global, Kigs::Maths::BBox bbox, ddVec3Param color, int duration = 0, bool depth_enabled = true);
 
 	CameraPoints camera_points(Kigs::Draw::Camera* cam);
 }
@@ -724,7 +724,7 @@ namespace Kigs
 				return true;
 			};
 
-			void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override;
+			void GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override;
 
 			void Drawfunc(Scene::TravState* trav, Draw2D::UIItem*) override { Draw(trav); };
 			virtual ~DebugDraw();
@@ -1917,9 +1917,9 @@ namespace dd
 				pt = { 0, 1, 0 };
 			}
 			ddVec3 p1 = ddVec3(0, 0, 0);
-			auto p2 = ProjectOnPlane(pt, v3f(0, 0, 0), v);
-			left = (p2 - p1).Normalized();
-			up = (left ^ v).Normalized();
+			auto p2 = projectOnPlane(pt, v3f(0, 0, 0), v);
+			left = normalize(p2 - p1);
+			up = normalize(cross(left , v));
 			/*
 			// Produces two orthogonal vectors for normalized vector v.
 			float lenSqr, invLen;

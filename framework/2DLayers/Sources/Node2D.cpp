@@ -25,8 +25,8 @@ IMPLEMENT_CONSTRUCTOR(Node2D)
 {
 	SetNodeFlag(Node2D_NeedUpdatePosition);
 	SetNodeFlag(Node2D_SizeChanged);
-	mLocalTransformMatrix.SetIdentity();
-	mGlobalTransformMatrix.SetIdentity();
+	mLocalTransformMatrix = mat3(1.0f);
+	mGlobalTransformMatrix = mat3(1.0f);
 
 	setOwnerNotification("ClipSons", true);
 
@@ -180,7 +180,7 @@ void Node2D::ComputeRealSize()
 		return;
 	}
 	
-	Point2D size(mSize);
+	v2f size(mSize);
 
 	SizeMode	s_mode[2];
 	s_mode[0] = (SizeMode)(int)mSizeModeX;
@@ -188,7 +188,7 @@ void Node2D::ComputeRealSize()
 
 	// as Node2D needs a parent to be init, fsize shoult always be ok
 	Node2D* father = getFather();
-	Point2D fsize(-1.0f,-1.0f);
+	v2f fsize(-1.0f,-1.0f);
 	if (father)
 	{
 		fsize = father->mRealSize;
@@ -284,21 +284,22 @@ void Node2D::ComputeRealSize()
 
 void Node2D::ComputeMatrices()
 {
-	mLocalTransformMatrix.SetIdentity();
-	mLocalTransformMatrix.SetScale((float)mPreScale[0], (float)mPreScale[1], 1.0);
-	mLocalTransformMatrix.PreRotateZ((float)mRotationAngle);
-	mLocalTransformMatrix.PostScale((float)mPostScale[0],(float)mPostScale[1], 1.0);
+	mLocalTransformMatrix = mat3(1.0f);
+
+	mLocalTransformMatrix = preScale(mLocalTransformMatrix,mPreScale[0], mPreScale[1],1.0);
+	mLocalTransformMatrix = preRotateZ(mLocalTransformMatrix, mRotationAngle);
+	mLocalTransformMatrix = postScale(mLocalTransformMatrix,mPostScale[0],mPostScale[1], 1.0);
 	
 	ComputeRealSize();
 
-	Point2D	Translate(mAnchor[0] * mRealSize.x, mAnchor[1] * mRealSize.y);
+	v2f	Translate(mAnchor[0] * mRealSize.x, mAnchor[1] * mRealSize.y);
 
-	mLocalTransformMatrix.TransformPoints(&Translate, 1);
+	Translate=transformPoint2(mLocalTransformMatrix, Translate);
 
 	if (mParent) // Dock on parent UI
 	{
-		mLocalTransformMatrix.e[2][0] = mDock[0] * mParent->mRealSize.x;
-		mLocalTransformMatrix.e[2][1] = mDock[1] * mParent->mRealSize.y;
+		mLocalTransformMatrix[2][0] = mDock[0] * mParent->mRealSize.x;
+		mLocalTransformMatrix[2][1] = mDock[1] * mParent->mRealSize.y;
 	}
 	else	// dock on layer if no parent UI
 	{
@@ -307,23 +308,23 @@ void Node2D::ComputeMatrices()
 		{
 			int sx, sy;
 			layerfather->getSize(sx, sy);
-			mLocalTransformMatrix.e[2][0] = mDock[0] * (float)sx;
-			mLocalTransformMatrix.e[2][1] = mDock[1] * (float)sy;
+			mLocalTransformMatrix[2][0] = mDock[0] * (float)sx;
+			mLocalTransformMatrix[2][1] = mDock[1] * (float)sy;
 		}
 	}
 
-	mLocalTransformMatrix.e[2][0] -= Translate.x;
-	mLocalTransformMatrix.e[2][1] -= Translate.y;
+	mLocalTransformMatrix[2][0] -= Translate.x;
+	mLocalTransformMatrix[2][1] -= Translate.y;
 
 	// add position
-	mLocalTransformMatrix.e[2][0] += mPosition[0];
-	mLocalTransformMatrix.e[2][1] += mPosition[1];
+	mLocalTransformMatrix[2][0] += mPosition[0];
+	mLocalTransformMatrix[2][1] += mPosition[1];
 
 	mGlobalTransformMatrix = mLocalTransformMatrix;
 
 	if (mParent)
 	{
-		mGlobalTransformMatrix.PostMultiply(mParent->mGlobalTransformMatrix);
+		mGlobalTransformMatrix = mParent->mGlobalTransformMatrix * mGlobalTransformMatrix;
 		if (mParent && GetNodeFlag(Node2D_SizeChanged) && mParent->isSubType(UILayout::mClassID))
 			static_cast<UILayout*>(mParent)->NeedRecomputeLayout();
 	}
@@ -400,8 +401,8 @@ void	Node2D::GetGlobalPosition(float &X, float &Y)
 	// recompute matrix
 	SetUpNodeIfNeeded();
 
-	X = mGlobalTransformMatrix.e[2][0];
-	Y = mGlobalTransformMatrix.e[2][1];
+	X = mGlobalTransformMatrix[2][0];
+	Y = mGlobalTransformMatrix[2][1];
 
 }
 
@@ -433,12 +434,12 @@ void Node2D::TravDraw(Scene::TravState* state)
 	PostTravDraw(state);
 }
 
-void	Node2D::GetTransformedPoints(Point2D * pt)
+void	Node2D::GetTransformedPoints(v2f * pt)
 {
-	pt[0].Set(0.0f, 0.0f);
-	pt[1].Set(0.0f, mRealSize.y);
-	pt[2].Set(mRealSize.x, mRealSize.y);
-	pt[3].Set(mRealSize.x,	0.0f);
+	pt[0]=v2f(0.0f, 0.0f);
+	pt[1]=v2f(0.0f, mRealSize.y);
+	pt[2]=v2f(mRealSize.x, mRealSize.y);
+	pt[3]=v2f(mRealSize.x,	0.0f);
 
 	TransformPoints(pt, 4);
 }

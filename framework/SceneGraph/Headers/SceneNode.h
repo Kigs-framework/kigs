@@ -64,15 +64,15 @@ namespace Kigs
 
 			bool IsVisibleInScene();
 
-			virtual void GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const
+			virtual void GetNodeBoundingBox(v3f& pmin, v3f& pmax) const
 			{
-				pmin.Set(0.0f, 0.0f, 0.0f);
-				pmax.Set(-1.0f, -1.0f, -1.0f);
+				pmin = { 0.0f, 0.0f, 0.0f };
+				pmax = { -1.0f, -1.0f, -1.0f };
 			}
 
-			bool	CompareMatrix(const Matrix3x4& m1, const Matrix3x4& m2)
+			bool	CompareMatrix(const mat4& m1, const mat4& m2)
 			{
-				return (memcmp(&m1, &m2, sizeof(Matrix3x4)) == 0);
+				return (memcmp(&m1, &m2, sizeof(mat4)) == 0);
 			}
 
 		protected:

@@ -323,7 +323,7 @@ namespace Kigs
 			s32				mArraySize=16;
 			WRAP_ATTRIBUTES(mArraySize);
 			maBuffer		mMatrixArray;
-			Matrix4x4*		mMatrixArrayPointer;
+			mat4*		mMatrixArrayPointer;
 		};
 
 		// ****************************************

@@ -42,7 +42,7 @@ void UIDrawableItem::SetVertexArray(UIVerticesInfo * aQI)
 	{
 		aQI->Resize(4);
 		VInfo2D::Data* buf = reinterpret_cast<VInfo2D::Data*>(aQI->Buffer());
-		Point2D pt[4];
+		v2f pt[4];
 
 		pt[0] = getDrawablePos({ 0.0f,0.0f });
 		pt[1] = getDrawablePos({ 0.0f,1.0f });
@@ -182,10 +182,10 @@ void UIDrawableItem::ProtectedDraw(TravState* state)
 
 	if ((lQI->Flag & UIVerticesInfo_UseModelMatrix) != 0)
 	{
-		Matrix3x3 m = GetGlobalTransform();
-		Matrix4x4 m4 = (Matrix4x4)m;
+		mat3 m = GetGlobalTransform();
+		mat4 m4 = (mat4)m;
 		//renderer->PushMatrix(MATRIX_MODE_MODEL);
-		renderer->PushAndMultMatrix(Draw::MATRIX_MODE_MODEL, &m4.e[0][0]);
+		renderer->PushAndMultMatrix(Draw::MATRIX_MODE_MODEL, &m4[0][0]);
 	}
 
 	// ** Manage Transparency (after texture init) **

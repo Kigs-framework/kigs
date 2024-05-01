@@ -109,12 +109,12 @@ void	JoystickDX::UpdateDevice()
 	// axis
 	if(mAxisIndex!=-1)
 	{
-		Point3D p((float)(dijs2.lX-32768)/32768.0f,(float)(dijs2.lY-32768)/32768.0f,(float)(dijs2.lZ-32768)/32768.0f);
+		v3f p((float)(dijs2.lX-32768)/32768.0f,(float)(dijs2.lY-32768)/32768.0f,(float)(dijs2.lZ-32768)/32768.0f);
 		mDeviceItems[mAxisIndex]->getState()->SetValue(p);
 	}
 	if(mRotationIndex!=-1)
 	{
-		Point3D p((float)(dijs2.lRx-32768)/32768.0f,(float)(dijs2.lRy-32768)/32768.0f,(float)(dijs2.lRz-32768)/32768.0f);
+		v3f p((float)(dijs2.lRx-32768)/32768.0f,(float)(dijs2.lRy-32768)/32768.0f,(float)(dijs2.lRz-32768)/32768.0f);
 		mDeviceItems[mRotationIndex]->getState()->SetValue(p);
 	}
 	currentDevice+=mAxisCount;
@@ -147,12 +147,12 @@ void	JoystickDX::DoInputDeviceDescription()
 	if(mAxisIndex)
 	{
 		mAxisIndex=currentDevice++;
-		devicearray[mAxisIndex]=new DeviceItem(DeviceItemState<Point3D>(Point3D()));
+		devicearray[mAxisIndex]=new DeviceItem(DeviceItemState<v3f>(v3f()));
 	}
 	if(mRotationIndex)
 	{
 		mRotationIndex=currentDevice++;
-		devicearray[mRotationIndex]=new DeviceItem(DeviceItemState<Point3D>(Point3D()));
+		devicearray[mRotationIndex]=new DeviceItem(DeviceItemState<v3f>(v3f()));
 	}
 
 	unsigned int currentPOV;

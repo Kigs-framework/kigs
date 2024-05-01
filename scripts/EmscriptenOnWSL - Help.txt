@@ -1,5 +1,60 @@
+
+********************************************************************************************************************************************
+									Install everything
+********************************************************************************************************************************************
+
+
+Install WSL (install Ubuntu from Windows Store)
+
+after Ubuntu for WSL is installed, just upgrade
+sudo apt update
+sudo apt upgrade
+
+then install missing executables if needed:
+sudo apt install lbzip2
+
+// instal latest cmake
+sudo apt purge --auto-remove cmake
+sudo apt update && \
+sudo apt install -y software-properties-common lsb-release && \
+sudo apt clean all
+
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+
+sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+
+sudo apt update
+sudo apt install kitware-archive-keyring
+sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
+
+If running sudo apt update gets the following error:
+
+Err:7 https://apt.kitware.com/ubuntu bionic InRelease
+The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6AF7F09730B3F0A4
+Fetched 11.0 kB in 1s (7552 B/s)
+
+Copy the public key 6AF7F09730B3F0A4 and run this command:
+
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6AF7F09730B3F0A4
+
+sudo apt update
+sudo apt install cmake
+
+then install Emscripten
+
+https://emscripten.org/docs/getting_started/downloads.html
+
+then launch script
+
+cd /mnt/YOUR_FULL_KIGS_PATH/kigs/scripts
+
+./generateEmscriptenCMake.sh
+
 If script generate CMake errors : 
 
+1) try to reboot your PC
+
+2) 
 1. Create file wsl.conf in /etc/ with content: 
 
 # /etc/wsl.conf
@@ -9,3 +64,31 @@ enabled = true
 
 2. Reboot your wsl
 wsl.exe -t Ubuntu // (or other e.g. Debian) 
+
+********************************************************************************************************************************************
+									Build project
+********************************************************************************************************************************************
+
+move to the project directory (and the build version) you want to build :
+
+If you want to build StaticDebug version of Sample8 go to : 
+cd /mnt/YOUR_FULL_KIGS_PATH/Build/solutionEmscriptenCMake/StaticDebug/kigs/projects/Sample8
+
+and then:
+
+make
+
+then wait (a long time) 
+
+********************************************************************************************************************************************
+									Launch project
+********************************************************************************************************************************************
+
+copy index.html from project source folder to current build folder 
+
+then : 
+python3 -m http.server 8000
+ 
+Open http://localhost:8000/ in a web browser
+
+

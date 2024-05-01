@@ -223,8 +223,7 @@ bool RenderingScreen::GetDataInTouchSupport(const Input::touchPosInfos& posin, I
 	else
 	{
 		//GetMousePosInScreen((s32)posin.pos.x, (s32)posin.pos.y, pout.pos.x, pout.pos.y);
-		pout.pos.xy = GlobalMousePositionToDesignPosition(posin.pos.xy);
-		pout.pos.z = 0;
+		pout.pos = v3f(GlobalMousePositionToDesignPosition(posin.pos),0.0f);
 	}
 
 	if ((pout.pos.x >= 0.0f) && (pout.pos.x < mDesignSize[0]))
@@ -237,13 +236,13 @@ bool RenderingScreen::GetDataInTouchSupport(const Input::touchPosInfos& posin, I
 	return false;
 }
 
-bool RenderingScreen::IsValidTouchSupport(Vector3D posin)
+bool RenderingScreen::IsValidTouchSupport(v3f posin)
 {
 	if (mIsOffScreen) // offscreen can not be a root touch support
 	{
 		return false;
 	}
-	Vector3D pout;
+	v3f pout;
 	GetMousePosInScreen((s32)posin.x, (s32)posin.y, pout.x, pout.y);
 
 	// return true if pos is inside screen
@@ -278,7 +277,7 @@ void RenderingScreen::ManageFade(TravState* state)
 		renderer->LoadIdentity(MATRIX_MODE_MODEL);
 		renderer->LoadIdentity(MATRIX_MODE_VIEW);
 
-		Point2D size;
+		v2f size;
 		GetSize(size.x, size.y);
 		renderer->SetScissorValue(0, 0, (s32)size.x, (s32)size.y);
 		renderer->Viewport(0, 0, (u32)size.x, (u32)size.y);

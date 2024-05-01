@@ -18,7 +18,7 @@ using namespace Kigs::Scene;
 //IMPLEMENT_AND_REGISTER_CLASS_INFO(CullingObject, CullingObject, SceneGraph);
 IMPLEMENT_CLASS_INFO(CullingObject)
 
-void  CullingObject::InitPlane(int i, const Vector3D& n, const Point3D& o)
+void  CullingObject::InitPlane(int i, const v3f& n, const v3f& o)
 {
 	mCullPlaneList[(unsigned int)i].mNormal = n;
 	mCullPlaneList[(unsigned int)i].mOrigin = o;
@@ -27,7 +27,7 @@ void  CullingObject::InitPlane(int i, const Vector3D& n, const Point3D& o)
 	mCullPlaneList[(unsigned int)i].mD = d;
 }
 
-void  CullingObject::AddPlane(const Vector3D& n, const Point3D& o)
+void  CullingObject::AddPlane(const v3f& n, const v3f& o)
 {
 	CullPlane  nplane;
 	nplane.mNormal = n;
@@ -53,8 +53,8 @@ CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int&
 	std::vector< CullingObject::CullPlane>::const_iterator itend = mCullPlaneList.end();
 
 	int index = 1;
-	Vector3D  normal;
-	Point3D   origin;
+	v3f  normal;
+	v3f   origin;
 	
 	const BBox* currentBBoxP;
 	if (isScaled)
@@ -73,7 +73,7 @@ CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int&
 	if (currentBBox.m_Max.x < currentBBox.m_Min.x) // bbox not init ?
 		return all_out;
 
-	auto& g2l = node->GetGlobalToLocal();
+	const mat4& g2l = node->GetGlobalToLocal();
 	float dot1;
 
 	while (it != itend)
@@ -89,8 +89,8 @@ CullingObject::CULLING_RESULT CullingObject::SubCull(Node3D* node, unsigned int&
 			}
 			else
 			{
-				g2l.TransformVector(&it->mNormal, &normal);
-				g2l.TransformPoint(&it->mOrigin, &origin);
+				normal = transformVector3(g2l,it->mNormal);
+				origin = transformPoint3(g2l,it->mOrigin);
 
 				d = origin.x*normal.x + origin.y*normal.y + origin.z*normal.z;
 			}
@@ -156,7 +156,11 @@ CullingObject::CULLING_RESULT CullingObject::Cull(Node3D* node, unsigned int& cu
 			if (valid)
 			{
 				bb.ConvertToPoint(pts);
-				node->GetLocalToGlobal().TransformPoints(pts, 8);
+
+				for (auto i = 0; i < 8; i++)
+				{
+					pts[i] = node->GetLocalToGlobal() * v4f(pts[i].x, pts[i].y,pts[i].z,1.0f);
+				}
 			}
 			
 		}
@@ -185,35 +189,35 @@ CullingObject::CULLING_RESULT CullingObject::Cull(Node3D* node, unsigned int& cu
 }
 
 // return intersection point of p1,p2,p3
-Point3D	CullingObject::getIntersection(const CullPlane& p1, const  CullPlane& p2, const  CullPlane& p3)
+v3f	CullingObject::getIntersection(const CullPlane& p1, const  CullPlane& p2, const  CullPlane& p3)
 {
-	Point3D	result(0.0f, 0.0f, 0.0f);
+	v3f	result(0.0f, 0.0f, 0.0f);
 	// first get line of intersection between p1 & p2
 
-	Vector3D dnormal;
-	dnormal.CrossProduct(p1.mNormal, p2.mNormal);
+	v3f dnormal;
+	dnormal=cross(p1.mNormal, p2.mNormal);
 
-	if (NormSquare(dnormal) > 0.0001)
+	if (length2(dnormal) > 0.0001)
 	{
-		dnormal.Normalize(); // this is the direction of the line
+		dnormal=normalize(dnormal); // this is the direction of the line
 		// project p1.myOrigin on p2 to have a point on the line
 
-		Vector3D distVector(p1.mOrigin);
-		distVector -= p2.mOrigin;
+		v3f distVector(p1.mOrigin);
+		distVector -= (v3f&)p2.mOrigin;
 
-		float dist = Dot(distVector, p2.mNormal);
+		float dist = dot(distVector, p2.mNormal);
 
-		Point3D dpoint(p1.mOrigin);
+		v3f dpoint(p1.mOrigin);
 		dpoint -= p2.mNormal*dist;
 
 		// then compute intersection of this line with p3
 
 		// check parallel
-		float denom = Dot(p3.mNormal, dnormal);
+		float denom = dot(p3.mNormal, dnormal);
 
 		if (fabsf(denom) > 0.0001)
 		{
-			float t = Dot((p3.mOrigin - dpoint), p3.mNormal) / denom;
+			float t = dot((p3.mOrigin - dpoint), p3.mNormal) / denom;
 			result = dpoint + t*dnormal;
 		}
 	}

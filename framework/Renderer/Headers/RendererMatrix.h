@@ -58,19 +58,12 @@ namespace Kigs
 			}
 
 			/**
-			 * \brief		initialize with a 3x4 matrix
-			 * \fn			void	Init(const Matrix3x4& matrix);
-			 * \param		matrix : used matrix
-			 */
-			void	Init(const Matrix3x4& matrix);
-			using	Drawable::Init;
-
-			/**
 			 * \brief		initialize with a 4x4 matrix
-			 * \fn			void	Init(const Matrix4x4& matrix);
+			 * \fn			void	Init(const mat4& matrix);
 			 * \param		matrix : used matrix
 			 */
-			void	Init(const Matrix4x4& matrix);
+			void	Init(const mat4& matrix);
+			using	Drawable::Init;
 
 
 			/**
@@ -111,7 +104,7 @@ namespace Kigs
 
 			const float* GetMatrixValues() const
 			{
-				return &mMatrix.e[0][0];
+				return &mMatrix[0][0];
 			}
 
 		protected:
@@ -122,7 +115,7 @@ namespace Kigs
 			virtual ~RendererMatrix();
 
 			//! used matrix
-			Matrix4x4	mMatrix;
+			mat4	mMatrix;
 
 			WRAP_ATTRIBUTES(mMatrix);
 		};

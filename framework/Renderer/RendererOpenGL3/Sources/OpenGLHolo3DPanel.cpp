@@ -55,12 +55,9 @@ bool OpenGLHolo3DPanel::Draw(TravState* travstate)
 
 		// compute position
 
-		Vector3D n = (v3f)mNormal;
-		Vector3D up = (v3f)mUp;
-		Vector3D left = up^n;
-
-		up.Normalize();
-		left.Normalize();
+		v3f n = (v3f)mNormal;
+		v3f up = normalize((v3f)mUp);
+		v3f left = normalize(cross(up,n));
 
 		VInfo3D vi;
 
@@ -105,7 +102,7 @@ bool OpenGLHolo3DPanel::Draw(TravState* travstate)
 			if (mTwoSided) nb_vertices *= 2u;
 			mVI = UIVerticesInfo{ &vi, nb_vertices };
 			VInfo3D::Data* buf = reinterpret_cast<VInfo3D::Data*>(mVI.Buffer());
-			float radians_interval = 2.0f * fPI / nb_triangles;
+			float radians_interval = 2.0f * glm::pi<float>() / nb_triangles;
 			
 			auto proj = [&](v2f pos2D)
 			{

@@ -91,11 +91,11 @@ namespace Kigs
 
 			/**
 			 * \brief	retreive the bounding box of the bitmap (point min and point max)
-			 * \fn 		virtual void	GetBoundingBox(Point3D& pmin,Point3D& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
+			 * \fn 		virtual void	GetBoundingBox(v3f& pmin,v3f& pmax) const {pmin=myBBoxMin; pmax=mBBoxMax;}
 			 * \param	pmin : point min of the bounding box (in/out param)
 			 * \param	pmax : point max of the bounding box (in/out param)
 			 */
-			void	GetNodeBoundingBox(Point3D& pmin, Point3D& pmax) const override { pmin.Set((float)mPosition[0], 0.0f, (float)mPosition[1]); pmax.Set((float)mPosition[0] + (float)mSize[0], (float)mDisplacement, (float)mPosition[1] + (float)mSize[1]); }
+			void	GetNodeBoundingBox(v3f& pmin, v3f& pmax) const override { pmin = v3f((float)mPosition[0], 0.0f, (float)mPosition[1]); pmax = v3f((float)mPosition[0] + (float)mSize[0], (float)mDisplacement, (float)mPosition[1] + (float)mSize[1]); }
 
 			//! displacement
 			float			mDisplacement = KIGS_SPRITE_DEFAULT_DISPLACEMENT;
