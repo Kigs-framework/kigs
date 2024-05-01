@@ -31,6 +31,7 @@
 
 */
 
+using namespace Kigs;
 using namespace Kigs::Fsm;
 
 SP<CoreFSMTransition> CoreFSM::mPopTransition=nullptr;
